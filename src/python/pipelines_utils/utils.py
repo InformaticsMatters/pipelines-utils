@@ -16,13 +16,14 @@
 
 
 from __future__ import print_function
-import sys, gzip, json, uuid, logging
+import sys, gzip, json, uuid
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from pipelines.rdkit.sanifix import fix_mol
-from pipelines.rdkit.StreamJsonListLoader import StreamJsonListLoader
-from pipelines.rdkit.BasicObjectWriter import BasicObjectWriter
-from pipelines.rdkit.TsvWriter import TsvWriter
+from rdkit_utils.sanifix import fix_mol
+from rdkit_utils.StreamJsonListLoader import StreamJsonListLoader
+from rdkit_utils.BasicObjectWriter import BasicObjectWriter
+from rdkit_utils.TsvWriter import TsvWriter
+
 
 def log(*args, **kwargs):
     """

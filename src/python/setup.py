@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
 
-    name='im-pipelines',
+    name='im-pipelines-utils',
     version='1.0.0',
     author='Alan Christie',
     author_email='alan.christie@informaticsmatters.com',
