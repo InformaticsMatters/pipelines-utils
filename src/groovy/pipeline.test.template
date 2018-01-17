@@ -11,6 +11,13 @@
 
 [
 
+    // The PipelineTester test script version.
+    // Must be supported by the PipelineTester utility.
+    // Check with your administrator and set it to the latest value that is
+    // supported.
+
+    version = 1,
+
     // An optional `setup_collection` section.
     //
     // This defines settings for the entire test suite.
@@ -44,6 +51,9 @@
     // by your pipeline. For example, if the test is successful when the
     // pipeline logs the text 'Computation = 4.5673' then you would add
     // this to the `see` section (as illustrated below).
+    //
+    // If a test is not working an you want to keep it and avoid running it
+    // then simply prefix the test section name with `ignore_`.
 
     test_1 = [
 

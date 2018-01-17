@@ -43,6 +43,9 @@ import groovy.text.SimpleTemplateEngine
  */
 class Tester {
 
+    // Supported test-script versions
+    def supportedTestFileVersions = [1]
+
     // Controlled by command-line
     boolean verbose = false
 
@@ -61,10 +64,13 @@ class Tester {
     String infoPrompt = '->'
     String dumpOutPrefix = '   #'
     String dumpErrPrefix = '   |'
+    String ignorePrefix = 'ignore_'
 
     // Material accumulated as the tests execute
+    int testScriptVersion = 0
     int sectionNumber = 0
     int testsExecuted = 0
+    int testsIgnored = 0
     def failedTests = []
 
     String currentTestFilename = ''
@@ -93,6 +99,7 @@ class Tester {
             currentTestFilename = currentTestFilename.
                 take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
+            testScriptVersion = 0
 
             // Guess the Service Descriptor path and filename
             // and try to extract the command and the supported options...
@@ -102,15 +109,42 @@ class Tester {
             extractOptionNames(sd)
 
             // Now run each test found in the test spec
-            // (also checking for a `setup_collection` section)
-            def spec = new ConfigSlurper().parse(new File(path).toURI().toURL())
-            spec.each { section ->
-                sectionNumber += 1
-                if (section.key.toLowerCase().startsWith('test')) {
-                    processTest(path, section, cmd)
-                } else if (section.key.toLowerCase().equals('setup_collection')) {
-                    processSetupCollection(section)
+            // (also checking for a `setup_collection` and `version` sections).
+            def test_spec = new ConfigSlurper().parse(new File(path).toURI().toURL())
+            for (def section : test_spec) {
+
+                String section_key_lower = section.key.toLowerCase()
+                if (section_key_lower.equals('version')) {
+
+                    if (!checkFileVersion(section.value)) {
+                        err("Unsupported test script version ($section.value)." +
+                            " Expected value from choice of $supportedTestFileVersions")
+                        recordFailedTest("-")
+                        return false
+                    }
+
+                } else {
+
+                    // Must have a version number if we get here...
+                    if (testScriptVersion == 0) {
+                        err('The file is missing its version definition')
+                        recordFailedTest("-")
+                        return false
+                    }
+
+                    // Section is either a `setup_collect` or `test`...
+                    sectionNumber += 1
+                    if (section_key_lower.startsWith('test')) {
+                        processTest(path, section, cmd)
+                    } else if (section_key_lower.equals('setup_collection')) {
+                        processSetupCollection(section)
+                    } else if (section_key_lower.startsWith(ignorePrefix)) {
+                        logTest(path, section)
+                        testsIgnored += 1
+                    }
+
                 }
+
             }
 
         }
@@ -137,11 +171,29 @@ class Tester {
             }
         }
         println "Num executed: $testsExecuted"
-        println "Num failed  : ${failedTests.size()}"
+        println "Num ignored : $testsIgnored"
+        println "Num failed  : $failedTests.size"
         separate()
         println "Passed: ${testPassed.toString().toUpperCase()}"
 
         return testPassed
+
+    }
+
+    /**
+     * Checks the file version supplied is supported.
+     * If successful the `testScriptVersion` member is set.
+     *
+     * @param version The version (*number)
+     * @return false on failure
+     */
+    private boolean checkFileVersion(version) {
+
+        if (supportedTestFileVersions.contains(version)) {
+            testScriptVersion = version
+            return true
+        }
+        return false
 
     }
 
@@ -208,7 +260,7 @@ class Tester {
      */
     static private err(String msg) {
 
-        System.err.println "ERROR: $msg"
+        println "ERROR: $msg"
 
     }
 
@@ -376,6 +428,22 @@ class Tester {
     }
 
     /**
+     * Logs key information about the current test.
+     *
+     * @param path Full path to the test file
+     * @param section The test section
+     */
+    private logTest(path, section) {
+
+        separate()
+
+        info("Test: $section.key")
+        info("File: $currentTestFilename")
+        info("Path: $path")
+
+    }
+
+    /**
      * Processes (runs) an individual test.
      *
      * If the test fails its name is added to the list of failed tests
@@ -401,10 +469,7 @@ class Tester {
 
         testsExecuted += 1
 
-        separate()
-
-        info("Test: $section.key")
-        info("File: $filename")
+        logTest(filename, section)
 
         def command = section.value['command']
         def params_block = section.value['params']
