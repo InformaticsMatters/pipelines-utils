@@ -365,12 +365,39 @@ class Tester {
     }
 
     /**
+     * Adds the test (and its filename) to the list of failed tests.
+     *
+     * @param testName The test name (test section value).
+     */
+    private recordFailedTest(testName) {
+
+        failedTests.add("${currentTestFilename}/${testName}")
+
+    }
+
+    /**
      * Processes (runs) an individual test.
      *
      * If the test fails its name is added to the list of failed tests
      * in the `failedTests` member list.
-     */
-    def processTest(filename, section, cmd) {
+     *
+     * A test consists of the following _blocks_: -
+     *
+     * -    command
+     *      Optional. If specified no service-descriptor (SD) tests are made.
+     *      Instead it is used an an alternative to the command normally
+     *      extracted from the SD.
+     *      This and the params block are mutually exclusive.
+     *
+     * -    params
+     *      A list of parameters (options) and values.
+     *      This and the command block are mutually exclusive.
+     *
+     * -    see
+     *      An optional list of regular expressions executed against
+     *      the pipeline log.
+     **/
+    def processTest(filename, section, sd_cmd) {
 
         testsExecuted += 1
 
@@ -379,23 +406,53 @@ class Tester {
         info("Test: $section.key")
         info("File: $filename")
 
-        // Extract the parameters from the test specification and,
-        // if all the options are recognised,
-        // replace the respective values in the command string...
-        def params = section.value['params']
-        if (!checkAllOptionsHaveBeenUsed(params)) {
-            failedTests.add("${currentTestFilename}/${section.key}")
+        def command = section.value['command']
+        def params_block = section.value['params']
+        def see_block = section.value['see']
+        // Enforce conditions on block combinations...
+        if (command != null && params_block != null) {
+            err('Found "command" and "params". Use one or the other.')
+            recordFailedTest(section.key)
             return
         }
-        String pipelineCommand = expandTemplate(cmd, params)
 
+        // Unless a test-specific command has been defined
+        // check the parameters against the service descriptor
+        // to ensure that all the options are recognised.
+        String the_command = null
+        if (command == null) {
+
+            if (!checkAllOptionsHaveBeenUsed(params_block)) {
+                recordFailedTest(section.key)
+                return
+            }
+            // No raw command defined in the test block,
+            // so the command to use for execution is the
+            // SD-defined command...
+            the_command = sd_cmd
+
+        } else {
+            // The user-supplied command might be a multi-line string.
+            // Flatten it...
+            the_command = ''
+            command.eachLine {
+                the_command += it.trim() + ' '
+            }
+            the_command = the_command.trim()
+        }
+
+        // Here ... `the_command` is either the SD-defined command or the
+        // command defined in this test's command block.
+
+        // replace the respective values in the command string...
+        String pipelineCommand = expandTemplate(the_command, params_block)
         // Replace newlines with '\n'
         pipelineCommand = pipelineCommand.replace(System.lineSeparator(), '\n')
 
         // Redirect the '-o' option, if defined
         def oOption = pipelineCommand =~ /$outputRegex/
         File testOutputFile = null
-        if (oOption.hasGroup()) {
+        if (oOption.count > 0) {
 
             // Construct and make the path for any '-o' output
             File testOutputPath =
@@ -458,9 +515,9 @@ class Tester {
                   }
             }
 
-            if (validated) {
+            if (validated && see_block != null) {
                 // Check that we see everything the test tells us to see.
-                section.value['see'].each { see ->
+                see_block.each { see ->
                     // Replace spaces in the 'see' string
                     // with a simple _variable whitespace_ regex (excluding
                     // line-breaks and form-feeds).
@@ -489,7 +546,7 @@ class Tester {
         } else {
             // Test failed.
             dumpCommandError(serr)
-            failedTests.add("${currentTestFilename}/${section.key}")
+            recordFailedTest(section.key)
         }
 
     }
