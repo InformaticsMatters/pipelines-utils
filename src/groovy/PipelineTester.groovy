@@ -74,6 +74,7 @@ class Tester {
     int testsExecuted = 0
     int testsIgnored = 0
     def failedTests = []
+    def observedFiles = []
 
     // The service descriptor for the current test file...
     def currentServiceDescriptor = null
@@ -98,7 +99,7 @@ class Tester {
 
         // Find all the potential test files
         def testFiles = new FileNameFinder().getFileNames(testSearchDir, testFileSpec)
-        testFiles.each { path ->
+        for (String path : testFiles) {
 
             // Reset filename and section number
             currentTestFilename = path.split(File.separator)[-1]
@@ -106,6 +107,17 @@ class Tester {
                 take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
             testScriptVersion = 0
+
+            // We must not have duplicate test files -
+            // this indicates there are pipelines in different projects
+            // that will clash if combined.
+            if (observedFiles.contains(currentTestFilename)) {
+                err("Duplicate pipline ($currentTestFilename)")
+                recordFailedTest("-")
+                separate()
+                continue
+            }
+            observedFiles.add(currentTestFilename)
 
             // Guess the Service Descriptor path and filename
             // and try to extract the command and the supported options...
@@ -122,19 +134,22 @@ class Tester {
                 if (section_key_lower.equals('version')) {
 
                     if (!checkFileVersion(section.value)) {
+                        separate()
                         err("Unsupported test script version ($section.value)." +
                             " Expected value from choice of $supportedTestFileVersions")
+                        err("In $path")
                         recordFailedTest("-")
-                        return false
+                        break
                     }
 
                 } else {
 
                     // Must have a version number if we get here...
                     if (testScriptVersion == 0) {
+                        separate()
                         err('The file is missing its version definition')
                         recordFailedTest("-")
-                        return false
+                        break
                     }
 
                     // Section is either a `setup_collect` or `test`...
@@ -144,8 +159,10 @@ class Tester {
                     } else if (section_key_lower.startsWith(testPrefix)) {
                         processTest(path, section)
                     } else if (section_key_lower.startsWith(ignorePrefix)) {
+                        separate()
                         logTest(path, section)
                         testsIgnored += 1
+                        info('OK (Ignored)')
                     }
 
                 }
@@ -440,6 +457,7 @@ class Tester {
      */
     def processSetupCollection(setupSection) {
 
+        separate()
         info('Processing setup_collection section')
 
         // Extract key setup values, supplying defaults
@@ -469,8 +487,6 @@ class Tester {
      * @param section The test section
      */
     private logTest(path, section) {
-
-        separate()
 
         info("Test: $section.key")
         info("File: $currentTestFilename")
@@ -504,6 +520,7 @@ class Tester {
 
         testsExecuted += 1
 
+        separate()
         logTest(filename, section)
 
         def command = section.value['command']
@@ -609,8 +626,6 @@ class Tester {
                 if (!testOutputFile.exists()) {
                       err("Expected output file '$testOutputFile' but it wasn't there")
                       validated = false
-                  } else {
-                      info("Got '$testOutputFile'")
                   }
             }
 
@@ -630,8 +645,6 @@ class Tester {
                     if (finder.count == 0) {
                         err("Expected to see '$see' but it was not in the command's output")
                         validated = false
-                    } else {
-                      info("Saw '$see'")
                     }
                 }
             }
