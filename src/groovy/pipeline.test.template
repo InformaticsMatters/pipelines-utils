@@ -60,8 +60,10 @@
         // An optional test-specific 'raw' command.
         //
         // As an alternative to exercising the service-descriptor-supplied
-        // command you can specify your own raw command. If you provide
-        // a command you cannot provide parameters (see below).
+        // command you can specify your own raw command.
+        //
+        // If you provide a command you **cannot** provide parameters
+        // (see the params section below).
 
         command: ```python my_own_command
                  --my-own-param-1 32
@@ -69,12 +71,12 @@
 
         // Test parameters.
         //
-        // If you are testing the service-descriptor command rather than
-        // applying your own raw command (see above) you need to provide the
-        // service-descriptor command wih parameters.
+        // Unless you are testing a raw command (see above) you need to
+        // provide the built-in service descriptor command wih parameters
+        // and values.
         //
-        // A parameter value must be defined for each service descriptor
-        // option that does not have a default value.
+        // A parameter value must be defined for each option that does not
+        // have a default.
 
         params: [ doses: 55,
                   volumes: 0.42,
@@ -83,9 +85,10 @@
         // Log validation.
         //
         // Optional checks against the pipeline's log.
-        // Spaces are automatically interpreted
-        // as the regular expression '[ \s]+',
-        // but you can also use regular expressions.
+        // To simplify strign checks against output that contains variable
+        // whitespace (like tabs etc.) spaces are automatically interpreted
+        // as the regular expression '[ \t]+', absorbing any non-line-breaking
+        // gaps. You can also use regular expressions.
 
         see: [ 'Computation = 4.5673' ]
 

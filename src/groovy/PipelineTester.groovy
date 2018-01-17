@@ -87,7 +87,7 @@ class Tester {
     /**
      * The run method.
      * Locates all the test files, loads them and executes them.
-     * This is the main/public entrypoint for the class.
+     * This is the main/public entry-point for the class.
      *
      * @return boolean, false if any test has failed.
      */
@@ -203,7 +203,8 @@ class Tester {
     }
 
     /**
-     * cleanup the generated output.
+     * Cleanup the generated output.
+     *
      * Pipelines that create files have their files placed in the project's
      * `tmp` directory. This method, called at the start of testing and when
      * all tests have passed successfully, removed the collected files.
@@ -317,9 +318,10 @@ class Tester {
             if (option.defaultValue != null) {
                 if (option.defaultValue in java.util.List) {
                     // Assume something like '[java.lang.Float, 0.7]'
-                    // So the defau;t's the 2nd entry?
+                    // So the default's the 2nd entry?
                     optionDefaults[arglessOption] = option.defaultValue[1]
                 } else {
+                    // Just a string?
                     optionDefaults[arglessOption] = option.defaultValue
                 }
             }
@@ -440,7 +442,7 @@ class Tester {
 
         info('Processing setup_collection section')
 
-        // Extract key setup values, suppling defaults
+        // Extract key setup values, supplying defaults
         int timeoutSeconds = setupSection.value.get('timeout')
         if (timeoutSeconds != null) {
             info("Setup timeout=$timeoutSeconds")
@@ -517,7 +519,7 @@ class Tester {
         // Unless a test-specific command has been defined
         // check the parameters against the service descriptor
         // to ensure that all the options are recognised.
-        String the_command = null
+        String pipelineCommand
         if (command == null) {
 
             if (!checkAllOptionsHaveBeenUsed(params_block)) {
@@ -526,7 +528,12 @@ class Tester {
             }
             // No raw command defined in the test block,
             // so use the command defined in the service descriptor...
-            the_command = currentServiceDescriptor.command
+            String the_command = currentServiceDescriptor.command
+
+            // Replace the respective values in the command string...
+            pipelineCommand = expandTemplate(the_command, params_block)
+            // Replace newlines with '\n'
+            pipelineCommand = pipelineCommand.replace(System.lineSeparator(), '\n')
 
         } else {
             // The user-supplied command might be a multi-line string.
@@ -535,18 +542,13 @@ class Tester {
             command.eachLine {
                 the_command += it.trim() + ' '
             }
-            the_command = the_command.trim()
+            pipelineCommand = the_command.trim()
         }
 
-        // Here ... `the_command` is either the SD-defined command or the
+        // Here ... `pipelineCommand` is either the SD-defined command or the
         // command defined in this test's command block.
 
-        // replace the respective values in the command string...
-        String pipelineCommand = expandTemplate(the_command, params_block)
-        // Replace newlines with '\n'
-        pipelineCommand = pipelineCommand.replace(System.lineSeparator(), '\n')
-
-        // Redirect the '-o' option, if defined
+        // Redirect the '-o' option, if there is a '-o' in the command
         def oOption = pipelineCommand =~ /$outputRegex/
         File testOutputFile = null
         if (oOption.count > 0) {
@@ -596,9 +598,9 @@ class Tester {
 
         // If command execution was successful (exit value of 0)
         // then:
-        //  - check that th eoutput file was created (if expected)
+        //  - check that the output file was created (if expected)
         //  - iterate through any optional _see_ values,
-        //    checking that the piupeline log contains the defined text.
+        //    checking that the pipeline log contains the defined text.
         boolean validated = true
         if (exitValue == 0) {
 
