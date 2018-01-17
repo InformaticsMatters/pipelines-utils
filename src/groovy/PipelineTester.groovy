@@ -64,6 +64,8 @@ class Tester {
     String infoPrompt = '->'
     String dumpOutPrefix = '   #'
     String dumpErrPrefix = '   |'
+    String setupPrefix = 'setup_'
+    String testPrefix = 'test_'
     String ignorePrefix = 'ignore_'
 
     // Material accumulated as the tests execute
@@ -73,10 +75,14 @@ class Tester {
     int testsIgnored = 0
     def failedTests = []
 
+    // The service descriptor for the current test file...
+    def currentServiceDescriptor = null
+    // The current test filename (short)
     String currentTestFilename = ''
-
-    // Options from the current service descriptor...
-    def optionNames = []
+    // A convenient list of normalised service descriptor option names
+    // i.e. 'arg.volumes' becomes 'volumes' (also contains expanded ranges)
+    List<String> optionNames = []
+    def optionDefaults = [:]
 
     /**
      * The run method.
@@ -104,9 +110,8 @@ class Tester {
             // Guess the Service Descriptor path and filename
             // and try to extract the command and the supported options...
             String sdFilename = path.take(path.length() - testExt.length()) + sdExt
-            def sd = new JsonSlurper().parse(new File(sdFilename).toURI().toURL())
-            String cmd = sd.command
-            extractOptionNames(sd)
+            currentServiceDescriptor = new JsonSlurper().parse(new File(sdFilename).toURI().toURL())
+            extractOptionsFromCurrentServiceDescriptor()
 
             // Now run each test found in the test spec
             // (also checking for a `setup_collection` and `version` sections).
@@ -134,10 +139,10 @@ class Tester {
 
                     // Section is either a `setup_collect` or `test`...
                     sectionNumber += 1
-                    if (section_key_lower.startsWith('test')) {
-                        processTest(path, section, cmd)
-                    } else if (section_key_lower.equals('setup_collection')) {
+                    if (section_key_lower.startsWith(setupPrefix)) {
                         processSetupCollection(section)
+                    } else if (section_key_lower.startsWith(testPrefix)) {
+                        processTest(path, section)
                     } else if (section_key_lower.startsWith(ignorePrefix)) {
                         logTest(path, section)
                         testsIgnored += 1
@@ -287,34 +292,61 @@ class Tester {
     }
 
     /**
-     * Extracts the service descriptor option names into the optionNames
-     * member. It automatically adds `minValue` and `maxValue` for ranges.
+     * Extracts the service descriptor option names and default values.
+     * It automatically adds `minValue` and `maxValue` for ranges.
      */
-    private extractOptionNames(def sd) {
+    private extractOptionsFromCurrentServiceDescriptor() {
 
         // Clear the current list of option names
         // (to avoid contamination from a prior test)
         optionNames.clear()
+        optionDefaults.clear()
 
-        sd.serviceConfig.optionDescriptors.each { option ->
-            String leanOption = option.key.substring(optionPrefix.length())
+        currentServiceDescriptor.serviceConfig.optionDescriptors.each { option ->
+
+            // 'arg.threshold` is recorded as `thrshold`
+            String arglessOption = option.key.substring(optionPrefix.length())
             if (option.typeDescriptor.type =~ /.*Range.*/) {
-                optionNames.add(leanOption + '.minValue')
-                optionNames.add(leanOption + '.maxValue')
+                optionNames.add(arglessOption + '.minValue')
+                optionNames.add(arglessOption + '.maxValue')
             } else {
-                optionNames.add(leanOption)
+                optionNames.add(arglessOption)
             }
+
+            // Collect the optional default value?
+            if (option.defaultValue != null) {
+                if (option.defaultValue in java.util.List) {
+                    // Assume something like '[java.lang.Float, 0.7]'
+                    // So the defau;t's the 2nd entry?
+                    optionDefaults[arglessOption] = option.defaultValue[1]
+                } else {
+                    optionDefaults[arglessOption] = option.defaultValue
+                }
+            }
+
         }
 
     }
 
     /**
      * Checks that the user's test `params` uses all the options
-     * (extracted from the service descriptor).
+     * (extracted from the service descriptor), using default values
+     * for missing parameter values where appropriate.
      *
-     * @return false if an option has not been defined in the test
+     * @return false if an option has not been defined in the test.
+     *         The params object may be modified by this method
+     *         (default values will be inserted).
      */
     private boolean checkAllOptionsHaveBeenUsed(def params) {
+
+        // Insert default values into the params object
+        // for options that have them where a value is not already present
+        // in the params...
+        optionDefaults.each { defaultValue ->
+            if (!params.containsKey(defaultValue.key)) {
+                params[defaultValue.key] = defaultValue.value
+            }
+        }
 
         // Check that the user has not specified an option
         // that is not in the service descriptor's set of options.
@@ -358,7 +390,8 @@ class Tester {
                     }
                 }
                 if (!foundParam) {
-                    err("Pipeline option '$option' is not defined in the test's params")
+                    err("Pipeline option '$option' is not defined in the test's params" +
+                        " and there is no default value to use.")
                     checkStatus = false
                 }
             }
@@ -465,7 +498,7 @@ class Tester {
      *      An optional list of regular expressions executed against
      *      the pipeline log.
      **/
-    def processTest(filename, section, sd_cmd) {
+    def processTest(filename, section) {
 
         testsExecuted += 1
 
@@ -492,9 +525,8 @@ class Tester {
                 return
             }
             // No raw command defined in the test block,
-            // so the command to use for execution is the
-            // SD-defined command...
-            the_command = sd_cmd
+            // so use the command defined in the service descriptor...
+            the_command = currentServiceDescriptor.command
 
         } else {
             // The user-supplied command might be a multi-line string.

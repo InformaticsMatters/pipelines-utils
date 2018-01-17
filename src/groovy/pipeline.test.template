@@ -73,7 +73,8 @@
         // applying your own raw command (see above) you need to provide the
         // service-descriptor command wih parameters.
         //
-        // A parameter value must be defined for each service descriptor option.
+        // A parameter value must be defined for each service descriptor
+        // option that does not have a default value.
 
         params: [ doses: 55,
                   volumes: 0.42,
