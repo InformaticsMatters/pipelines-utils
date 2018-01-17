@@ -57,7 +57,7 @@ def expandValues(inputs, count, name):
     if len(inputs) == count:
         expanded = inputs
     elif len(inputs) == 1:
-        expanded = [inputs[0] for i in range(count)]
+        expanded = inputs * count
     else:
-        raise ValueError('Incompatible number of values for  ' + name)
+        raise ValueError('Incompatible number of values for ' + name)
     return expanded

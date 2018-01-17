@@ -42,6 +42,9 @@ setup(
         'Topic :: Software Development :: Build Tools',
     ],
 
+    # Root of the test suite
+    test_suite = 'test',
+
     install_requires=[],
 
     zip_safe=False,
