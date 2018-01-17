@@ -555,7 +555,7 @@ class Tester {
         } else {
             // The user-supplied command might be a multi-line string.
             // Flatten it...
-            the_command = ''
+            String the_command = ''
             command.eachLine {
                 the_command += it.trim() + ' '
             }
