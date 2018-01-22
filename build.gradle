@@ -27,7 +27,9 @@ task runPipelineTester(type: Exec) {
     } else {
         args = ''
     }
+    def currentDir = System.getProperty("user.dir")
 
+    environment PYTHONPATH: "${currentDir}/src/python"
     workingDir 'src/groovy'
     commandLine 'groovy', 'PipelineTester.groovy', "$args"
 
