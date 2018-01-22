@@ -90,7 +90,19 @@
         // as the regular expression '[ \t]+', absorbing any non-line-breaking
         // gaps. You can also use regular expressions.
 
-        see: [ 'Computation = 4.5673' ]
+        see: [ 'Computation = 4.5673' ],
+
+        // Files created and not created.
+        //
+        // If your pipeline creates files you can and should declare
+        // their names in a `creates` block. The test utility will make
+        // sure they exist when your pipeline completes (successfully).
+        // Additionally, if you are not expecting certain files for the test
+        // you can also name them. Here we expect to see the file 'output.png'
+        // but not the file 'output.txt'
+
+        creates: [ 'output.png' ],
+        does_not_create: [ 'output.txt' ]
 
     ],
 

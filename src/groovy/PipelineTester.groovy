@@ -84,6 +84,10 @@ class Tester {
     // i.e. 'arg.volumes' becomes 'volumes' (also contains expanded ranges)
     List<String> optionNames = []
     def optionDefaults = [:]
+    // A list of created and uncreated files
+    // (set if the user's used the corresponding blocks in the test)
+    List<String> creates = []
+    List<String> doesNotCreate = []
 
     /**
      * The run method.
@@ -102,11 +106,14 @@ class Tester {
         for (String path : testFiles) {
 
             // Reset filename and section number
+            // along with other test-specific objects
             currentTestFilename = path.split(File.separator)[-1]
             currentTestFilename = currentTestFilename.
                 take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
             testScriptVersion = 0
+            creates = []
+            doesNotCreate []
 
             // We must not have duplicate test files -
             // this indicates there are pipelines in different projects
@@ -515,6 +522,12 @@ class Tester {
      * -    see
      *      An optional list of regular expressions executed against
      *      the pipeline log.
+     *
+     * -    creates
+     *      An optional list of file names (regular expressions).
+     *
+     * -    does_not_create
+     *      An optional list of file names (regular expressions).
      **/
     def processTest(filename, section) {
 
@@ -524,10 +537,13 @@ class Tester {
         logTest(filename, section)
 
         def command = section.value['command']
-        def params_block = section.value['params']
-        def see_block = section.value['see']
+        def paramsBlock = section.value['params']
+        def seeBlock = section.value['see']
+        def createsBlock = section.value['creates']
+        def doesNotCreateBlock = section.value['does_not_create']
+
         // Enforce conditions on block combinations...
-        if (command != null && params_block != null) {
+        if (command != null && paramsBlock != null) {
             err('Found "command" and "params". Use one or the other.')
             recordFailedTest(section.key)
             return
@@ -539,7 +555,7 @@ class Tester {
         String pipelineCommand
         if (command == null) {
 
-            if (!checkAllOptionsHaveBeenUsed(params_block)) {
+            if (!checkAllOptionsHaveBeenUsed(paramsBlock)) {
                 recordFailedTest(section.key)
                 return
             }
@@ -548,7 +564,7 @@ class Tester {
             String the_command = currentServiceDescriptor.command
 
             // Replace the respective values in the command string...
-            pipelineCommand = expandTemplate(the_command, params_block)
+            pipelineCommand = expandTemplate(the_command, paramsBlock)
             // Replace newlines with '\n'
             pipelineCommand = pipelineCommand.replace(System.lineSeparator(), '\n')
 
@@ -626,18 +642,20 @@ class Tester {
             // Here we look for things like "output*" in the
             // redirected output path.
             if (testOutputPath != null) {
-                def outputFiles =
-                    new FileNameFinder().getFileNames(testOutputPath.toString(),
-                                                      "${outputFileBaseName}*")
+                def outputFiles = new FileNameFinder().
+                        getFileNames(testOutputPath.toString(), "*")
+                println "++++++ " + outputFiles
                 if (outputFiles.size() == 0) {
-                      err("Expected output files '$testOutputFile' but got nothing")
-                      validated = false
-                  }
+                    err("Expected output files '$testOutputFile' but got nothing")
+                    validated = false
+                }
             }
 
-            if (validated && see_block != null) {
+            // Has the user asked us to check text that has been logged?
+            if (validated && seeBlock != null) {
+
                 // Check that we see everything the test tells us to see.
-                see_block.each { see ->
+                seeBlock.each { see ->
                     // Replace spaces in the 'see' string
                     // with a simple _variable whitespace_ regex (excluding
                     // line-breaks and form-feeds).
@@ -653,6 +671,7 @@ class Tester {
                         validated = false
                     }
                 }
+
             }
 
         } else {
