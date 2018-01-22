@@ -624,7 +624,9 @@ class Tester {
 
             // Do we expect output files?
             if (testOutputPath != null) {
-                def outputFiles = new FileNameFinder().getFileNames(testOutputPath, "{outputFileBaseName}.*")
+                def outputFiles =
+                    new FileNameFinder().getFileNames(testOutputPath.toString(),
+                                                      "${outputFileBaseName}.*")
                 if (outputFiles.size() == 0) {
                       err("Expected output file '$testOutputFile' but it wasn't there")
                       validated = false
