@@ -641,10 +641,11 @@ class Tester {
             // Do we expect output files?
             // Here we look for things like "output*" in the
             // redirected output path.
-            if (testOutputPath != null) {
+            if (testOutputPath != null && createsBlock != null) {
                 def outputFiles = new FileNameFinder().
                         getFileNames(testOutputPath.toString(), "*")
                 println "++++++ " + outputFiles
+                println "++++++ " + createsBlock
                 if (outputFiles.size() == 0) {
                     err("Expected output files '$testOutputFile' but got nothing")
                     validated = false
