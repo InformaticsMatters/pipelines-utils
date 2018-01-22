@@ -7,12 +7,12 @@
 //
 // This test specification contains lists of tests that define
 // excitation parameters for your pipeline and an optional set of
-// expectations of what should be seen logged by it.
+// expectations of what should be seen logged by it and the files it creates.
 
 [
 
     // The PipelineTester test script version.
-    // Must be supported by the PipelineTester utility.
+    // Must be set and supported by the PipelineTester utility.
     // Check with your administrator and set it to the latest value that is
     // supported.
 
@@ -24,14 +24,15 @@
     // At the moment the following settings are supported:
     //
     // timeout: The time allowed for each pipeline test to complete.
-    //          Use this to override the default of 30 seconds.
+    //          Optional. Use this to override the default of 30 seconds.
     //
-    // creates: A list of file names that each test is expected to create.
-    //          Tests can define test-specific files with their own
-    //          'creates' block.
+    // creates: An optional list of file names that each test is expected to
+    //          create.  Here we define files created by every test in this
+    //          file. Individual tests can define their own test-specific files
+    //          with their own 'creates' block, discussed later in this file.
     //
     // There can only be one setup_collection section and it must be
-    // the first section.
+    // the first section in the file.
 
     setup_collection = [
         timeout: 10,
@@ -97,14 +98,15 @@
 
         see: [ 'Computation = 4.5673' ],
 
-        // Files created.
+        // Files created (optional).
         //
         // If your pipeline test creates files you can and should declare
         // their names in a `creates` block, either here or in the
-        // `setup_collection` section. All files defined in the creates blocks
-        // must exist for the test to pass. Here we expect 'output.png'
-        // but the test also expects 'output.txt' as that's defined in the
-        // 'setup_collection' block above.
+        // `setup_collection` section above. All files defined in
+        // both the common creates block and the block used here
+        // must exist for the test to pass. This test is expected to create
+        // and 'output.png' but an 'output.txt' is also expected as that's
+        // defined in the 'setup_collection' section (above).
 
         creates: [ 'output.png' ]
 
