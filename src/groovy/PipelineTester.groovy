@@ -645,8 +645,10 @@ class Tester {
                 def outputFiles = new FileNameFinder().
                         getFileNames(testOutputPath.toString(), "*")
                 for (String create in creates) {
+                    println "+++++ " + create
                     boolean found = false
                     for (String outputFile in outputFiles) {
+                        println ">>>>> " + outputFile
                         if (outputFile.endsWith(create)) {
                             found = true
                             break
