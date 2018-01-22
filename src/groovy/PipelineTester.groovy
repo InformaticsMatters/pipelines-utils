@@ -644,11 +644,19 @@ class Tester {
             if (testOutputPath != null && createsBlock != null) {
                 def outputFiles = new FileNameFinder().
                         getFileNames(testOutputPath.toString(), "*")
-                println "++++++ " + outputFiles
-                println "++++++ " + createsBlock
-                if (outputFiles.size() == 0) {
-                    err("Expected output files '$testOutputFile' but got nothing")
-                    validated = false
+                for (String create in creates) {
+                    boolean found = false
+                    for (String outputFile in outputFiles) {
+                        if (outputFile.endsWith(create)) {
+                            found = true
+                            break
+                        }
+                    }
+                    if (!found) {
+                        err("Expected output file '$creste' but couldn't find it")
+                        validated = false
+                        break
+                    }
                 }
             }
 
