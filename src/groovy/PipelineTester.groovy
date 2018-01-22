@@ -57,6 +57,7 @@ class Tester {
     String testSearchDir = '../../..'
     String sdExt = '.dsd.json'
     String optionPrefix = 'arg.'
+    String metricsFile = 'output_metrics.txt'
     String outputBasePath = System.getProperty('user.dir') + '/tmp/PipelineTester'
     String outputRegex = '-o (\\S+)'
     String infoPrompt = '->'
@@ -549,7 +550,7 @@ class Tester {
         def paramsBlock = section.value['params']
         def seeBlock = section.value['see']
         def createsBlock = section.value['creates']
-        def doesNotCreateBlock = section.value['does_not_create']
+        def metricsBlock = section.value['metrics']
 
         // Enforce conditions on block combinations...
         if (command != null && paramsBlock != null) {
@@ -694,6 +695,38 @@ class Tester {
                     }
                 }
 
+            }
+
+            // Has the user specified any metrics?
+            // These are located in the `output_metrics.txt` file.
+            if (validated && metricsBlock != null) {
+                // A metrics file must exist.
+                Properties properties = new Properties()
+                String metricsPath = testOutputPath.toString() + File.separator + metricsFile
+                File propertiesFile = new File(metricsPath)
+                if (propertiesFile.exists()) {
+                    propertiesFile.withInputStream {
+                        properties.load(it)
+                    }
+                    metricsBlock.each { metric ->
+                        String fileProperty = properties."$metric.key"
+                        if (fileProperty == null) {
+                            // The Metric is not in the file!
+                            err("Metric for '$metric.key' is not in the metrics file")
+                            validated = false
+                        } else {
+                            def finder = (fileProperty =~ /${metric.value}/)
+                            if (finder.count == 0) {
+                                err("Expected value for metric '$metric.key' ($metric.value)" +
+                                        " does not match file value ($fileProperty)")
+                                validated = false
+                            }
+                        }
+                    }
+                } else {
+                    err("Expected metrics but there was no metrics file ($metricsFile)")
+                    validated = false
+                }
             }
 
         } else {

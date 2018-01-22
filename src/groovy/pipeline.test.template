@@ -109,7 +109,16 @@
         // and 'output.png' but an 'output.txt' is also expected as that's
         // defined in the 'setup_collection' section (above).
 
-        creates: [ 'output.png' ]
+        creates: [ 'output.png' ],
+
+        // Metrics.
+        //
+        // If your pipeline creates standard metrics - a Java properties file
+        // with the name 'output_metrics.txt' you can use the metrics block
+        // here to check the generated values. You can specify a property
+        // (a key) and a regular expression string value.
+
+        metrics: [ __StatusMessage__: 'kel: 0.171, t1/2: 4.06, V: 7.07, CL: 20.1' ]
 
     ],
 
