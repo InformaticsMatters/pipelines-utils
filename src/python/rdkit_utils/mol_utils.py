@@ -17,7 +17,7 @@
 import logging
 from rdkit import Chem
 from rdkit.Chem import Descriptors
-from pipelines.utils import utils
+from pipelines_utils import utils
 
 def fragment(mol, mode, quiet=False):
     frags = Chem.GetMolFrags(mol, asMols=True)

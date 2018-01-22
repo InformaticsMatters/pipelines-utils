@@ -16,8 +16,8 @@
 
 import argparse
 from rdkit.Chem import Descriptors
-from pipelines.utils import utils
-from pipelines.rdkit import mol_utils
+from pipelines_utils import utils
+import mol_utils
 
 
 ### start function definitions #########################################

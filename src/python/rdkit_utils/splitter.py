@@ -16,7 +16,7 @@
 
 import argparse
 
-from pipelines.utils import utils
+from pipelines_utils import utils
 
 
 def main():
