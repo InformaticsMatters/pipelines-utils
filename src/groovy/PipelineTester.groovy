@@ -567,14 +567,15 @@ class Tester {
 
         // Redirect the '-o' option, if there is a '-o' in the command
         def oOption = pipelineCommand =~ /$outputRegex/
-        File testOutputFile = null
+        File testOutputPath = null
+        String outputFileBaseName = null // i.e. "output"
         if (oOption.count > 0) {
 
             // Construct and make the path for any '-o' output
-            File testOutputPath =
-                new File(outputBasePath, "${currentTestFilename}_${section.key}")
+            testOutputPath = new File(outputBasePath, "${currentTestFilename}_${section.key}")
             testOutputPath.mkdir()
-            testOutputFile = new File(testOutputPath, oOption[0][1])
+            outputFileBaseName = oOption[0][1]
+            File testOutputFile = new File(testOutputPath, outputFileBaseName)
             info("Out : $testOutputFile")
             // Now swap-out the original '-o'...
             String redirectedOutputOption = "-o ${testOutputFile.toString()}"
@@ -615,15 +616,16 @@ class Tester {
 
         // If command execution was successful (exit value of 0)
         // then:
-        //  - check that the output file was created (if expected)
+        //  - check that an output file was created (if expected)
         //  - iterate through any optional _see_ values,
         //    checking that the pipeline log contains the defined text.
         boolean validated = true
         if (exitValue == 0) {
 
-            // Does the output file exist?
-            if (testOutputFile != null) {
-                if (!testOutputFile.exists()) {
+            // Do we expect output files?
+            if (testOutputPath != null) {
+                def outputFiles = new FileNameFinder().getFileNames(testOutputPath, "{outputFileBaseName}.*")
+                if (outputFiles.size() == 0) {
                       err("Expected output file '$testOutputFile' but it wasn't there")
                       validated = false
                   }
