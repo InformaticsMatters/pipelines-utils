@@ -81,7 +81,8 @@
         // provide the built-in service descriptor command wih parameters
         // and values.
         //
-        // A parameter value must be defined for each option that does not
+        // You can provide values for every option. At the very least
+        // you _must_ provide a parameter value for each option that does not
         // have a default.
 
         params: [ doses: 55,
@@ -91,7 +92,7 @@
         // Log validation.
         //
         // Optional checks against the pipeline's log.
-        // To simplify strign checks against output that contains variable
+        // To simplify string checks against output that contains variable
         // whitespace (like tabs etc.) spaces are automatically interpreted
         // as the regular expression '[ \t]+', absorbing any non-line-breaking
         // gaps. You can also use regular expressions.
