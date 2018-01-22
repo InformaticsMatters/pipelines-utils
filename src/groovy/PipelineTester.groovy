@@ -623,12 +623,14 @@ class Tester {
         if (exitValue == 0) {
 
             // Do we expect output files?
+            // Here we look for things like "output*" in the
+            // redirected output path.
             if (testOutputPath != null) {
                 def outputFiles =
                     new FileNameFinder().getFileNames(testOutputPath.toString(),
-                                                      "${outputFileBaseName}.*")
+                                                      "${outputFileBaseName}*")
                 if (outputFiles.size() == 0) {
-                      err("Expected output file '$testOutputFile' but it wasn't there")
+                      err("Expected output files '$testOutputFile' but got nothing")
                       validated = false
                   }
             }
