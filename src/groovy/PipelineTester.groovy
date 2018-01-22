@@ -114,6 +114,7 @@ class Tester {
             sectionNumber = 0
             testScriptVersion = 0
             testTimeoutSeconds = 30
+            collectionCreates = []
 
             // We must not have duplicate test files -
             // this indicates there are pipelines in different projects
@@ -127,10 +128,17 @@ class Tester {
             observedFiles.add(currentTestFilename)
 
             // Guess the Service Descriptor path and filename
-            // and try to extract the command and the supported options...
+            // and try to extract the command and the supported options.
+            // The SD file must exist if the user has defined a set of
+            // parameters. The SD file is not required if the test
+            // contains just raw commands.
             String sdFilename = path.take(path.length() - testExt.length()) + sdExt
-            currentServiceDescriptor = new JsonSlurper().parse(new File(sdFilename).toURI().toURL())
-            extractOptionsFromCurrentServiceDescriptor()
+            currentServiceDescriptor = null
+            File sdFilenameFile = new File(sdFilename)
+            if (sdFilenameFile.exists()) {
+                currentServiceDescriptor = new JsonSlurper().parse(sdFilenameFile.toURI().toURL())
+                extractOptionsFromCurrentServiceDescriptor()
+            }
 
             // Now run each test found in the test spec
             // (also checking for `setup_collection` and `version` sections).
@@ -477,7 +485,6 @@ class Tester {
         }
 
         // Globally-defined created files?
-        collectionCreates = []
         if (setupSection.value.creates != null) {
             collectionCreates = setupSection.value.get('creates')
         }
@@ -565,10 +572,15 @@ class Tester {
         String pipelineCommand
         if (command == null) {
 
-            if (!checkAllOptionsHaveBeenUsed(paramsBlock)) {
+            if (currentServiceDescriptor == null) {
+                err('Found "params" but there was no service descriptor file.')
+                recordFailedTest(section.key)
+                return
+            } else if (!checkAllOptionsHaveBeenUsed(paramsBlock)) {
                 recordFailedTest(section.key)
                 return
             }
+
             // No raw command defined in the test block,
             // so use the command defined in the service descriptor...
             String the_command = currentServiceDescriptor.command
