@@ -84,7 +84,7 @@ class Tester {
     String currentTestFilename = ''
     // A convenient list of normalised service descriptor option names
     // i.e. 'arg.volumes' becomes 'volumes' (also contains expanded ranges)
-    List<String> optionNames = []
+    def optionNames = []
     def optionDefaults = [:]
     // Files created by the entire test collection.
     // Defined in the 'setup_collection.creates' block.
@@ -110,7 +110,7 @@ class Tester {
             // along with other test-specific objects
             currentTestFilename = path.split(File.separator)[-1]
             currentTestFilename = currentTestFilename.
-                take(currentTestFilename.length() - testExt.length())
+                    take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
             testScriptVersion = 0
             testTimeoutSeconds = 30
@@ -618,7 +618,7 @@ class Tester {
             // Now swap-out the original '-o'...
             String redirectedOutputOption = "-o ${testOutputFile.toString()}"
             pipelineCommand = pipelineCommand.replaceAll(/$outputRegex/,
-                                                         redirectedOutputOption)
+                    redirectedOutputOption)
 
         }
 
@@ -632,8 +632,8 @@ class Tester {
         //
         int executeAnchorDirPos = filename.indexOf(executeAnchorDir)
         File testExecutionDir =
-            new File(filename.take(filename.indexOf(File.separator,
-                                   executeAnchorDirPos + executeAnchorDir.length())))
+                new File(filename.take(filename.indexOf(File.separator,
+                        executeAnchorDirPos + executeAnchorDir.length())))
         info("Dir : $testExecutionDir")
         // And the expanded and redirected command...
         info("Cmd : $pipelineCommand")
@@ -660,7 +660,7 @@ class Tester {
         boolean validated = true
         if (exitValue == 0) {
 
-            List<String> testCreates = collectionCreates
+            def testCreates = collectionCreates.collect()
             if (createsBlock != null) {
                 testCreates.addAll(createsBlock)
             }
