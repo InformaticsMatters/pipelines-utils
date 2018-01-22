@@ -84,10 +84,6 @@ class Tester {
     // i.e. 'arg.volumes' becomes 'volumes' (also contains expanded ranges)
     List<String> optionNames = []
     def optionDefaults = [:]
-    // A list of created and uncreated files
-    // (set if the user's used the corresponding blocks in the test)
-    List<String> creates = []
-    List<String> doesNotCreate = []
 
     /**
      * The run method.
@@ -112,8 +108,6 @@ class Tester {
                 take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
             testScriptVersion = 0
-            creates = []
-            doesNotCreate []
 
             // We must not have duplicate test files -
             // this indicates there are pipelines in different projects
@@ -272,7 +266,7 @@ class Tester {
      */
     private separate() {
 
-      println "-------"
+        println "-------"
 
     }
 
@@ -632,7 +626,7 @@ class Tester {
 
         // If command execution was successful (exit value of 0)
         // then:
-        //  - check that an output file was created (if expected)
+        //  - check that any declared _creates_ output files were created
         //  - iterate through any optional _see_ values,
         //    checking that the pipeline log contains the defined text.
         boolean validated = true
@@ -642,20 +636,18 @@ class Tester {
             // Here we look for things like "output*" in the
             // redirected output path.
             if (testOutputPath != null && createsBlock != null) {
-                def outputFiles = new FileNameFinder().
+                def createdFiles = new FileNameFinder().
                         getFileNames(testOutputPath.toString(), "*")
-                for (String create in creates) {
-                    println "+++++ " + create
+                for (String expectedFile in createsBlock) {
                     boolean found = false
-                    for (String outputFile in outputFiles) {
-                        println ">>>>> " + outputFile
-                        if (outputFile.endsWith(create)) {
+                    for (String createdFile in createdFiles) {
+                        if (createdFile.endsWith(expectedFile)) {
                             found = true
                             break
                         }
                     }
                     if (!found) {
-                        err("Expected output file '$creste' but couldn't find it")
+                        err("Expected output file '$expectedFile' but couldn't find it")
                         validated = false
                         break
                     }
