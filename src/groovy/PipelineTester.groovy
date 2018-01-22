@@ -49,10 +49,8 @@ class Tester {
     // Controlled by command-line
     boolean verbose = false
 
-    // Controlled by setup sections
-    int testTimeoutSeconds = 30
-
     // Constants?
+    int defaultTimeoutSeconds = 30
     String testExt = '.test'
     String executeAnchorDir = '/src/'
     String testFileSpec = "**/*${testExt}"
@@ -67,6 +65,9 @@ class Tester {
     String setupPrefix = 'setup_'
     String testPrefix = 'test_'
     String ignorePrefix = 'ignore_'
+
+    // Controlled by setup sections
+    int testTimeoutSeconds = defaultTimeoutSeconds
 
     // Material accumulated as the tests execute
     int testScriptVersion = 0
@@ -84,6 +85,9 @@ class Tester {
     // i.e. 'arg.volumes' becomes 'volumes' (also contains expanded ranges)
     List<String> optionNames = []
     def optionDefaults = [:]
+    // Files created by the entire test collection.
+    // Defined in the 'setup_collection.creates' block.
+    def collectionCreates = []
 
     /**
      * The run method.
@@ -108,6 +112,7 @@ class Tester {
                 take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
             testScriptVersion = 0
+            testTimeoutSeconds = 30
 
             // We must not have duplicate test files -
             // this indicates there are pipelines in different projects
@@ -127,7 +132,7 @@ class Tester {
             extractOptionsFromCurrentServiceDescriptor()
 
             // Now run each test found in the test spec
-            // (also checking for a `setup_collection` and `version` sections).
+            // (also checking for `setup_collection` and `version` sections).
             def test_spec = new ConfigSlurper().parse(new File(path).toURI().toURL())
             for (def section : test_spec) {
 
@@ -462,10 +467,18 @@ class Tester {
         info('Processing setup_collection section')
 
         // Extract key setup values, supplying defaults
-        int timeoutSeconds = setupSection.value.get('timeout')
-        if (timeoutSeconds != null) {
-            info("Setup timeout=$timeoutSeconds")
-            testTimeoutSeconds = timeoutSeconds
+        if (setupSection.value.timeout != null) {
+            int timeoutSeconds = setupSection.value.get('timeout')
+            if (timeoutSeconds != null) {
+                info("Setup timeout=$timeoutSeconds")
+                testTimeoutSeconds = timeoutSeconds
+            }
+        }
+
+        // Globally-defined created files?
+        collectionCreates = []
+        if (setupSection.value.creates != null) {
+            collectionCreates = setupSection.value.get('creates')
         }
 
     }
@@ -519,6 +532,8 @@ class Tester {
      *
      * -    creates
      *      An optional list of file names (regular expressions).
+     *      Entries in this list are added to any defined in the creates
+     *      block in the setup_collection section.
      *
      * -    does_not_create
      *      An optional list of file names (regular expressions).
@@ -632,13 +647,17 @@ class Tester {
         boolean validated = true
         if (exitValue == 0) {
 
+            List<String> testCreates = collectionCreates
+            if (createsBlock != null) {
+                testCreates.addAll(createsBlock)
+            }
             // Do we expect output files?
             // Here we look for things like "output*" in the
             // redirected output path.
-            if (testOutputPath != null && createsBlock != null) {
+            if (testOutputPath != null && testCreates.size() > 0) {
                 def createdFiles = new FileNameFinder().
                         getFileNames(testOutputPath.toString(), "*")
-                for (String expectedFile in createsBlock) {
+                for (String expectedFile in testCreates.unique()) {
                     boolean found = false
                     for (String createdFile in createdFiles) {
                         if (createdFile.endsWith(expectedFile)) {
