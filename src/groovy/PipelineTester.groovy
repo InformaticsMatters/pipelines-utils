@@ -751,6 +751,9 @@ class Tester {
             // Test failed.
             dumpCommandError(serr)
             recordFailedTest(section.key)
+            println '!!!!!!!!!!!!!!!!!!!!!!!!!'
+            println '!!  >> TEST  ERROR <<  !!'
+            println '!!!!!!!!!!!!!!!!!!!!!!!!!'
         }
 
     }
