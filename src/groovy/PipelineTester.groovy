@@ -178,6 +178,11 @@ class Tester {
                         logTest(path, section)
                         testsIgnored += 1
                         info('OK (Ignored)')
+                    } else {
+                        separate()
+                        err("Unexpected section name ($section.key)" +
+                                " in the '${currentTestFilename}.test'")
+                        recordFailedTest(section_key_lower)
                     }
 
                 }
