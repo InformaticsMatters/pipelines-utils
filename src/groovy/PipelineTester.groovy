@@ -515,8 +515,8 @@ class Tester {
      */
     private logTest(path, section) {
 
-        info("Test: $section.key")
         info("File: $currentTestFilename")
+        info("Test: $section.key")
         info("Path: $path")
 
     }
