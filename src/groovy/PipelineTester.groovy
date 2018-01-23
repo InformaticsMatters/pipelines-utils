@@ -44,7 +44,7 @@ import groovy.text.SimpleTemplateEngine
 class Tester {
 
     // Version (try and update with every change/release)
-    String version = '1.0'
+    String version = '1.0.0'
 
     // Supported test-script versions
     def supportedTestFileVersions = [1]
