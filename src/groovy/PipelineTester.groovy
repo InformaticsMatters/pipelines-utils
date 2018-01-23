@@ -567,8 +567,9 @@ class Tester {
      *      Entries in this list are added to any defined in the creates
      *      block in the setup_collection section.
      *
-     * -    does_not_create
-     *      An optional list of file names (regular expressions).
+     * -    metrics
+     *      An optional list of metrics keyword and value checks
+     *      (regular expressions).
      **/
     def processTest(filename, section) {
 
@@ -630,13 +631,12 @@ class Tester {
         // Redirect the '-o' option, if there is a '-o' in the command
         def oOption = pipelineCommand =~ /$outputRegex/
         File testOutputPath = null
-        String outputFileBaseName = null // i.e. "output"
         if (oOption.count > 0) {
 
             // Construct and make the path for any '-o' output
-            testOutputPath = new File(outputBasePath, "${currentTestFilename}_${section.key}")
+            testOutputPath = new File(outputBasePath, "${currentTestFilename}-${section.key}")
             testOutputPath.mkdir()
-            outputFileBaseName = oOption[0][1]
+            String outputFileBaseName = oOption[0][1]
             File testOutputFile = new File(testOutputPath, outputFileBaseName)
             info("Out : $testOutputFile")
             // Now swap-out the original '-o'...
