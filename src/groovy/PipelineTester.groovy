@@ -79,6 +79,7 @@ class Tester {
     int testsExecuted = 0
     int testsIgnored = 0
     int filesUsed = 0
+    int numWarnings = 0
     def failedTests = []
     def observedFiles = []
 
@@ -129,10 +130,7 @@ class Tester {
             // this indicates there are pipelines in different projects
             // that will clash if combined.
             if (observedFiles.contains(currentTestFilename)) {
-                err("Duplicate pipline ($currentTestFilename)")
-                recordFailedTest("-")
-                separate()
-                continue
+                warning("Duplicate pipline ($currentTestFilename)")
             }
             observedFiles.add(currentTestFilename)
 
@@ -225,6 +223,7 @@ class Tester {
         println "Tests        : " + sprintf('%4d', testsExecuted)
         println "Tests ignored: " + sprintf('%4d', testsIgnored)
         println "Tests failed : " + sprintf('%4d', failedTests.size())
+        println "Warnings     : " + sprintf('%4d', numWarnings)
         separate()
         println "Passed: ${testPassed.toString().toUpperCase()}"
 
@@ -314,6 +313,16 @@ class Tester {
     static private err(String msg) {
 
         println "ERROR: $msg"
+
+    }
+
+    /**
+     * Print a warning message (and counts it).
+     */
+    private warning(String msg) {
+
+        println "WARNING: $msg"
+        numWarnings += 1
 
     }
 
