@@ -1,0 +1,14 @@
+// Automated pipeline test specification.
+
+[
+
+    version = 1,
+
+    // Test basic startup
+    test_help = [
+
+        command: '''python -m rdkit_utils.sdf2json -h''',
+
+    ],
+
+]

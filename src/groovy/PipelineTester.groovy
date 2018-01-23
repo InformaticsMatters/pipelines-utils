@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 /**
- * Copyright (c) 2017 Informatics Matters Ltd.
+ * Copyright (c) 2018 Informatics Matters Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,9 @@ import groovy.text.SimpleTemplateEngine
  */
 class Tester {
 
+    // Version (try and update with every change/release)
+    String version = '1.0'
+
     // Supported test-script versions
     def supportedTestFileVersions = [1]
 
@@ -75,6 +78,7 @@ class Tester {
     int sectionNumber = 0
     int testsExecuted = 0
     int testsIgnored = 0
+    int filesUsed = 0
     def failedTests = []
     def observedFiles = []
 
@@ -99,7 +103,11 @@ class Tester {
      */
     boolean run() {
 
-        // before we start - cleanup (everything)
+        // Log versions
+        info("PipelineTester: v$version")
+        info("Supporting test file versions: $supportedTestFileVersions")
+
+        // Before we start - cleanup (everything)
         cleanUpOutput(true)
 
         // Find all the potential test files
@@ -115,6 +123,7 @@ class Tester {
             testScriptVersion = 0
             testTimeoutSeconds = 30
             collectionCreates = []
+            filesUsed += 1
 
             // We must not have duplicate test files -
             // this indicates there are pipelines in different projects
@@ -212,9 +221,10 @@ class Tester {
                 println "Failed: $name"
             }
         }
-        println "Num executed: $testsExecuted"
-        println "Num ignored : $testsIgnored"
-        println "Num failed  : $failedTests.size"
+        println "Test Files   : " + sprintf('%4d', filesUsed)
+        println "Tests        : " + sprintf('%4d', testsExecuted)
+        println "Tests ignored: " + sprintf('%4d', testsIgnored)
+        println "Tests failed : " + sprintf('%4d', failedTests.size())
         separate()
         println "Passed: ${testPassed.toString().toUpperCase()}"
 
