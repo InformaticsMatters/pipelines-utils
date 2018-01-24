@@ -7,7 +7,7 @@
     // Testing filter.py reading from STDIN and writing to STDOUT
     test_in_to_out = [
 
-        command: '''gunzip -c ../../data/Kinase_inhibs.sdf.gz |
+        command: '''gunzip -c ${PIN}/Kinase_inhibs.sdf.gz |
                     python -m rdkit_utils.filter
                     --hacmin 25 --hacmax 30 -if sdf''',
 

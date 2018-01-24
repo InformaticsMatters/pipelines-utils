@@ -31,12 +31,19 @@
     //          file. Individual tests can define their own test-specific files
     //          with their own 'creates' block, discussed later in this file.
     //
+    // pin:     This property can be used to over-ride the automatically
+    //          generated data input path (which is typically the repository's
+    //          own data directory. This allows you to use date outside the
+    //          repository - maybe because it's a large file or an experimental
+    //          file.
+    //
     // There can only be one setup_collection section and it must be
     // the first section in the file.
 
     setup_collection = [
         timeout: 10,
-        creates: [ 'output.txt' ]
+        creates: [ 'output.txt' ],
+        pin: /Users/alan/data
     ],
 
     // Individual tests.
@@ -60,6 +67,8 @@
     //
     // If a test is not working an you want to keep it and avoid running it
     // then simply prefix the test section name with `ignore_`.
+    //
+    // The location of any input data you provide in your test
 
     test_1 = [
 

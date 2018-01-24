@@ -54,10 +54,13 @@ of the number of test files and individual tests that were executed: -
     -------
     Summary
     -------
-    Test Files   :   20
-    Tests        :   30
-    Tests ignored:    0
-    Tests failed :    0
+    Test Files    :   20
+    Tests Found   :   30
+    Tests passed  :   30
+    Tests failed  :    0
+    Tests skipped :    0
+    Tests ignored :    0
+    Warnings      :    0
     -------
     Passed: TRUE
 
@@ -68,8 +71,27 @@ across all the repositories by running the tester from here. Simply
 run the following Gradle command from here: -
 
     $ ./gradlew runPipelineTester
+
+### In Docker
+You can run the pipeline tests in Docxker using their expected container
+image (defined in the service descriptor). Doing this gives you added
+confidence that your pipeline will work wen deployed.
+
+To run in Docker you need to add the `-d` or `--indocker` command-line
+argument. To pass these variables through Gradle into the pipeline tester
+run the tests like this: -
+
+    $ ./gradlew runPipelineTester -Pptargs=-d
+
+Or by using the Docker-specific gradle command:
+
+    $ ./gradlew runDockerPipelineTester
     
-### Debugging test failures
+>   When you run _in docker_ only the tests that can run in Docker (those with
+    a defined image name) will be executed. Tests that cannot be executed in
+    Docker will be _skipped_.
+    
+## Debugging test failures
 Ideally your tests will pass. When they don't the test framework prints
 the collected log to the screen as it happens but also keeps all the files
 generated (by all the tests) in case they are of use for diagnostics.
@@ -102,6 +124,13 @@ in order to create a set of tests for a new pipeline.
 >   At the moment the tester only permits one test file per pipeline so all 
     tests for a given pipeline need to be composed in one file. 
 
+## Testing the pipeline utilities
+The pipeline utilities consist of a number of Python-based modules
+that can be tested using `setup.py`. To test these modules run the
+following from the `src/python` directory: -
+
+    $ python setup.py test
+ 
 ---
 
 [Conda]: https://conda.io/docs/
