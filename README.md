@@ -32,6 +32,16 @@ installed as normal:
     released when more invasive tests have been written. In the meantime we
     use this repository as a Git [submodule] in our existing pipelines.
 
+### Redirecting output
+Normally pipeline output files are written to a `tmp` directory inside
+the working copy of the repository you're running in. Alternatively you
+can write test output to your own directory (i.e. `/tmp/blob`) using
+the environment variable `POUT`: -
+
+    $ export POUT=/tmp/blob
+
+Output files are removed when the test suite starts and when it passes.
+ 
 ### From within a pipeline repository
 You will find this repository located as a submodule. When checking the
 pipeline out (for example [Pipelines]) you will need to initialise the
@@ -51,18 +61,19 @@ When tests fail it logs as much as it can and continues. When all the tests
 have finished it prints a summary including a lit of failed tests along with
 of the number of test files and individual tests that were executed: -
 
-    -------
-    Summary
-    -------
-    Test Files    :   20
-    Tests Found   :   30
-    Tests passed  :   30
-    Tests failed  :    0
-    Tests skipped :    0
-    Tests ignored :    0
-    Warnings      :    0
-    -------
-    Passed: TRUE
+    +----------------+
+    :         Summary: 
+    +----------------+
+    :      Test files:  29
+    :     Tests found:  39
+    :    Tests passed:  20
+    :    Tests failed:   -
+    :   Tests skipped:  19
+    :   Tests ignored:   3
+    :        Warnings:   -
+    +----------------+
+    :          Result: SUCCESS
+    +----------------+
 
 ### From here
 If you have working copies of all your pipeline repositories checked-out
