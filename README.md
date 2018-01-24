@@ -73,20 +73,20 @@ run the following Gradle command from here: -
     $ ./gradlew runPipelineTester
 
 ### In Docker
-You can run the pipeline tests in Docxker using their expected container
+You can run the pipeline tests in Docker using their expected container
 image (defined in the service descriptor). Doing this gives you added
 confidence that your pipeline will work wen deployed.
 
-To run in Docker you need to add the `-d` or `--indocker` command-line
-argument. To pass these variables through Gradle into the pipeline tester
-run the tests like this: -
-
-    $ ./gradlew runPipelineTester -Pptargs=-d
-
-Or by using the Docker-specific gradle command:
+You can use the docker-specific Gradle task: -
 
     $ ./gradlew runDockerPipelineTester
     
+Or, by add the `-d` or `--indocker` command-line argument into the basic
+task. To pass these variables through Gradle into the pipeline tester
+run the Docker tests like this: -
+
+    $ ./gradlew runPipelineTester -Pptargs=-d
+
 >   When you run _in docker_ only the tests that can run in Docker (those with
     a defined image name) will be executed. Tests that cannot be executed in
     Docker will be _skipped_.

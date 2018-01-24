@@ -19,8 +19,6 @@
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 
-import ShellExecutor
-
 /**
  * The Tester. A groovy class for the automated testing
  * of Informatics Matters pipeline scripts. This class searches for
@@ -84,10 +82,15 @@ class Tester {
     // (for pipelines that normally execute in a container)
     String imageName = null
     // The Pipeline IN and OUT directories.
-    // Taken from environment variables (poin/pout) or test-specific values
-    // from the setup_collection block.
+    // The input directory is based on location of the test file.
+    // The output directory is based on where the PipelineTester is executed from.
+    // The base output directory can be redirected with the POUT environment variable
+    // which is copied to env_pout.
     String test_pin = null
     String test_pout = null
+    // The POUT environment variable (or null)
+    // Set in the static initialiser.
+    final static String env_pout
 
     /**
      * The run method.
@@ -99,7 +102,7 @@ class Tester {
     boolean run() {
 
         // Log supported test file versions
-        info("Supporting test file versions: $supportedTestFileVersions")
+        info('Setup', "Supporting test file versions: $supportedTestFileVersions")
 
         // Before we start - cleanup (everything)
         cleanUpOutput()
@@ -120,7 +123,7 @@ class Tester {
             filesUsed += 1
 
             separate()
-            info("File: $currentTestFilename")
+            info('File', currentTestFilename)
             // Collect the files we find...
             if (!observedFiles.contains(currentTestFilename)) {
                 observedFiles.add(currentTestFilename)
@@ -176,7 +179,7 @@ class Tester {
                         separate()
                         logTest(path, section)
                         testsIgnored += 1
-                        info('OK (Ignored)')
+                        info('Result', 'Ignored')
                     } else {
                         separate()
                         err("Unexpected section name ($section.key)" +
@@ -190,13 +193,11 @@ class Tester {
 
         }
 
-        separate()
-        info('Done')
-
         // Cleanup if successful.
         // We'll also cleanup again when we re-run.
         boolean testPassed = false
         if (failedTests.size() == 0) {
+            separate()
             cleanUpOutput()
             testPassed = true
         }
@@ -204,22 +205,32 @@ class Tester {
         // Summarise...
 
         separate()
-        println "Summary"
-        separate()
+        info('Summary', '')
+
+        // List failed tests...
         if (failedTests.size() > 0) {
+            separate()
             failedTests.each { name ->
-                println "Failed: $name"
+                info('Failed', name)
             }
         }
-        println "Test Files    : " + sprintf('%4d', filesUsed)
-        println "Tests Found   : " + sprintf('%4d', testsFound)
-        println "Tests passed  : " + sprintf('%4d', testsPassed)
-        println "Tests failed  : " + sprintf('%4d', failedTests.size())
-        println "Tests skipped : " + sprintf('%4d', testsSkipped)
-        println "Tests ignored : " + sprintf('%4d', testsIgnored)
-        println "Warnings      : " + sprintf('%4d', numWarnings)
+
         separate()
-        println "Passed: ${testPassed.toString().toUpperCase()}"
+        int testsFailed = failedTests.size()
+        info('Test files', sprintf('%3s', filesUsed ? filesUsed : '-'))
+        info('Tests found', sprintf('%3s', testsFound ? testsFound : '-'))
+        info('Tests passed',sprintf('%3s', testsPassed ? testsPassed : '-'))
+        info('Tests failed', sprintf('%3s', testsFailed ? failedTests : '-'))
+        info('Tests skipped', sprintf('%3s', testsSkipped ? testsSkipped : '-'))
+        info('Tests ignored', sprintf('%3s', testsIgnored ? testsIgnored : '-'))
+        info('Warnings', sprintf('%3s', numWarnings ? numWarnings : '-'))
+        separate()
+        if (testsFailed) {
+            info('Result', 'FAILURE')
+        } else {
+            info('Result', 'SUCCESS')
+        }
+        separate()
 
         return testPassed
 
@@ -251,10 +262,10 @@ class Tester {
      */
     private cleanUpOutput() {
 
-        info("Cleaning collected output")
+        info('Cleanup', 'Cleaning collected output')
 
         // If the output path exists, remove it.
-        File tmpPath = new File(defaultOutputPath)
+        File tmpPath = new File(env_pout ? env_pout : defaultOutputPath)
         if (tmpPath.exists()) {
             if (!tmpPath.isDirectory()) {
                 err("Output directory exists but it's not a directory " +
@@ -276,16 +287,17 @@ class Tester {
      */
     private separate() {
 
-        println "-------"
+        println "+----------------+"
 
     }
 
     /**
-     * Print a message prefixed with th e`infoPrompt` string.
+     * Print an 'info' message prefixed with `->` string. You can specify a
+     * tag and a message which is printed as "-> <tag> : <msg>"
      */
-    static private info(String msg) {
+    static private info(String tag, String msg) {
 
-        println "-> $msg"
+        println ":" + sprintf('%16s: %s', tag, msg)
 
     }
 
@@ -479,13 +491,13 @@ class Tester {
     def processSetupCollection(setupSection) {
 
         separate()
-        info("Act : Processing setup_collection section")
+        info('Action', 'Processing setup_collection section')
 
         // Extract key setup values, supplying defaults
         if (setupSection.value.timeout != null) {
             int timeoutSeconds = setupSection.value.get('timeout')
             if (timeoutSeconds != null) {
-                info("Set : timeout=$timeoutSeconds")
+                info('Setup', "timeout=$timeoutSeconds")
                 testTimeoutSeconds = timeoutSeconds
             }
         }
@@ -514,11 +526,11 @@ class Tester {
      * @param path Full path to the test file
      * @param section The test section
      */
-    private logTest(path, section) {
+    private logTest(String path, def section) {
 
-        info("Test: $section.key")
-        info("File: $currentTestFilename")
-        info("Path: $path")
+        info('Test', section.key.toString())
+        info('File', currentTestFilename)
+        info('Path', path)
 
     }
 
@@ -614,38 +626,19 @@ class Tester {
         if (imageName) {
             imageName = (imageName =~ /:/) ? imageName : imageName + ':latest'
         }
-        info("Img : $imageName")
+        info('Image', imageName)
 
         // If we're running 'inDocker' and there's no 'imageName'
         // there's no point in continuing.
         // We simply record this as a skipped test.
         if (inDocker && imageName == null) {
-            info('Skip: Yes')
+            info('Skip', 'Yes')
             testsSkipped += 1
             return
         }
 
         // Here ... `pipelineCommand` is either the SD-defined command or the
         // command defined in this test's command block.
-
-        // Redirect the '-o' option, if there is a '-o' in the command
-        def oOption = pipelineCommand =~ /$outputRegex/
-        String testSubDir = "${currentTestFilename}-${section.key}"
-        // Construct and make the path for any '-o' output
-        File testOutputPath = new File(defaultOutputPath, testSubDir)
-        testOutputPath.mkdir()
-
-        if (oOption.count > 0) {
-
-            // Redirect output
-            String outputFileBaseName = oOption[0][1]
-            String testOutputFile = '\\${POUT}' + File.separator + outputFileBaseName
-            // Now swap-out the original '-o'...
-            String redirectedOutputOption = "-o ${testOutputFile}"
-            pipelineCommand = pipelineCommand.replaceAll(/$outputRegex/,
-                    redirectedOutputOption)
-
-        }
 
         // The pipeline execution directory is the directory _below_
         // the path's `executeAnchorDir` directory. The anchor directory
@@ -659,13 +652,39 @@ class Tester {
         String executeDir = filename.take(filename.indexOf(File.separator,
                 executeAnchorDirPos + executeAnchorDir.length()))
         File testExecutionDir = new File(executeDir)
-        info("Dir : $testExecutionDir")
+        info('ExeDir', testExecutionDir.toString())
 
+        String testSubDir = "${currentTestFilename}-${section.key}"
+
+        // PIN (Pipeline inout data) is normally the project's data directory
         test_pin = new File(executeDir, defaultInputPath).getCanonicalPath()
-        test_pout = defaultOutputPath + File.separator + testSubDir
+        // POUT is either set by the POUT environment variable or relative
+        //      to the directory we've been executed from.
+        test_pout = env_pout ? env_pout : defaultOutputPath
+        test_pout += File.separator + testSubDir
 
-        info("PIN : $test_pin")
-        info("POUT: $test_pout")
+        // Construct and make the path for any '-o' output
+        File testOutputPath = new File(test_pout)
+        testOutputPath.mkdir()
+
+        info('Input', test_pin)
+        info('Output', test_pout)
+
+        // Redirect the '-o' option, if there is a '-o' in the command
+        def oOption = pipelineCommand =~ /$outputRegex/
+        if (oOption.count > 0) {
+
+            // Redirect output
+            String outputFileBaseName = oOption[0][1]
+            String testOutputFile = '\\${POUT}' + File.separator + outputFileBaseName
+            // Now swap-out the original '-o'...
+            String redirectedOutputOption = "-o ${testOutputFile}"
+            pipelineCommand = pipelineCommand.replaceAll(/$outputRegex/,
+                    redirectedOutputOption)
+
+        }
+
+        info('Command', pipelineCommand)
 
         // Execute the command, using the shell, giving it time to complete,
         // while also collecting stdout & stderr
@@ -674,19 +693,13 @@ class Tester {
         int exitValue
         boolean timeout
         if (imageName && inDocker) {
-            info('Dock: Yes')
-            // And the expanded and redirected command...
-            info("Cmd : $pipelineCommand")
-
+            info('Docker', 'Yes')
             (sout, serr, exitValue, timeout) =
                     ContainerExecutor.execute(pipelineCommand,
                             imageName, test_pin, test_pout, testTimeoutSeconds)
 
         } else {
-            info('Dock: No')
-            // And the expanded and redirected command...
-            info("Cmd : $pipelineCommand")
-
+            info('Docker', 'No')
             (sout, serr, exitValue, timeout) =
                     ShellExecutor.execute(pipelineCommand,
                             testExecutionDir, test_pin, test_pout, testTimeoutSeconds)
@@ -797,7 +810,7 @@ class Tester {
 
         if (exitValue == 0 && validated) {
             testsPassed += 1
-            info('OK')
+            info('Result', 'SUCCESS')
         } else {
             // Test failed.
             dumpCommandError(serr)
@@ -806,6 +819,16 @@ class Tester {
             println '!!  >> TEST  ERROR <<  !!'
             println '!!!!!!!!!!!!!!!!!!!!!!!!!'
         }
+
+    }
+
+    /**
+     * Static initialiser.
+     */
+    static {
+
+        def env = System.getenv()
+        env_pout = env['POUT']
 
     }
 

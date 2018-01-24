@@ -17,13 +17,14 @@
  */
 
 /**
- * The PipelineTester Executor class. The class is responsible for executing
- * a pipeline command using the command-line.
+ * The PipelineTester Shell (command-line) Executor class. The class is
+ * responsible for executing a pipeline command using the command-line.
  */
 class ShellExecutor {
 
     /**
-     * Executes the given command in the supplied execution directory.
+     * Executes the given command using the shell in the supplied execution
+     * directory.
      *
      * @param command The command to run
      * @param edir The directory in which to run the command

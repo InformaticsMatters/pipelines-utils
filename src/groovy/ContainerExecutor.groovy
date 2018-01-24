@@ -23,10 +23,19 @@
 class ContainerExecutor {
 
     /**
-     * Executes the given command in the supplied container image.
+     * Executes the given command in the supplied container image. The data
+     * directory (pin) is mounted as `/data` in the running container
+     * and the designated output directory (pout) is mounted in the container
+     * as `/output`. Two environment variables are defined: PIN and POUT and
+     * are set to `/data` and `/output` respectively. The script is executed in
+     * the output directory in the container.
      *
-     * @param imageName The image to run the command in
      * @param command The command to run
+     * @param imageName The image to run the command in
+     * @param pin The pipeline input directory
+     *            (used to define the PIN environment variable)
+     * @param pout The pipeline output directory
+     *             (used to define the POUT environment variable)
      * @param timeoutSeconds The time to allow for the command to execute
      * @return A list containing the STDOUT and STDERR encapsulated in a
      *         StringBuilder(), an integer command exit code and a timeout

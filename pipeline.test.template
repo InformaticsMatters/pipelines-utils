@@ -31,19 +31,12 @@
     //          file. Individual tests can define their own test-specific files
     //          with their own 'creates' block, discussed later in this file.
     //
-    // pin:     This property can be used to over-ride the automatically
-    //          generated data input path (which is typically the repository's
-    //          own data directory. This allows you to use date outside the
-    //          repository - maybe because it's a large file or an experimental
-    //          file.
-    //
     // There can only be one setup_collection section and it must be
     // the first section in the file.
 
     setup_collection = [
         timeout: 10,
-        creates: [ 'output.txt' ],
-        pin: /Users/alan/data
+        creates: [ 'output.txt' ]
     ],
 
     // Individual tests.
@@ -68,7 +61,12 @@
     // If a test is not working an you want to keep it and avoid running it
     // then simply prefix the test section name with `ignore_`.
     //
-    // The location of any input data you provide in your test
+    // The location of any input data you provide in your test is normally
+    // located in the project's `data` directory or mounted as `/data`
+    // when running in a container. You can safely refer to data in both cases
+    // with the PIN environment variable created by the PipelineTester.
+    // To allow execution from the command-line and in a container the input
+    // data file `blob.dat` should be referred to using `${PIN}blob.dat`
 
     test_1 = [
 
@@ -80,7 +78,7 @@
         // If you provide a command you **cannot** provide parameters
         // (see the params section below).
 
-        command: ```python my_own_command
+        command: ```python my_own_command -i ${PIN}blob.dat
                  --my-own-param-1 32
                  --my-own-param-2 18.5```,
 

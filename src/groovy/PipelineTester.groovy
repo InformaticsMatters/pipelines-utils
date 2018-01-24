@@ -16,12 +16,10 @@
  * limitations under the License.
  */
 
-import Tester
-
 /**
  * The PipelineTester. A groovy script for the automated testing
  * of Informatics Matters pipeline scripts. This utility searches for
- * pipeline test files and then loads and executes them.
+ * pipeline `.test` files and then loads and executes them.
  *
  *      `pipeline.test.template` is template that can be used as to create your
  *      own tests. Read its inline documentation to understand how it is used
@@ -29,16 +27,6 @@ import Tester
  *
  * Depending on your pipeline's requirements you may need to execute this
  * the PipelineTester within a suitable execution environment like Conda.
- *
- * Typical execution is from this project's root using Gradle: -
- *
- *      gradle runPipelineTester
- *
- * ...or with an abbreviated task name like:
- *
- *      gradle rPT
- *
- * This utility has been tested with groovy v2.4
  */
 
 // Version
@@ -46,7 +34,7 @@ import Tester
 String version = '2.0.0'
 
 println "+----------------+"
-println "| PipelineTester | (v$version)"
+println "| PipelineTester | v$version"
 println "+----------------+"
 
 // Build command-line processor
