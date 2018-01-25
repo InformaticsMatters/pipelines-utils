@@ -38,7 +38,7 @@ the working copy of the repository you're running in. Alternatively you
 can write test output to your own directory (i.e. `/tmp/blob`) using
 the environment variable `POUT`: -
 
-    $ export POUT=/tmp/blob
+    $ export POUT=/tmp/blob/
 
 Output files are removed when the test suite starts and when it passes.
  
