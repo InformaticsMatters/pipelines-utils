@@ -75,6 +75,15 @@ of the number of test files and individual tests that were executed: -
     :          Result: SUCCESS
     +----------------+
 
+Fields in the summary should be self-explanatory but a couple might benefit
+from further explanation: -
+
+-   `Tests skipped` are the tests that were found but not executed.
+    Normally these are the tests found during a _Container_ test
+    that can't be run (because the test has no corresponding container image).
+-   `Tests ignored` are test found that are not run because they have
+    been marked for non-execution as the test name begins with `ignore_`. 
+    
 ### From here
 If you have working copies of all your pipeline repositories checked-out
 in the same directory as this repository you can execute all the tests
