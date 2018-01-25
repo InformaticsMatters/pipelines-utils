@@ -34,3 +34,12 @@ task runPipelineTester(type: Exec) {
     commandLine 'groovy', 'PipelineTester.groovy', "$args"
 
 }
+
+task runDockerPipelineTester(type: Exec) {
+
+    description 'Runs the PipelineTester Docker tests'
+
+    workingDir 'src/groovy'
+    commandLine 'groovy', 'PipelineTester.groovy', '-indocker'
+
+}

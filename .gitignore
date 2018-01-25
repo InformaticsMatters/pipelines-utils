@@ -12,3 +12,4 @@ work
 .nextflow.log*
 /tmp
 **/*.egg-info
+**/.DS_Store
