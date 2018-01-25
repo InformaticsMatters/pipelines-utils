@@ -34,7 +34,7 @@ class Tester {
     boolean inDocker = true
 
     // Constants?
-    int defaultTimeoutSeconds = 1
+    int defaultTimeoutSeconds = 60
     String testExt = '.test'
     String executeAnchorDir = '/src/'
     String testFileSpec = "**/*${testExt}"
@@ -118,7 +118,7 @@ class Tester {
                     take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
             testScriptVersion = 0
-            testTimeoutSeconds = 30
+            testTimeoutSeconds = defaultTimeoutSeconds
             collectionCreates = []
             filesUsed += 1
 
