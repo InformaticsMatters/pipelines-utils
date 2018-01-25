@@ -48,8 +48,13 @@ class ContainerExecutor {
         StringBuilder sout = new StringBuilder()
         StringBuilder serr = new StringBuilder()
 
+        // Note: PIN and POUT have trailing forward-slashed for now
+        //       to allow a migratory use of $PIN}file references
+        //       rather than insisting on ${PIN}/file which would fail if
+        //       PIN wasn't defined - it's about lowest risk changes.
+
         String cmd = "docker run -v $pin:/data -v $pout:/output" +
-                     " -w /output -e PIN=/data -e POUT=/output $imageName" +
+                     " -w /output -e PIN=/data/ -e POUT=/output/ $imageName" +
                      " sh -c '$command'"
 
         def proc = ['sh', '-c', cmd].execute(null, new File('.'))

@@ -676,7 +676,7 @@ class Tester {
 
             // Redirect output
             String outputFileBaseName = oOption[0][1]
-            String testOutputFile = '\\${POUT}' + File.separator + outputFileBaseName
+            String testOutputFile = '\\${POUT}' + outputFileBaseName
             // Now swap-out the original '-o'...
             String redirectedOutputOption = "-o ${testOutputFile}"
             pipelineCommand = pipelineCommand.replaceAll(/$outputRegex/,
