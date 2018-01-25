@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import java.util.regex.Pattern
+
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 
@@ -36,9 +38,9 @@ class Tester {
     // Constants?
     int defaultTimeoutSeconds = 60
     String testExt = '.test'
-    String executeAnchorDir = '/src/'
-    String testFileSpec = "**/*${testExt}"
-    String testSearchDir = '../../..'
+    String executeAnchorDir = File.separator + 'src' + File.separator
+    String testFileSpec = '**' + File.separator + "*${testExt}"
+    String testSearchDir = '..'+ File.separator + '..' + File.separator + '..'
     String sdExt = '.dsd.json'
     String optionPrefix = 'arg.'
     String metricsFile = 'output_metrics.txt'
@@ -49,8 +51,9 @@ class Tester {
     String testPrefix = 'test_'
     String ignorePrefix = 'ignore_'
 
-    final static String defaultInputPath = '../../data'
-    final static String defaultOutputPath = System.getProperty('user.dir') + '/tmp/PipelineTester'
+    final static String defaultInputPath = '..' + File.separator + '..' + File.separator + 'data'
+    final static String defaultOutputPath = System.getProperty('user.dir') +
+            File.separator + 'tmp' + File.separator + 'PipelineTester'
 
     // Controlled by setup sections
     int testTimeoutSeconds = defaultTimeoutSeconds
@@ -113,7 +116,7 @@ class Tester {
 
             // Reset filename and section number
             // along with other test-specific objects
-            currentTestFilename = path.split(File.separator)[-1]
+            currentTestFilename = path.split(Pattern.quote(File.separator))[-1]
             currentTestFilename = currentTestFilename.
                     take(currentTestFilename.length() - testExt.length())
             sectionNumber = 0
@@ -220,7 +223,7 @@ class Tester {
         info('Test files', sprintf('%3s', filesUsed ? filesUsed : '-'))
         info('Tests found', sprintf('%3s', testsFound ? testsFound : '-'))
         info('Tests passed',sprintf('%3s', testsPassed ? testsPassed : '-'))
-        info('Tests failed', sprintf('%3s', testsFailed ? failedTests : '-'))
+        info('Tests failed', sprintf('%3s', testsFailed ? testsFailed : '-'))
         info('Tests skipped', sprintf('%3s', testsSkipped ? testsSkipped : '-'))
         info('Tests ignored', sprintf('%3s', testsIgnored ? testsIgnored : '-'))
         info('Warnings', sprintf('%3s', numWarnings ? numWarnings : '-'))
@@ -516,7 +519,7 @@ class Tester {
      */
     private recordFailedTest(testName) {
 
-        failedTests.add("${currentTestFilename}/${testName}")
+        failedTests.add("${currentTestFilename}" + File.separator + "${testName}")
 
     }
 
