@@ -26,6 +26,21 @@ installed as normal:
 >   The module utilities should support both Python 2 and 3 but we recommend
     any modules/pipelines you write support both flavours.
 
+## Adding this project as a submodule for a new pipelines project
+If you have started a new pipelines project you can add these utilities
+to it by running the following from the project root of your new project: -
+
+    $ git submodule add https://github.com/InformaticsMatters/pipelines-utils.git
+
+This will create a new directory (`pipelines-utils`) and a `.gitmodules` file.
+You must add the `.gitmodules` to your project. Read about the Git [Submodule]
+for more information.
+ 
+If you checkout a new working copy you will need to initialise the submodule
+with the command: -
+
+    $ git submodule update --init --remote
+
 ## Running the test framework
 >   We plan to release the Python utility modules to [PIP] at some stage. The
     distribution is based on `setup.py` is present and works and will be

@@ -66,7 +66,6 @@ class Tester {
     int testsSkipped = 0
     int testsPassed = 0
     int filesUsed = 0
-    int numWarnings = 0
     def failedTests = []
     def observedFiles = []
 
@@ -95,6 +94,11 @@ class Tester {
     // Set in the static initialiser.
     final static String env_pout
 
+    // A filename checker for files generated for the service descriptor.
+    // Used for service-descriptor pipelines to make sure the
+    // files they are expected to generate are actually generated.
+    MediaChecker mediaChecker = new MediaChecker()
+
     /**
      * The run method.
      * Locates all the test files, loads them and executes them.
@@ -105,7 +109,7 @@ class Tester {
     boolean run() {
 
         // Log supported test file versions
-        info('Setup', "Supporting test file versions: $supportedTestFileVersions")
+        Log.info('Setup', "Supporting test file versions: $supportedTestFileVersions")
 
         // Before we start - cleanup (everything)
         cleanUpOutput()
@@ -125,8 +129,8 @@ class Tester {
             collectionCreates = []
             filesUsed += 1
 
-            separate()
-            info('File', currentTestFilename)
+            Log.separate()
+            Log.info('Test file', currentTestFilename)
             // Collect the files we find...
             if (!observedFiles.contains(currentTestFilename)) {
                 observedFiles.add(currentTestFilename)
@@ -154,10 +158,10 @@ class Tester {
                 if (section_key_lower.equals('version')) {
 
                     if (!checkFileVersion(section.value)) {
-                        separate()
-                        err("Unsupported test script version ($section.value)." +
-                            " Expected value from choice of $supportedTestFileVersions")
-                        err("In $path")
+                        Log.separate()
+                        Log.err("Unsupported test script version ($section.value)." +
+                                " Expected value from choice of $supportedTestFileVersions")
+                        Log.err("In $path")
                         recordFailedTest("-")
                         break
                     }
@@ -166,8 +170,8 @@ class Tester {
 
                     // Must have a version number if we get here...
                     if (testScriptVersion == 0) {
-                        separate()
-                        err('The file is missing its version definition')
+                        Log.separate()
+                        Log.err('The file is missing its version definition')
                         recordFailedTest("-")
                         break
                     }
@@ -179,14 +183,14 @@ class Tester {
                     } else if (section_key_lower.startsWith(testPrefix)) {
                         processTest(path, section)
                     } else if (section_key_lower.startsWith(ignorePrefix)) {
-                        separate()
+                        Log.separate()
                         logTest(path, section)
                         testsIgnored += 1
-                        info('Result', 'Ignored')
+                        Log.info('Result', 'Ignored')
                     } else {
-                        separate()
-                        err("Unexpected section name ($section.key)" +
-                            " in the '${currentTestFilename}.test'")
+                        Log.separate()
+                        Log.err("Unexpected section name ($section.key)" +
+                                " in the '${currentTestFilename}.test'")
                         recordFailedTest(section_key_lower)
                     }
 
@@ -200,40 +204,40 @@ class Tester {
         // We'll also cleanup again when we re-run.
         boolean testPassed = false
         if (failedTests.size() == 0) {
-            separate()
+            Log.separate()
             cleanUpOutput()
             testPassed = true
         }
 
         // Summarise...
 
-        separate()
-        info('Summary', '')
+        Log.separate()
+        Log.info('Summary', '')
 
         // List failed tests...
         if (failedTests.size() > 0) {
-            separate()
+            Log.separate()
             failedTests.each { name ->
-                info('Failed', name)
+                Log.info('Failed', name)
             }
         }
 
-        separate()
+        Log.separate()
         int testsFailed = failedTests.size()
-        info('Test files', sprintf('%3s', filesUsed ? filesUsed : '-'))
-        info('Tests found', sprintf('%3s', testsFound ? testsFound : '-'))
-        info('Tests passed',sprintf('%3s', testsPassed ? testsPassed : '-'))
-        info('Tests failed', sprintf('%3s', testsFailed ? testsFailed : '-'))
-        info('Tests skipped', sprintf('%3s', testsSkipped ? testsSkipped : '-'))
-        info('Tests ignored', sprintf('%3s', testsIgnored ? testsIgnored : '-'))
-        info('Warnings', sprintf('%3s', numWarnings ? numWarnings : '-'))
-        separate()
+        Log.info('Test files', sprintf('%3s', filesUsed ? filesUsed : '-'))
+        Log.info('Tests found', sprintf('%3s', testsFound ? testsFound : '-'))
+        Log.info('Tests passed',sprintf('%3s', testsPassed ? testsPassed : '-'))
+        Log.info('Tests failed', sprintf('%3s', testsFailed ? testsFailed : '-'))
+        Log.info('Tests skipped', sprintf('%3s', testsSkipped ? testsSkipped : '-'))
+        Log.info('Tests ignored', sprintf('%3s', testsIgnored ? testsIgnored : '-'))
+//        Log.info('Warnings', sprintf('%3s', Log.numWarnings ? Log.numWarnings : '-'))
+        Log.separate()
         if (testsFailed) {
-            info('Result', 'FAILURE')
+            Log.info('Result', 'FAILURE')
         } else {
-            info('Result', 'SUCCESS')
+            Log.info('Result', 'SUCCESS')
         }
-        separate()
+        Log.separate()
 
         return testPassed
 
@@ -265,13 +269,13 @@ class Tester {
      */
     private cleanUpOutput() {
 
-        info('Cleanup', 'Cleaning collected output')
+        Log.info('Cleanup', 'Cleaning collected output')
 
         // If the output path exists, remove it.
         File tmpPath = new File(env_pout ? env_pout : defaultOutputPath)
         if (tmpPath.exists()) {
             if (!tmpPath.isDirectory()) {
-                err("Output directory exists but it's not a directory " +
+                Log.err("Output directory exists but it's not a directory " +
                         "(${tmpPath.toString()})")
                 return false
             } else {
@@ -281,45 +285,6 @@ class Tester {
         }
         // Finally, (re-)create the output directory path...
         tmpPath.mkdirs()
-
-    }
-
-    /**
-     * Print a simple separator (a bar) to stdout.
-     * Used to visually separate generated output into logical blocks.
-     */
-    private separate() {
-
-        println "+----------------+"
-
-    }
-
-    /**
-     * Print an 'info' message prefixed with `->` string. You can specify a
-     * tag and a message which is printed as "-> <tag> : <msg>"
-     */
-    static private info(String tag, String msg) {
-
-        println ":" + sprintf('%16s: %s', tag, msg)
-
-    }
-
-    /**
-     * Print an error message.
-     */
-    static private err(String msg) {
-
-        println "ERROR: $msg"
-
-    }
-
-    /**
-     * Print a warning message (and counts it).
-     */
-    private warning(String msg) {
-
-        println "WARNING: $msg"
-        numWarnings += 1
 
     }
 
@@ -358,7 +323,7 @@ class Tester {
 
         currentServiceDescriptor.serviceConfig.optionDescriptors.each { option ->
 
-            // 'arg.threshold` is recorded as `thrshold`
+            // 'arg.threshold` is recorded as `threshold`
             String arglessOption = option.key.substring(optionPrefix.length())
             if (option.typeDescriptor.type =~ /.*Range.*/) {
                 optionNames.add(arglessOption + '.minValue')
@@ -445,7 +410,7 @@ class Tester {
                     }
                 }
                 if (!foundParam) {
-                    err("Pipeline option '$option' is not defined in the test's params" +
+                    Log.err("Pipeline option '$option' is not defined in the test's params" +
                             " and there is no default value to use.")
                     checkStatus = false
                 }
@@ -467,7 +432,7 @@ class Tester {
         // Checks that the given parameter name
         // is in the service descriptor's set of options.
         if (!optionNames.contains(paramName)) {
-            err("Test param '$paramName' is not a recognised pipeline option")
+            Log.err("Test param '$paramName' is not a recognised pipeline option")
             return false
         }
         return true
@@ -493,14 +458,14 @@ class Tester {
      */
     def processSetupCollection(setupSection) {
 
-        separate()
-        info('Action', 'Processing setup_collection section')
+        Log.separate()
+        Log.info('Action', 'Processing setup_collection section')
 
         // Extract key setup values, supplying defaults
         if (setupSection.value.timeout != null) {
             int timeoutSeconds = setupSection.value.get('timeout')
             if (timeoutSeconds != null) {
-                info('Setup', "timeout=$timeoutSeconds")
+                Log.info('Setup', "timeout=$timeoutSeconds")
                 testTimeoutSeconds = timeoutSeconds
             }
         }
@@ -531,9 +496,9 @@ class Tester {
      */
     private logTest(String path, def section) {
 
-        info('Test', section.key.toString())
-        info('File', currentTestFilename)
-        info('Path', path)
+        Log.info('Test', section.key.toString())
+        Log.info('File', currentTestFilename)
+        Log.info('Path', path)
 
     }
 
@@ -572,7 +537,7 @@ class Tester {
 
         testsFound += 1
 
-        separate()
+        Log.separate()
         logTest(filename, section)
 
         def command = section.value['command']
@@ -583,7 +548,7 @@ class Tester {
 
         // Enforce conditions on block combinations...
         if (command != null && paramsBlock != null) {
-            err('Found "command" and "params". Use one or the other.')
+            Log.err('Found "command" and "params". Use one or the other.')
             recordFailedTest(section.key)
             return
         }
@@ -595,7 +560,7 @@ class Tester {
         if (command == null) {
 
             if (currentServiceDescriptor == null) {
-                err('Found "params" but there was no service descriptor file.')
+                Log.err('Found "params" but there was no service descriptor file.')
                 recordFailedTest(section.key)
                 return
             } else if (!checkAllOptionsHaveBeenUsed(paramsBlock)) {
@@ -629,13 +594,13 @@ class Tester {
         if (imageName) {
             imageName = (imageName =~ /:/) ? imageName : imageName + ':latest'
         }
-        info('Image', imageName)
+        Log.info('Image', imageName)
 
         // If we're running 'inDocker' and there's no 'imageName'
         // there's no point in continuing.
         // We simply record this as a skipped test.
         if (inDocker && imageName == null) {
-            info('Skip', 'Yes')
+            Log.info('Skip', 'Yes')
             testsSkipped += 1
             return
         }
@@ -655,7 +620,7 @@ class Tester {
         String executeDir = filename.take(filename.indexOf(File.separator,
                 executeAnchorDirPos + executeAnchorDir.length()))
         File testExecutionDir = new File(executeDir)
-        info('ExeDir', testExecutionDir.toString())
+        Log.info('ExeDir', testExecutionDir.toString())
 
         String testSubDir = "${currentTestFilename}-${section.key}"
 
@@ -670,8 +635,8 @@ class Tester {
         File testOutputPath = new File(test_pout)
         testOutputPath.mkdir()
 
-        info('Input', test_pin)
-        info('Output', test_pout)
+        Log.info('Input path', test_pin)
+        Log.info('Output path', test_pout)
 
         // Redirect the '-o' option, if there is a '-o' in the command
         def oOption = pipelineCommand =~ /$outputRegex/
@@ -687,7 +652,7 @@ class Tester {
 
         }
 
-        info('Command', pipelineCommand)
+        Log.info('Command', pipelineCommand)
 
         // Execute the command, using the shell, giving it time to complete,
         // while also collecting stdout & stderr
@@ -696,13 +661,13 @@ class Tester {
         int exitValue
         boolean timeout
         if (imageName && inDocker) {
-            info('Docker', 'Yes')
+            Log.info('Docker', 'Yes')
             (sout, serr, exitValue, timeout) =
                     ContainerExecutor.execute(pipelineCommand,
                             imageName, test_pin, test_pout, testTimeoutSeconds)
 
         } else {
-            info('Docker', 'No')
+            Log.info('Docker', 'No')
             (sout, serr, exitValue, timeout) =
                     ShellExecutor.execute(pipelineCommand,
                             testExecutionDir, test_pin, test_pout, testTimeoutSeconds)
@@ -726,10 +691,19 @@ class Tester {
             if (createsBlock != null) {
                 testCreates.addAll(createsBlock)
             }
-            // Do we expect output files?
+
+            // Check service descriptor output files (unless its a raw command).
+            // If the service descriptor has one or more `outputDescriptors`
+            // Then we should check that the pipeline generated the
+            // expected files using the MediaChecker.
+            if (currentServiceDescriptor != null && command == null) {
+                validated = mediaChecker.check(currentServiceDescriptor, testOutputPath)
+            }
+
+            // Do we expect additional output files?
             // Here we look for things like "output*" in the
             // redirected output path.
-            if (testOutputPath != null && testCreates.size() > 0) {
+            if (validated && testCreates.size() > 0) {
                 def createdFiles = new FileNameFinder().
                         getFileNames(testOutputPath.toString(), "*")
                 for (String expectedFile in testCreates.unique()) {
@@ -741,7 +715,7 @@ class Tester {
                         }
                     }
                     if (!found) {
-                        err("Expected output file '$expectedFile' but couldn't find it")
+                        Log.err("Expected output file '$expectedFile' but couldn't find it")
                         validated = false
                         break
                     }
@@ -764,7 +738,7 @@ class Tester {
                     String seeExpr = see.replaceAll(/\s+/, '[ \\\\t]+')
                     def finder = (serr =~ /$seeExpr/)
                     if (finder.count == 0) {
-                        err("Expected to see '$see' but it was not in the command's output")
+                        Log.err("Expected to see '$see' but it was not in the command's output")
                         validated = false
                     }
                 }
@@ -786,34 +760,34 @@ class Tester {
                         String fileProperty = properties."$metric.key"
                         if (fileProperty == null) {
                             // The Metric is not in the file!
-                            err("Metric for '$metric.key' is not in the metrics file")
+                            Log.err("Metric for '$metric.key' is not in the metrics file")
                             validated = false
                         } else {
                             def finder = (fileProperty =~ /${metric.value}/)
                             if (finder.count == 0) {
-                                err("Expected value for metric '$metric.key' ($metric.value)" +
+                                Log.err("Expected value for metric '$metric.key' ($metric.value)" +
                                         " does not match file value ($fileProperty)")
                                 validated = false
                             }
                         }
                     }
                 } else {
-                    err("Expected metrics but there was no metrics file ($metricsFile)")
+                    Log.err("Expected metrics but there was no metrics file ($metricsFile)")
                     validated = false
                 }
             }
 
         } else {
             if (timeout) {
-                err("Execution was terminated" +
+                Log.err("Execution was terminated" +
                     " (taking longer than ${testTimeoutSeconds}S)")
             }
-            err("Pipeline exitValue=$exitValue. <stderr> follows...")
+            Log.err("Pipeline exitValue=$exitValue. <stderr> follows...")
         }
 
         if (exitValue == 0 && validated) {
             testsPassed += 1
-            info('Result', 'SUCCESS')
+            Log.info('Result', 'SUCCESS')
         } else {
             // Test failed.
             dumpCommandError(serr)
