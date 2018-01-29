@@ -55,16 +55,26 @@ class MediaChecker {
         def opDescriptors = serviceDescriptor.serviceConfig.outputDescriptors
         opDescriptors.each { desc ->
 
-            // Expected extension...
-            // (use the media type to lookup it up)
-            // And construct full path to the expected file...
-            String opExt = mediaTypesLookup.media_type[desc.mediaType]
-            String opName = desc.name + opExt
-            String opPath = path.toString() + File.separator + opName
-            if (!new File(opPath).exists()) {
-                Log.err("The pipeline's 'outputDescriptor'" +
-                        " expected '$opName' but the file wasn't found")
-                retVal = false
+            // There must be a matching media type in our txt/lookup file.
+            def typeExtList = mediaTypesLookup.media_types[desc.mediaType]
+            if (typeExtList == null || typeExtList.size() == 0) {
+                Log.err("Pipeline service descriptor output mediaType" +
+                        " '$desc.mediaType' is not listed in '$mediaTypesFile'")
+            } else {
+                // What are the expected file extensions for this media type?
+                // It's a list of 1 or more entries.
+                typeExtList.each { extension ->
+
+                    String opName = desc.name + extension
+                    Log.info('Media check', opName)
+                    String opPath = path.toString() + File.separator + opName
+                    if (!new File(opPath).exists()) {
+                        Log.err("The pipeline's 'outputDescriptor'" +
+                                " expected '$opName' but the file wasn't found")
+                        retVal = false
+                    }
+
+                }
             }
 
         }

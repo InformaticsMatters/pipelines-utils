@@ -130,7 +130,7 @@ class Tester {
             filesUsed += 1
 
             Log.separate()
-            Log.info('File', currentTestFilename)
+            Log.info('Test file', currentTestFilename)
             // Collect the files we find...
             if (!observedFiles.contains(currentTestFilename)) {
                 observedFiles.add(currentTestFilename)
@@ -635,8 +635,8 @@ class Tester {
         File testOutputPath = new File(test_pout)
         testOutputPath.mkdir()
 
-        Log.info('Input', test_pin)
-        Log.info('Output', test_pout)
+        Log.info('Input path', test_pin)
+        Log.info('Output path', test_pout)
 
         // Redirect the '-o' option, if there is a '-o' in the command
         def oOption = pipelineCommand =~ /$outputRegex/
