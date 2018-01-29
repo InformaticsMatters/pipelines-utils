@@ -8,8 +8,22 @@ branches:
   only:
   - /.*/
 
-script:
-- cd mock-rdkit
-- python setup.py install
-- cd ../src/python
-- python setup.py test
+stages:
+- test
+- package
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - cd mock-rdkit
+        - python setup.py install
+        - cd ../src/python
+        - python setup.py test
+        - cd ../..
+    - stage: package
+      script:
+        - pip install -r package-requirements.txt
+        - cd src/python
+        - pyroma .
+        - python setup.py bdist_wheel
