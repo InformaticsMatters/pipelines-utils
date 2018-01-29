@@ -1,11 +1,15 @@
 language: python
 
 python:
-  - "2.7"
-  - "3.6"
+- "2.7"
+- "3.6"
+
+branches:
+  only:
+  - /.*/
 
 script:
-  - cd mock-rdkit
-  - python setup.py install
-  - cd ../src/python
-  - python setup.py test
+- cd mock-rdkit
+- python setup.py install
+- cd ../src/python
+- python setup.py test
