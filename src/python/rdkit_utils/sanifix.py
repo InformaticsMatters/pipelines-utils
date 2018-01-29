@@ -2,6 +2,7 @@
 
   Contribution from James Davidson
 """
+from __future__ import print_function
 from rdkit import Chem
 from rdkit.Chem import AllChem
 
@@ -94,7 +95,7 @@ def AdjustAromaticNs(m,nitrogenPattern='[n&D2&H0;r5,r6]'):
                 break
             else:
                 revMap={}
-                for k,v in frag._idxMap.iteritems():
+                for k,v in frag._idxMap.items():
                     revMap[v]=k
                 for idx in indices:
                     oatom = m.GetAtomWithIdx(revMap[idx])
@@ -114,16 +115,16 @@ def fix_mol(m):
         cp = Chem.Mol(m.ToBinary())
         Chem.SanitizeMol(cp)
         m = cp
-        print 'fine:',Chem.MolToSmiles(m)
+        print('fine:',Chem.MolToSmiles(m))
         return m
     except ValueError:
-        print 'adjust'
+        print('adjust')
         nm=AdjustAromaticNs(m)
         if nm is not None:
             Chem.SanitizeMol(nm)
-            print 'fixed:',Chem.MolToSmiles(nm)
+            print('fixed:',Chem.MolToSmiles(nm))
         else:
-            print 'still broken'
+            print('still broken')
         return nm
 
 if __name__=='__main__':
@@ -132,18 +133,18 @@ if __name__=='__main__':
         if not txt_m:
             continue
         m = Chem.MolFromMolBlock(txt_m, False)
-        print '#---------------------'
+        print('#---------------------')
         try:
             m.UpdatePropertyCache(False)
             cp = Chem.Mol(m.ToBinary())
             Chem.SanitizeMol(cp)
             m = cp
-            print 'fine:',Chem.MolToSmiles(m)
+            print('fine:',Chem.MolToSmiles(m))
         except ValueError:
-            print 'adjust'
+            print('adjust')
             nm=AdjustAromaticNs(m)
             if nm is not None:
                 Chem.SanitizeMol(nm)
-                print 'fixed:',Chem.MolToSmiles(nm)
+                print('fixed:',Chem.MolToSmiles(nm))
             else:
-                print 'still broken'
+                print('still broken')
