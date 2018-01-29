@@ -1,0 +1,11 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.6"
+
+script:
+  - cd mock-rdkit
+  - python setup.py install
+  - cd ../src/python
+  - python setup.py test

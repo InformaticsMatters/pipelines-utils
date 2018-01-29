@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
+from builtins import object
 import sys, gzip, json
 
-class StreamJsonListLoader():
+class StreamJsonListLoader(object):
     """
     When you have a big JSON file containing a list, such as
 
@@ -41,7 +43,7 @@ class StreamJsonListLoader():
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         read_buffer = self.stream.read(1)
         while True:
             try:
@@ -71,7 +73,7 @@ def main():
         #print "got some json", j
         count += 1
     loader.close()
-    print "Found",count,"records"
+    print("Found",count,"records")
 
 
 if __name__ == "__main__":
