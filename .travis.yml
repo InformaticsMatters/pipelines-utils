@@ -1,16 +1,19 @@
 language: python
 
 python:
-- "2.7"
-- "3.6"
+  - "2.7"
+  - "3.6"
 
 branches:
   only:
-  - /.*/
+    - /.*/
 
 stages:
-- test
-- package
+  - test
+  - package
+
+script:
+  - pip install -r package-requirements.txt
 
 jobs:
   include:
@@ -20,10 +23,8 @@ jobs:
         - python setup.py install
         - cd ../src/python
         - python setup.py test
-        - cd ../..
     - stage: package
       script:
-        - pip install -r package-requirements.txt
         - cd src/python
         - pyroma .
         - python setup.py bdist_wheel
