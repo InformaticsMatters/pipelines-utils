@@ -1,0 +1,18 @@
+// Input/Output Descriptor dictionary for use with the PipelineTester.
+// This is a map of input/output descriptor `mediaType` identifiers,
+// with expected filename extension(s).
+//
+// Read by MediaChecker.groovy
+
+media_type = [
+
+    // Please keep the keys in alphabetical order...
+
+    'application/x-squonk-dataset-molecule+json': '.data.gz',
+    'application/x-squonk-dataset-basic+json': '.data.gz',
+
+    'image/gif': '.gif',
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+
+]
