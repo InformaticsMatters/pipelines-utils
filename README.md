@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/InformaticsMatters/pipelines-utils.svg?branch=master)](https://travis-ci.org/InformaticsMatters/pipelines-utils)
+
 # Pipelines Utils
 A repository of common **Informatics Matters** _Pipeline_ utilities shared
 between a number of _Pipelines_ repositories. As well as containing a number
