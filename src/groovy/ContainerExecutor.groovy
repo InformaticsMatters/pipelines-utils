@@ -50,7 +50,7 @@ class ContainerExecutor {
 
         // Windows/Git-Bash PIN/POUT path tweak...
         String osName = System.properties['os.name']
-        if (osNmae && osName.startsWith('Win')) {
+        if (osName && osName.startsWith('Win')) {
             pin = pin.replace('\\', '/')
             pin = pin.replace('C:', '/c')
             pout = pout.replace('\\', '/')
