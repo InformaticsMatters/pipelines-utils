@@ -1,6 +1,5 @@
 # Additional modules we depend on.
 # Required from within an RDKIT Conda environment
 
-matplotlib == 2.1.1
 molvs == 0.0.9
 standardiser == 0.1.9

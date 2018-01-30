@@ -43,6 +43,16 @@ class ShellExecutor {
 
         StringBuilder sout = new StringBuilder()
         StringBuilder serr = new StringBuilder()
+
+        // Windows hack?
+        String osName = System.properties['os.name']
+        if (osName.startsWith('Win')) {
+            pin = pin.replace('\\', '/')
+            pin = pin.replace('C:', '/c')
+            pout = pout.replace('\\', '/')
+            pout = pout.replace('C:', '/c')
+        }
+
         // Append '/' to PIN and POUT to allow '${POUT}output'
         String cmd = "PIN=$pin/; POUT=$pout/; " + command
         def proc = ['sh', '-c', cmd].execute(null, edir)
