@@ -189,7 +189,17 @@ You will need:
 1.  Ensure that you can execute both Python and Groovy from within the
     Git-Bash shell (i.e. `python --version` and `groovy --version` work)
 1.  From the pipelines project root enter your Conda environment
-    with something like `source activate my-conda-env`
+    with something like `source activate my-conda-env`. To run the
+    pipelines tests your environment must contain the rdkit package. It
+    can be installed with this command from within Conda...
+    
+    $ conda install -c rdkit rdkit
+    
+1.  Install additional modules required by `pipelines-utils` but
+    using its requirements file (which can be found in the `pipelines-utils`
+    sub-project): -
+    
+    $ pip install -r requirements.txt
 
 With the above steps complete you should be able to execute the pipelines
 tester by navigating to the sub-module in your pipelines project: -
