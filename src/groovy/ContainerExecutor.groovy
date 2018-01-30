@@ -48,7 +48,16 @@ class ContainerExecutor {
         StringBuilder sout = new StringBuilder()
         StringBuilder serr = new StringBuilder()
 
-        // Note: PIN and POUT have trailing forward-slashed for now
+        // Windows/Git-Bash PIN/POUT path tweak...
+        String osName = System.properties['os.name']
+        if (osNmae && osName.startsWith('Win')) {
+            pin = pin.replace('\\', '/')
+            pin = pin.replace('C:', '/c')
+            pout = pout.replace('\\', '/')
+            pout = pout.replace('C:', '/c')
+        }
+
+        // Note: PIN and POUT have trailing forward-slashes for now
         //       to allow a migratory use of $PIN}file references
         //       rather than insisting on ${PIN}/file which would fail if
         //       PIN wasn't defined - it's about lowest risk changes.

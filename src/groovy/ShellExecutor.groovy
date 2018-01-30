@@ -24,10 +24,12 @@ class ShellExecutor {
 
     /**
      * Executes the given command using the shell in the supplied execution
-     * directory.
+     * directory. Normally this would be executed in a unix-like environment.
+     * In Windows this would be from something like a Git-Bash shell.
      *
      * @param command The command to run
      * @param edir The directory in which to run the command
+     *             (execution directory)
      * @param pin The pipeline input directory
      *            (used to define the PIN environment variable)
      * @param pout The pipeline output directory
@@ -44,9 +46,9 @@ class ShellExecutor {
         StringBuilder sout = new StringBuilder()
         StringBuilder serr = new StringBuilder()
 
-        // Windows hack?
+        // Windows/Git-Bash PIN/POUT path tweak...
         String osName = System.properties['os.name']
-        if (osName.startsWith('Win')) {
+        if (osName && osName.startsWith('Win')) {
             pin = pin.replace('\\', '/')
             pin = pin.replace('C:', '/c')
             pout = pout.replace('\\', '/')
