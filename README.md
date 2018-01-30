@@ -8,8 +8,9 @@ text-file format used to both describe and execute built-in tests.
 ## Execution environment
 You will need: -
 
--   Groovy
 -   Conda
+-   Groovy (v2.4)
+-   Python
 
 Although the project is based on [Gradle], which is Groovy-based,
 you will need to install **Groovy**. We've tested this framework using Groovy
@@ -170,10 +171,46 @@ that can be tested using `setup.py`. To test these modules run the
 following from the `src/python` directory: -
 
     $ python setup.py test
- 
+
+## Considerations for Windows
+The tests and test framework are designed to operate from within a unix-like
+environment but if you are forced to execute pipeline tests from Windows the
+following approach is recommended: -
+
+You will need:
+
+-   Conda
+-   Groovy (v2.4)
+-   Git-Bash
+
+1.  Install [Git for Windows]. This will give you a unix bash-like
+    execution environment
+1.  From within the Git-bash shell navigate to your pipelines project.
+1.  Ensure that you can execute both Python and Groovy from within the
+    Git-Bash shell (i.e. `python --version` and `groovy --version` work)
+1.  From the pipelines project root enter your Conda environment
+    with something like `source activate my-conda-env`. To run the
+    pipelines tests your environment must contain the rdkit package. It
+    can be installed with this command from within Conda...
+    
+    $ conda install -c rdkit rdkit
+    
+1.  Install additional modules required by `pipelines-utils` but
+    using its requirements file (which can be found in the `pipelines-utils`
+    sub-project): -
+    
+    $ pip install -r requirements.txt
+
+With the above steps complete you should be able to execute the pipelines
+tester by navigating to the sub-module in your pipelines project: -
+
+    $ cd pipelines-utils
+    $ ./gradlew runPipelineTester
+
 ---
 
 [Conda]: https://conda.io/docs/
+[Git for Windows]: http://gitforwindows.org
 [Gradle]: https://gradle.org
 [Groovy]: http://groovy-lang.org
 [PIP]: https://pypi.python.org/pypi
