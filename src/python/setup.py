@@ -6,18 +6,19 @@
 
 from setuptools import setup, find_packages
 
+def get_long_description():
+    return open('README.rst').read()
+
 setup(
 
     name='im-pipelines-utils',
     version='1.0.0.rc1',
     author='Alan Christie',
-    author_email='alan.christie@informaticsmatters.com',
+    author_email='achristie@informaticsmatters.com',
     url='https://github.com/InformaticsMatters/pipelines-utils',
     license='Copyright (C) 2018 Informatics Matters Ltd. All rights reserved.',
     description='Utilities for Informatics Matters Pipelines',
-    long_description='Utilities employed by Informatics Matters'
-                     ' execution pipelines that include extensions to RDKit'
-                     ' and other miscellaneous utilities.',
+    long_description=get_long_description(),
     keywords='pipelines',
     platforms=['any'],
 
