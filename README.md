@@ -185,10 +185,13 @@ following approach is recommended: -
 
 You will need:
 
+-   Java 8
 -   Conda
 -   Groovy (v2.4)
 -   Git-Bash
 
+1.  Install Java 8 (ideally the JDK) and define [JAVA_HOME]. This **MUST**
+    be done _before_ installing Groovy.
 1.  Install [Git for Windows]. This will give you a unix bash-like
     execution environment
 1.  From within the Git-bash shell navigate to your pipelines project.
@@ -219,6 +222,7 @@ tester by navigating to the sub-module in your pipelines project: -
 [Git for Windows]: http://gitforwindows.org
 [Gradle]: https://gradle.org
 [Groovy]: http://groovy-lang.org
+[JAVA_HOME]: https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t/
 [PIP]: https://pypi.python.org/pypi
 [Pipelines]: https://github.com/InformaticsMatters/pipelines.git
 [RDKit]: http://www.rdkit.org
