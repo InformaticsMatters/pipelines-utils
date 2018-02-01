@@ -16,7 +16,7 @@ setup(
     license='Copyright (C) 2018 Informatics Matters Ltd. All rights reserved.',
     description='Utilities for Informatics Matters Pipelines',
     long_description='Utilities employed by Informatics Matters'
-                     ' execution pipelines that include extensions to RDKIT'
+                     ' execution pipelines that include extensions to RDKit'
                      ' and other miscellaneous utilities.',
     keywords='pipelines',
     platforms=['any'],
