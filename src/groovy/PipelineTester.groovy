@@ -31,7 +31,7 @@
 
 // Version
 // Update with every change/release
-String version = '2.1.1'
+String version = '2.2.0'
 
 println "+----------------+"
 println "| PipelineTester | v$version"
