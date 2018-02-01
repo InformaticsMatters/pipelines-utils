@@ -9,11 +9,15 @@ branches:
   only:
   - /.*/
 
-script:
+install:
+- pip install -r requirements.txt
 - pip install -r package-requirements.txt
 - cd mock-rdkit
 - python setup.py install
-- cd ../src/python
+- cd ..
+
+script:
+- cd src/python
 - python setup.py test
 - pyroma .
 - python setup.py bdist_wheel
