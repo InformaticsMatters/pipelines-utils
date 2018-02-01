@@ -2,8 +2,8 @@ Informatics Matters Pipelines Utilities
 =======================================
 
 The ``im-pipelines-utils`` module is a core set of utilities employed by
-`Informatics Matters`_' computational pipelines and distributed in a number
-of our container images.
+`Informatics Matters`_' computational pipelines, its automated *Pipeline
+Tester* and distributed in a number of our container images.
 
 pipelines_utils
 ---------------
