@@ -43,6 +43,7 @@ def cli = new CliBuilder(usage:'groovy PipelineTester.groovy',
                          stopAtNonOption:false)
 cli.v(longOpt: 'verbose', "Display the pipeline's log")
 cli.d(longOpt: 'indocker', "Run tests using their container images")
+cli.s(longOpt: 'stoponerror', "Stop executing on the first test failure")
 cli.h(longOpt: 'help', "Print this message")
 def options = cli.parse(args)
 if (!options) {
@@ -56,7 +57,8 @@ if (options.help) {
 // Create a Tester object
 // and run all the tests that have been discovered...
 Tester pipelineTester = new Tester(verbose:options.v,
-                                   inDocker:options.d)
+                                   inDocker:options.d,
+                                   stopOnError:options.s)
 boolean testResult = pipelineTester.run()
 
 // Leave with a non-zero exit code on failure...

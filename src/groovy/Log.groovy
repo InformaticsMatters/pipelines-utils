@@ -39,7 +39,7 @@ static separate() {
  * Print an 'info' message prefixed with `->` string. You can specify a
  * tag and a message which is printed as "-> <tag> : <msg>"
  */
-static info(String tag, String msg) {
+static info(String tag, msg) {
 
     println ":" + sprintf('%16s: %s', tag, msg)
 

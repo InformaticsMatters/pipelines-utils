@@ -34,6 +34,7 @@ class Tester {
     // Controlled by command-line
     boolean verbose = false
     boolean inDocker = true
+    boolean stopOnError = false
 
     // Constants?
     int defaultTimeoutSeconds = 60
@@ -110,6 +111,7 @@ class Tester {
 
         // Log supported test file versions
         Log.info('Setup', "Supporting test file versions: $supportedTestFileVersions")
+        Log.info('Stop on error', stopOnError)
 
         // Before we start - cleanup (everything)
         cleanUpOutput()
@@ -194,8 +196,20 @@ class Tester {
                         recordFailedTest(section_key_lower)
                     }
 
+                    if (stopOnError && failedTests.size() > 0) {
+                        break
+                    }
+
                 }
 
+                if (stopOnError && failedTests.size() > 0) {
+                    break
+                }
+
+            }
+
+            if (stopOnError && failedTests.size() > 0) {
+                break
             }
 
         }
