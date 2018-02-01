@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/InformaticsMatters/pipelines-utils.svg?branch=master)](https://travis-ci.org/InformaticsMatters/pipelines-utils)
+[![Build Status](https://travis-ci.org/InformaticsMatters/pipelines-utils.svg?branch=issue-15)](https://travis-ci.org/InformaticsMatters/pipelines-utils)
+[![Coverage Status](https://coveralls.io/repos/github/InformaticsMatters/pipelines-utils/badge.svg?branch=issue-15)](https://coveralls.io/github/InformaticsMatters/pipelines-utils?branch=issue-15)
 
 # Pipelines Utils
 A repository of common **Informatics Matters** _Pipeline_ utilities shared
