@@ -110,7 +110,8 @@ class Tester {
     boolean run() {
 
         // Log supported test file versions
-        Log.info('Setup', "Supporting test file versions: $supportedTestFileVersions")
+        Log.info('Tests', "Supporting test file versions: $supportedTestFileVersions")
+        Log.info('PYTHONPATH', System.getenv('PYTHONPATH'))
         Log.info('Stop on error', stopOnError)
 
         // Before we start - cleanup (everything)
