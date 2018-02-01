@@ -18,6 +18,7 @@ install:
 
 script:
 - cd src/python
-- python setup.py test
+- coverage run setup.py test
+- coverage report
 - pyroma .
 - python setup.py bdist_wheel
