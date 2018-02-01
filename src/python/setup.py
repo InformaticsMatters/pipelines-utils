@@ -22,7 +22,12 @@ setup(
     platforms=['any'],
 
     # Our modules to package
-    packages=find_packages(exclude=["*.test", "*.test.*", "test.*", "test"]),
+    packages=find_packages(exclude=['*.test', '*.test.*', 'test.*', 'test']),
+
+    # Essential dependencies
+    install_requires=[
+        'future >= 0.16.0'
+    ],
 
     # Project classification:
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -39,8 +44,6 @@ setup(
 
     # Root of the test suite
     test_suite = 'test',
-
-    install_requires=[],
 
     zip_safe=False,
 
