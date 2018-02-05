@@ -36,21 +36,6 @@ installed as normal:
 >   The module utilities should support both Python 2 and 3 but we recommend
     any modules/pipelines you write support both flavours.
 
-## Adding this project as a submodule for a new pipelines project
-If you have started a new pipelines project you can add these utilities
-to it by running the following from the project root of your new project: -
-
-    $ git submodule add https://github.com/InformaticsMatters/pipelines-utils.git
-
-This will create a new directory (`pipelines-utils`) and a `.gitmodules` file.
-You must add the `.gitmodules` to your project. Read about the Git [Submodule]
-for more information.
- 
-If you checkout a new working copy you will need to initialise the submodule
-with the command: -
-
-    $ git submodule update --init --remote
-
 ## Running the test framework
 >   We plan to release the Python utility modules to [PIP] at some stage. The
     distribution is based on `setup.py` is present and works and will be
@@ -219,6 +204,26 @@ tester by navigating to the sub-module in your pipelines project: -
     $ cd pipelines-utils
     $ ./gradlew runPipelineTester
 
+## Publishing im-pipelines-utils to PyPI
+The `src/python` directory contains common Python-based pipelines utilities
+used by other pipelines repositories. These utilities are published to PyPI
+for easy installation.
+
+You will need an account on PyPI. For Informatics Matters you should add the
+following to your `~/pypirc` file (or create one if you don't have one): -
+
+    [pypi]
+    username: informaticsmatters
+    password: <password>
+
+
+To publish a new set of Python utilities you then simply need to build
+and upload them from the `src/python` directory: -
+
+    $ pip install -r requirments.txt
+    $ python setup.py bdist_wheel
+    $ twine upload dist/*
+
 ---
 
 [Conda]: https://conda.io/docs/
@@ -228,5 +233,6 @@ tester by navigating to the sub-module in your pipelines project: -
 [JAVA_HOME]: https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t/
 [PIP]: https://pypi.python.org/pypi
 [Pipelines]: https://github.com/InformaticsMatters/pipelines.git
+[PyPI]: https://pypi.python.org/pypi
 [RDKit]: http://www.rdkit.org
 [Submodule]: https://git-scm.com/docs/gitsubmodules
