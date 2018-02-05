@@ -7,7 +7,7 @@ DATA_DIR = os.path.join('test', 'rdkit_utils', 'data')
 
 class StreamJsonListLoaderTestCase(unittest.TestCase):
 
-    def test_basic_operation(self):
+    def test_basic_operation_with_next(self):
         """Test loading of a simple JSON list file
         """
         test_file = os.path.join(DATA_DIR, 'StreamJsonListLoader.example.json')
@@ -28,6 +28,18 @@ class StreamJsonListLoaderTestCase(unittest.TestCase):
         except StopIteration:
             got_end_of_data = True
         self.assertTrue(got_end_of_data)
+        loader.close()
+
+    def test_basic_operation_with_for(self):
+        """Test loading of a simple JSON list file
+        """
+        test_file = os.path.join(DATA_DIR, 'StreamJsonListLoader.example.json')
+        loader = StreamJsonListLoader.StreamJsonListLoader(test_file)
+        # Load the JSON list (one at a time)
+        num_entries = 0
+        for entry in loader:
+            num_entries += 1
+        self.assertEqual(3, num_entries)
         loader.close()
 
     def test_bad_1_file(self):
