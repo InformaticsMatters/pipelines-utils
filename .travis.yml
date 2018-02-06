@@ -12,17 +12,23 @@ language: python
 os:
 - linux
 
-# Out build stages (test is basically a travis default default)
-# We also want a `deploy` stage, that only runs on master
-# and if the the commit is tagged.
+# Our build stages (`test` is basically a travis default default).
+# We also want a `deploy` stage that only runs if the the commit is tagged
+# and it's the master branch.
 stages:
 - test
 - name: deploy
   if: tag is present and branch = master
 
+# Run Travis on all branches
+# (normally it only runs on master)
 branches:
   only:
   - "/.*/"
+
+env:
+- TWINE_USERNAME=informaticsmatters
+  secure: b5P02Bw2sZQORqDR+hTm92NMSkYiUpXDngnvUckkJWbC2GnAKjrDjqP5op4YQhMfb29U+OdkbYQyOoMmTbQe8K+e0eoaHL1spTER7eqO5wHG0d0ebJY6PEm/nmZDlGiOlMbL1HnBNqaqWfvKYDV4gAWHkRDc4+kWb+/k6tqa6Rkk2tp5LjTEQqAYM2ihGNmU6kfJhqWjjDN/yvnYQIc4KQ7PZKF8yaAE5XHEv81QSsVohxCjKkM7acOx2hahG7RA5SVLj/YMdOzNJSuO+yzBGnZDexg4RtWcTcF896ZDpXPjHa9bS9jL1dPbgvH/hY+fBaxHUGn0WrYdpbD+1x7OGDScg0ySSfk+I/a9FoF8Nm3zYsL9sJGFaV5xrCs7rBFYvHbEcbBNF316PD7gJoOBEYCHdtLyAaqXpa92XUiH/n5oRBMDoqSnfgo2CsrS/6c8k634KkW9W+AsQsG8hFL1YAwuLzIK6H899DAINVojt3hpw8ryrOy5u5Zb2kEw+JGx7/FvZ8ZYLozuE6j4BWClSoWGPmxWMtBw84MSpAI2D/rcWJUV/VzwS9vWGe+uhl9ZPdXs2Yg7B0cihRXzu9iFSBR/1EgZENYoriORdNtWwdtcIsnaWCrH9bOVgYlEv7xoK02Vj36K/FAKIOesCmhOd1vUYosqJyQ50p1Z9C7L0GY=
 
 # Installation steps.
 # We have more than one requirements file and need to install
@@ -51,8 +57,8 @@ jobs:
   - stage: deploy
     python: 3.6
     env:
-      - TWINE_USERNAME=informaticsmatters
-      - secure: b5P02Bw2sZQORqDR+hTm92NMSkYiUpXDngnvUckkJWbC2GnAKjrDjqP5op4YQhMfb29U+OdkbYQyOoMmTbQe8K+e0eoaHL1spTER7eqO5wHG0d0ebJY6PEm/nmZDlGiOlMbL1HnBNqaqWfvKYDV4gAWHkRDc4+kWb+/k6tqa6Rkk2tp5LjTEQqAYM2ihGNmU6kfJhqWjjDN/yvnYQIc4KQ7PZKF8yaAE5XHEv81QSsVohxCjKkM7acOx2hahG7RA5SVLj/YMdOzNJSuO+yzBGnZDexg4RtWcTcF896ZDpXPjHa9bS9jL1dPbgvH/hY+fBaxHUGn0WrYdpbD+1x7OGDScg0ySSfk+I/a9FoF8Nm3zYsL9sJGFaV5xrCs7rBFYvHbEcbBNF316PD7gJoOBEYCHdtLyAaqXpa92XUiH/n5oRBMDoqSnfgo2CsrS/6c8k634KkW9W+AsQsG8hFL1YAwuLzIK6H899DAINVojt3hpw8ryrOy5u5Zb2kEw+JGx7/FvZ8ZYLozuE6j4BWClSoWGPmxWMtBw84MSpAI2D/rcWJUV/VzwS9vWGe+uhl9ZPdXs2Yg7B0cihRXzu9iFSBR/1EgZENYoriORdNtWwdtcIsnaWCrH9bOVgYlEv7xoK02Vj36K/FAKIOesCmhOd1vUYosqJyQ50p1Z9C7L0GY=
+    - TWINE_USERNAME=informaticsmatters
+      secure: b5P02Bw2sZQORqDR+hTm92NMSkYiUpXDngnvUckkJWbC2GnAKjrDjqP5op4YQhMfb29U+OdkbYQyOoMmTbQe8K+e0eoaHL1spTER7eqO5wHG0d0ebJY6PEm/nmZDlGiOlMbL1HnBNqaqWfvKYDV4gAWHkRDc4+kWb+/k6tqa6Rkk2tp5LjTEQqAYM2ihGNmU6kfJhqWjjDN/yvnYQIc4KQ7PZKF8yaAE5XHEv81QSsVohxCjKkM7acOx2hahG7RA5SVLj/YMdOzNJSuO+yzBGnZDexg4RtWcTcF896ZDpXPjHa9bS9jL1dPbgvH/hY+fBaxHUGn0WrYdpbD+1x7OGDScg0ySSfk+I/a9FoF8Nm3zYsL9sJGFaV5xrCs7rBFYvHbEcbBNF316PD7gJoOBEYCHdtLyAaqXpa92XUiH/n5oRBMDoqSnfgo2CsrS/6c8k634KkW9W+AsQsG8hFL1YAwuLzIK6H899DAINVojt3hpw8ryrOy5u5Zb2kEw+JGx7/FvZ8ZYLozuE6j4BWClSoWGPmxWMtBw84MSpAI2D/rcWJUV/VzwS9vWGe+uhl9ZPdXs2Yg7B0cihRXzu9iFSBR/1EgZENYoriORdNtWwdtcIsnaWCrH9bOVgYlEv7xoK02Vj36K/FAKIOesCmhOd1vUYosqJyQ50p1Z9C7L0GY=
     # Our module and setup.py is not located in the root of the project.
     # Move to it before we deploy.
     before_deploy:
