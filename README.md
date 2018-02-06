@@ -51,7 +51,7 @@ the environment variable `POUT`: -
     $ export POUT=/tmp/blob/
 
 Output files are removed when the test suite starts and when it passes.
- 
+
 ### From here
 If you have working copies of all your pipeline repositories checked-out
 in the same directory as this repository you can execute all the tests
@@ -88,6 +88,15 @@ from further explanation: -
 -   `Tests ignored` are test found that are not run because they have
     been marked for non-execution as the test name begins with `ignore_`. 
     
+### Limiting test search
+You can limit the tests that are located by defining the parent
+directories that you want executed on the command-line. From gradle
+you can add the test directories as a comma-separated list with the `-o`
+option. To only run the tests in the pipelines project your command-line
+would look like this: -
+
+    $ ./gradlew runPipelineTester -Pptargs=-opipelines
+
 ### In Docker
 You can run the pipeline tests in Docker using their expected container
 image (defined in the service descriptor). Doing this gives you added
