@@ -26,22 +26,33 @@ branches:
   only:
   - "/.*/"
 
+# Our module and setup.py is not located in the root of the project.
+# Move to it before we deploy.
 before_deploy:
 - cd ${TRAVIS_BUILD_DIR}/src/python
 
+# Deploy to PyPI
+# Credentials (TWINE_USERNAME etc.) are set in the environment
 deploy:
   proivider: pypi
   distributions: bdist_wheel
   on:
+    # Restrict deployments to tagged builds
+    # and only in the Python 3.6 runtime
     tags: true
     python: '3.6'
 
+# Installation steps.
+# We have more than one requirements file and need to install
+# a mock version of dependent packages in order to run our tests.
 install:
 - pip install -r requirements.txt
 - pip install -r package-requirements.txt
-- cd mock-rdkit
+- cd ${TRAVIS_BUILD_DIR}/mock-rdkit
 - python setup.py install
 
+# Test/build execution steps...
+# All in the default 'test' stage.
 script:
 - cd ${TRAVIS_BUILD_DIR}/src/python
 - coverage run setup.py test
