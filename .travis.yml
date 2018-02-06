@@ -59,6 +59,9 @@ jobs:
 
   - stage: deploy
     python: 3.6
+    # No need to re-run scripted commands here.
+    # They're all part of the test stages
+    script: skip
     # Our module and setup.py is not located in the root of the project.
     # Move to it before we deploy.
     before_deploy:
