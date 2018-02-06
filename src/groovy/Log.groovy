@@ -31,7 +31,7 @@ static separate() {
 
     // To look 'pretty' this should align with the field width
     // used in the info() function
-    println "+----------------+"
+    println "+------------------+"
 
 }
 
@@ -41,7 +41,7 @@ static separate() {
  */
 static info(String tag, msg) {
 
-    println ":" + sprintf('%16s: %s', tag, msg)
+    println "|" + sprintf('%18s| %s', tag, msg)
 
 }
 

@@ -72,17 +72,17 @@ have finished it prints a summary including a lit of failed tests along with
 of the number of test files and individual tests that were executed: -
 
     +----------------+
-    :         Summary: 
+    |         Summary| 
     +----------------+
-    :      Test files:  29
-    :     Tests found:  39
-    :    Tests passed:  20
-    :    Tests failed:   -
-    :   Tests skipped:  19
-    :   Tests ignored:   3
-    :        Warnings:   -
+    |      Test files|  29
+    |     Tests found|  39
+    |    Tests passed|  20
+    |    Tests failed|   -
+    |   Tests skipped|  19
+    |   Tests ignored|   3
+    |        Warnings|   -
     +----------------+
-    :          Result: SUCCESS
+    |          Result| SUCCESS
     +----------------+
 
 Fields in the summary should be self-explanatory but a couple might benefit
