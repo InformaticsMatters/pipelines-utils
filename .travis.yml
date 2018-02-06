@@ -12,10 +12,13 @@ language: python
 os:
 - linux
 
+# Out build stages (test is basically a travis default default)
+# We also want a `deploy` stage, that only runs on master
+# and if the the commit is tagged.
 stages:
 - test
 - name: deploy
-  if: tag IS present
+  if: tag is present and branch = master
 
 branches:
   only:
@@ -44,6 +47,7 @@ jobs:
   - python: 2.7
   - python: 3.5
   - python: 3.6
+
   - stage: deploy
     python: 3.6
     env:
