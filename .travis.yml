@@ -1,33 +1,35 @@
 language: python
 os:
-  - linux
+- linux
 python:
-  - '2.7'
-  - '3.5'
-  - '3.6'
+- '2.7'
+- '3.5'
+- '3.6'
 env:
+  matrix:
+  global:
   - TWINE_USERNAME=informaticsmatters
-    secure: "CCAaqFp53BinjSBFyOdLRXelwCc2XIwPnsVLY1lJMIzzZfBlXyl3I4wH179NQNX5dBtKTuSq4xrxg3uGjIqJ/ki6GW85X0xPpqwKagQcQIhgck/Jp1v1Ufm2bbBZmdIsLje9o1WjqyoC8PKUd9FT36glMWHsK9bHKOOiI42h81HeuG2opTw0zilBRkOO3gHa7gVDIvnYlVy2qFS/PUdEE70hG1/Y1n4cCCXCCBMPSkea1qSIHUFai87ykYtYrswL4l9cwNrJ/MWaod9QmA17hzYz1xSmzctpTiVRRPeDXzdNX7PRneUfd2s+wH4xn2GDdz1xVcgBYPnO6Ki9dZajnOEKy7wvcaJ6zoKY1MWoc3IZEVLboOO3vvbmHOkFdYB7m49vthBD+FoxcNt+z6PAdoSwORlLKidNGljMFkV6R4Q7BFxQXccJOvJkon8YEYUC0v4V9RhJwNiJJrW/KSgXF45UKEvTIpyQKKoHMpnfas1qvXxiWqE2WzTz21PJJP07I1cHaPDwjen2DF1X+EuI/I+MR+IywVOnX2F0usAhf/lSuCHHUjaPxo3vFGgZv9SFoYfLGI9ZnJzqHpd0uCKPHwx5x6Vo9Ly2chYRRLEq/elKjtw1Nmu3GqT2nqwPDfrrxjbgPOmJ+nAg6Bli2ejnsmp0D9KHhE6EkdjM3n7fjLU="
+  - secure: UX6v2DvcmAkLengak/O67mjDe5BKigdXESTO+r26TW6PXWn12ybbosgLfWkKf8YVjD8Y3qFDEnvqvVP8Q7LQ/IOk3Mu1OFh+37NRlDwt+VKMRAi2zPz1b0lAW1OaFiLTb2Yvarq+5oe969xdEcFyqUUYcRY3PewcObYs0ksK43sFx8LbbnOsbbvdXD4+9ovXZ8qMHfpzUt7srB8SXInkrczrNC+SAPC9iZjj64C9MCVaLL6qcQwMP1Fz1yhY6V7PdxO8LuvMXDVZIXjY3tBsHHhitdmCKDk0g6SSOVMY8y38Yscx4bc1zf5q7r3v+ufwmT82KU6w+DoPqzOsrTD9uUkc7pLMpiWQPBI3C+8xv3gI9qOKxKEnTOQCnrYEB40/KbTYgIx0tG5o60zbFdGw5YEGcbgc4say67wLpPyDYpyL4Z5CDSUeRwss6Wo+7T0DyzLQvToIHNoZki5dkTOib3NeEbdU1MX8AjvJjJN88lFB9HuklvaL8PB9wzB/DfEDJAaeD33EKbDzjqNWDDlQs237J9odb3D/F4Qfws4lWPlT9Bm83npU6vqcdzqmUKZHRehdb8vziECkp4bd+FO+1vu8BSK6yAJDz5iso1TttbX5v+51poG5+umHj77wtIgL3oRV12G9YLfdD6QM3SmNJyXNnWVz/nNDTW8gxthUxKI=
 branches:
   only:
-    - "/.*/"
+  - "/.*/"
 before_deploy:
-  - cd src/python
+- cd src/python
 deploy:
   proivider: pypi
-  distributions: "bdist_wheel"
+  distributions: bdist_wheel
   on:
     branch: master
     tags: true
 install:
-  - pip install -r requirements.txt
-  - pip install -r package-requirements.txt
-  - cd mock-rdkit
-  - python setup.py install
-  - cd ..
+- pip install -r requirements.txt
+- pip install -r package-requirements.txt
+- cd mock-rdkit
+- python setup.py install
+- cd ..
 script:
-  - cd src/python
-  - coverage run setup.py test
-  - coverage report
-  - pyroma .
-  - python setup.py bdist_wheel
+- cd src/python
+- coverage run setup.py test
+- coverage report
+- pyroma .
+- python setup.py bdist_wheel
