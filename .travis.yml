@@ -1,34 +1,49 @@
+---
+
+# The pipelines-utils Travis CI/CD configuration.
+# Here we concentrate on the src/python part of the repository.
+# where we run coverage testing and then deploy when tagged.
+#
+# We avoid running pylint at the moment because the vast majority of the
+# code is legacy and fails a number of best-practice tests.
+
 language: python
+
 os:
 - linux
+
 python:
 - '2.7'
 - '3.5'
 - '3.6'
+
 env:
-  matrix: 
   global:
   - TWINE_USERNAME=informaticsmatters
   - secure: b5P02Bw2sZQORqDR+hTm92NMSkYiUpXDngnvUckkJWbC2GnAKjrDjqP5op4YQhMfb29U+OdkbYQyOoMmTbQe8K+e0eoaHL1spTER7eqO5wHG0d0ebJY6PEm/nmZDlGiOlMbL1HnBNqaqWfvKYDV4gAWHkRDc4+kWb+/k6tqa6Rkk2tp5LjTEQqAYM2ihGNmU6kfJhqWjjDN/yvnYQIc4KQ7PZKF8yaAE5XHEv81QSsVohxCjKkM7acOx2hahG7RA5SVLj/YMdOzNJSuO+yzBGnZDexg4RtWcTcF896ZDpXPjHa9bS9jL1dPbgvH/hY+fBaxHUGn0WrYdpbD+1x7OGDScg0ySSfk+I/a9FoF8Nm3zYsL9sJGFaV5xrCs7rBFYvHbEcbBNF316PD7gJoOBEYCHdtLyAaqXpa92XUiH/n5oRBMDoqSnfgo2CsrS/6c8k634KkW9W+AsQsG8hFL1YAwuLzIK6H899DAINVojt3hpw8ryrOy5u5Zb2kEw+JGx7/FvZ8ZYLozuE6j4BWClSoWGPmxWMtBw84MSpAI2D/rcWJUV/VzwS9vWGe+uhl9ZPdXs2Yg7B0cihRXzu9iFSBR/1EgZENYoriORdNtWwdtcIsnaWCrH9bOVgYlEv7xoK02Vj36K/FAKIOesCmhOd1vUYosqJyQ50p1Z9C7L0GY=
+
 branches:
   only:
   - "/.*/"
+
 before_deploy:
-- cd src/python
+- cd ${TRAVIS_BUILD_DIR}/src/python
+
 deploy:
   proivider: pypi
   distributions: bdist_wheel
   on:
     branch: master
     tags: true
+
 install:
 - pip install -r requirements.txt
 - pip install -r package-requirements.txt
 - cd mock-rdkit
 - python setup.py install
-- cd ..
+
 script:
-- cd src/python
+- cd ${TRAVIS_BUILD_DIR}/src/python
 - coverage run setup.py test
 - coverage report
 - pyroma .
