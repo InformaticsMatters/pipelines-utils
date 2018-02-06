@@ -9,8 +9,9 @@ pipelines_utils
 ---------------
 A generally useful collection of utility modules for any Informatics Matters'
 pipelines. These consist of utilities in the ``parameter_utils`` module
-to process multi-value command-line parameter values along with numerous
-helper and convenience methods in ``utils`` for file handling and logging.
+to process multi-value (comma-separated) command-line parameter values along
+with numerous helper and convenience methods in ``utils`` for file
+handling and logging.
 
 ``utils`` depends on the RDKit_ open source cheminformatics software,
 which you will need to install separately if you need to use this module.
