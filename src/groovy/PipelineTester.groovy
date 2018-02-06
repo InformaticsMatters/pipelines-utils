@@ -70,7 +70,7 @@ if (options.o) {
 Tester pipelineTester = new Tester(verbose:options.v,
                                    inDocker:options.d,
                                    stopOnError:options.s,
-                                   onlyDirectories:only)
+                                   onlySpec:only)
 boolean testResult = pipelineTester.run()
 
 // Leave with a non-zero exit code on failure...

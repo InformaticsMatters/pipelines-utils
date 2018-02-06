@@ -97,6 +97,18 @@ would look like this: -
 
     $ ./gradlew runPipelineTester -Pptargs=-opipelines
 
+Additionally, if you only want to run some specific tests within
+a directory you can added their names to the directory with `.`.
+For example, to only run the test `test_x_100` in the `pipelines`
+directory: -
+
+    $ ./gradlew runPipelineTester -Pptargs=-opipelines.test_x_100
+
+To run all the tests in the `pipelines` directory and the `test_probe`
+test in the `pipelines-2` directory: -
+
+    $ ./gradlew runPipelineTester -Pptargs=-opipelines,pipelines-2.test_probe
+
 ### In Docker
 You can run the pipeline tests in Docker using their expected container
 image (defined in the service descriptor). Doing this gives you added

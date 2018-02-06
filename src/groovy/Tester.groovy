@@ -35,7 +35,7 @@ class Tester {
     boolean verbose = false
     boolean inDocker = true
     boolean stopOnError = false
-    def onlyDirectories = []
+    def onlySpec = []
 
     // Constants?
     int defaultTimeoutSeconds = 60
@@ -117,10 +117,8 @@ class Tester {
         Log.info('Stop on error', stopOnError)
 
         // Only process some directories?
-        if (onlyDirectories) {
-            onlyDirectories.each {
-                Log.info('Only', it)
-            }
+        onlySpec.each {
+            Log.info('Only', it)
         }
 
         // List of directories skipped,
@@ -136,10 +134,10 @@ class Tester {
         for (String path : testFiles) {
 
             // Keep every new root directory where a test file was found...
-            // But skip if 'onlyDirectories' is set
-            // and this directory is not in it.
+            // But optionally skip if this directory if the user's specified
+            // an 'only' list and this directory is not in it.
             String testDir = path[searchRoot.size()..-1].split(File.separator)[1]
-            if (onlyDirectories && !onlyDirectories.contains(testDir)) {
+            if (avoid(testDir)) {
                 if (!skippedDirectories.contains(testDir)) {
                     Log.separate()
                     Log.info('Not in only', testDir)
@@ -214,7 +212,10 @@ class Tester {
                     if (section_key_lower.startsWith(setupPrefix)) {
                         processSetupCollection(section)
                     } else if (section_key_lower.startsWith(testPrefix)) {
-                        processTest(path, section)
+                        // Should we avoid this test?
+                        if (!avoid(testDir, section_key_lower)) {
+                            processTest(path, section)
+                        }
                     } else if (section_key_lower.startsWith(ignorePrefix)) {
                         Log.separate()
                         logTest(path, section)
@@ -298,6 +299,61 @@ class Tester {
         Log.separate()
 
         return testPassed
+
+    }
+
+    /**
+     * Returns true if the tester should avoid tests in this directory.
+     *
+     * @param directory The directory we're about to process
+     * @return True to avoid running in this directory
+     */
+    private boolean avoid(String directory) {
+
+        // If there's nothing in the 'only' list then we don't
+        // need to avoid anything
+        if (!onlySpec) {
+            return false
+        }
+
+        for (String spec : onlySpec) {
+            if (spec.tokenize('.')[0].equals(directory)) {
+                return false
+            }
+        }
+        // The named directory is not in the list.
+        // We should avoid this directory.
+        return true
+
+    }
+
+    /**
+     * Returns true if the tester should avoid this test
+     * (in the supplied directory).
+     *
+     * @param directory The directory we're processing
+     * @param test The test we're about to process
+     * @return True to avoid running in this directory
+     */
+    private boolean avoid(String directory, String test) {
+
+        // If there's nothing in the 'only' list then we don't
+        // need to avoid anything
+        if (!onlySpec) {
+            return false
+        }
+
+        // The spec is the combination of directory and test.
+        // i.e. dir='one' and test='two' has a spec of 'one.two'
+        String spec = directory + '.' + test
+        // This test can execute if:
+        // the directory is in the only list or the spec is.
+        if (onlySpec.contains(directory) || onlySpec.contains(spec)) {
+            return false
+        }
+        // The test is not in the only list.
+        // We must avoid this test.
+        return true
 
     }
 
