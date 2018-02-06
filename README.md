@@ -52,18 +52,12 @@ the environment variable `POUT`: -
 
 Output files are removed when the test suite starts and when it passes.
  
-### From within a pipeline repository
-You will find this repository located as a submodule. When checking the
-pipeline out (for example [Pipelines]) you will need to initialise the
-submodule: -
+### From here
+If you have working copies of all your pipeline repositories checked-out
+in the same directory as this repository you can execute all the tests
+across all the repositories by running the tester from here. Simply
+run the following Gradle command from here: -
 
-    $ git submodule update --init --remote
-    
-Then to run the test framework (which searches for test files in the contained
-repository) you should navigate to the submodule and run the test framework's
-Gradle task: -
-
-    $ cd pipelines-utils
     $ ./gradlew runPipelineTester
 
 The tester summarises each test it has found wile also executing it.
@@ -94,14 +88,6 @@ from further explanation: -
 -   `Tests ignored` are test found that are not run because they have
     been marked for non-execution as the test name begins with `ignore_`. 
     
-### From here
-If you have working copies of all your pipeline repositories checked-out
-in the same directory as this repository you can execute all the tests
-across all the repositories by running the tester from here. Simply
-run the following Gradle command from here: -
-
-    $ ./gradlew runPipelineTester
-
 ### In Docker
 You can run the pipeline tests in Docker using their expected container
 image (defined in the service descriptor). Doing this gives you added
@@ -149,11 +135,11 @@ Some important notes: -
 
 ## Writing pipeline tests
 The `PipelineTester` looks for files that have the extension `.test` that
-can be found in the enclosing project. Tests need to be placed in the
+can be found in your pipelines project. Tests need to be placed in the
 directory that contains the pipeline they're testing.
 
 As well as copying existing test files you can use the `pipeline.test.template`
-file, in the project root, as a documented template file
+file, in this project's root, as a documented template file
 in order to create a set of tests for a new pipeline.
 
 >   At the moment the tester only permits one test file per pipeline so all 
@@ -207,9 +193,11 @@ tester by navigating to the sub-module in your pipelines project: -
 ## Publishing im-pipelines-utils to PyPI
 The `src/python` directory contains common Python-based pipelines utilities
 used by other pipelines repositories. These utilities are published to PyPI
-for easy installation.
+for easy installation (normally automatically by the Travis CI/CD framework
+when the repository is tagged on master).
 
-You will need an account on PyPI. For Informatics Matters you should add the
+If you are going to publish the utilties yourself (not recommended) you will
+need an account on PyPI. For Informatics Matters you should add the
 following to your `~/pypirc` file (or create one if you don't have one): -
 
     [pypi]
