@@ -1,27 +1,33 @@
 language: python
-
 os:
 - linux
-
 python:
-- "2.7"
-- "3.5"
-- "3.6"
-
+- '2.7'
+- '3.5'
+- '3.6'
+stages:
+- name: test
+- name: publish
+  if: branch = master
+  if: tag IS present
 branches:
   only:
-  - /.*/
-
+  - "/.*/"
 install:
 - pip install -r requirements.txt
 - pip install -r package-requirements.txt
 - cd mock-rdkit
 - python setup.py install
 - cd ..
-
-script:
-- cd src/python
-- coverage run setup.py test
-- coverage report
-- pyroma .
-- python setup.py bdist_wheel
+jobs:
+  include:
+  - script: cd src/python
+  - script: coverage run setup.py test
+  - script: coverage report
+  - script: pyroma .
+  - script: python setup.py bdist_wheel
+  - stage: publish
+    env:
+    - TWINE_USERNAME=informaticsmatters
+      secure: Ota73pyTupnO8A/O8wKOTPRX7YcqD1fBVGMvoKc1HyQDMsTPgdM+bcyMFFCtml4OMuQNSx6nKUmfuovIWXvf4FRurLhsQ/TLBEPIz+WB8ryJjfBPPE3YIDCd5gKQIpop4u/BFHDHH2McNreh5WLYBTVswB6RJ1O/g0MuqpGDJ84nDTExjDD3qK7TJi8HGvUF9aFTX99TdMLUTQMnBwnOnheBdJBLCqj/cfZ8FxByqf1DXMqf2L9LQPgCCMS1xtd6bn1Xm/cTkwuowTXNDuiVao96fn/rAExl9c5X8FitgDBRdTSFoB6TIR5bhIKlLv84THhJuTxi5NJx2yVMD6vvruKYSksUUb63wJSwdDaqEKm+V9qRjN3pYmzcG/ngqrdwV14gxFjZ+3Q/jIfZI6fC5xueD4pWNaUm0j+RtxPBaDIw8s0uhVkJ1URKuvHzLr3sFAzZwr4vBY0DiqeXORa/NCvgHfsJHRlF/WzTLgQwUFai9PtlBCEi1zPZp1Q75ExklAJkAqwfetWY+eCw1KPbhOm2n3EevoBVVOjiY5u2yRV6u+nf/18lMfWuVFT+2LLcdXrgvCdw1VousMhsnm9+SBbeSxRLnv7D8lN2KVRm7fUWu3AqjfL/tEkltiaxi6zt7vd05ecIsnaGaBVxlGMUog6f7EZTE9rESpT+CjrCOI4=
+    script: twine upload dist/*
