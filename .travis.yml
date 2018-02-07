@@ -15,11 +15,12 @@ os:
 # Our build stages.
 # (`test` is basically a travis default default so we don't need to name it).
 # But we do want a `deploy` stage that only runs if the the commit is tagged
-# and it's the master branch.
+# (with a label that begins `pypi-` and it's on the master branch).
+# Our tags for PyPI distributions will be of the form `pypi-1.0.1`.
 stages:
 - name: test
 - name: deploy
-  if: tag is present and branch = master
+  if: tag =~ ^pypi- and branch = master
 
 # Run Travis on all branches
 # (normally it only runs on master)
