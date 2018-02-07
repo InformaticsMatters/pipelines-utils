@@ -37,26 +37,23 @@ installed as normal:
     any modules/pipelines you write support both flavours.
 
 ## Running the test framework
->   We plan to release the Python utility modules to [PIP] at some stage. The
-    distribution is based on `setup.py` is present and works and will be
-    released when more invasive tests have been written. In the meantime we
-    use this repository as a Git [submodule] in our existing pipelines.
 
 ### Redirecting output
 Normally pipeline output files are written to a `tmp` directory inside
-the working copy of the repository you're running in. Alternatively you
-can write test output to your own directory (i.e. `/tmp/blob`) using
-the environment variable `POUT`: -
+the working copy of the `pipelines-utils` repository you're running in.
+Alternatively you can write test output to your own directory
+(i.e. `/tmp/blob`) using the environment variable `POUT`: -
 
     $ export POUT=/tmp/blob/
 
-Output files are removed when the test suite starts and when it passes.
+>   Output files are removed when the test suite starts and when it passes.
 
 ### From here
 If you have working copies of all your pipeline repositories checked-out
 in the same directory as this repository you can execute all the tests
 across all the repositories by running the tester from here. Simply
-run the following Gradle command from here: -
+run the following Gradle command from te root of the `pipelines-utils`
+project: -
 
     $ ./gradlew runPipelineTester
 
@@ -65,19 +62,21 @@ When tests fail it logs as much as it can and continues. When all the tests
 have finished it prints a summary including a lit of failed tests along with
 of the number of test files and individual tests that were executed: -
 
-    +----------------+
-    |         Summary| 
-    +----------------+
-    |      Test files|  29
-    |     Tests found|  39
-    |    Tests passed|  20
-    |    Tests failed|   -
-    |   Tests skipped|  19
-    |   Tests ignored|   3
-    |        Warnings|   -
-    +----------------+
-    |          Result| SUCCESS
-    +----------------+
+    +------------------+
+    |           Summary| 
+    +------------------+
+    |    Test directory| pipelines-utils
+    |    Test directory| pipelines
+    +------------------+
+    |        Test files|  29
+    |       Tests found|  39
+    |      Tests passed|  20
+    |      Tests failed|   -
+    |     Tests skipped|  19
+    |     Tests ignored|   3
+    +------------------+
+    |            Result| SUCCESS
+    +------------------+
 
 Fields in the summary should be self-explanatory but a couple might benefit
 from further explanation: -
@@ -89,23 +88,28 @@ from further explanation: -
     been marked for non-execution as the test name begins with `ignore_`. 
     
 ### Limiting test search
-You can limit the tests that are located by defining the parent
-directories that you want executed on the command-line. From gradle
-you can add the test directories as a comma-separated list with the `-o`
-option. To only run the tests in the pipelines project your command-line
-would look like this: -
+You can limit the tests that are executed by defining the parent
+directories that you want the tester to explore via the command-line.
+From gradle you can add the test directories as a comma-separated list
+with the `-o` option. To only run the tests in the `pipelines` project your
+command-line would look like this: -
 
     $ ./gradlew runPipelineTester -Pptargs=-opipelines
 
-Additionally, if you only want to run some specific tests within
-a directory you can added their names to the directory with `.`.
-For example, to only run the test `test_x_100` in the `pipelines`
-directory: -
+Additionally, if you want to limit test execution further by naming
+specific tests within a project you can added their names to the directory
+with `.`. For example, to only run the test `test_x_100` in the `pipelines`
+project: -
 
     $ ./gradlew runPipelineTester -Pptargs=-opipelines.test_x_100
 
+You can add more tests if you want by adding further comma-separated values.
+To add `test_v` in the `pipleines_demo` project for example: -
+
+    $ ./gradlew runPipelineTester -Pptargs=-opipelines.test_x_100,pipelines-demo.test_v
+
 To run all the tests in the `pipelines` directory and the `test_probe`
-test in the `pipelines-2` directory: -
+test in the `pipelines-2` project: -
 
     $ ./gradlew runPipelineTester -Pptargs=-opipelines,pipelines-2.test_probe
 
@@ -114,16 +118,11 @@ You can run the pipeline tests in Docker using their expected container
 image (defined in the service descriptor). Doing this gives you added
 confidence that your pipeline will work wen deployed.
 
-You can use the docker-specific Gradle task: -
+To execute the tests within their containers run the docker-specific
+Gradle task: -
 
     $ ./gradlew runDockerPipelineTester
     
-Or, by adding the `-d` or `--indocker` command-line argument into the basic
-task. To pass command-line options through Gradle into the underlying task
-you can also run the Docker tests like this: -
-
-    $ ./gradlew runPipelineTester -Pptargs=-d
-
 >   When you run _in docker_ only the tests that can run in Docker (those with
     a defined image name) will be executed. Tests that cannot be executed in
     Docker will be _skipped_.
@@ -147,11 +146,12 @@ defining the Environment variable `POUT`: -
 Some important notes: -
 
 -   Files generated by the pipelines are removed when the tester is
-    re-executed and is all the tests pass
--   Generated files are not deleted until the test framework has finished.
-    If your tests generate large output files you may need to make sure your
-    disk can accommodate all the output from all the tests
--   When you run the pipeline tester it removes any remaining collected
+    re-executed and when all the tests pass
+-   The files generated by the tests are not deleted until the test
+    framework has finished. If your tests generate large output files you
+    may need to make sure your disk can accommodate all the output from all
+    the tests
+-   When you re-run the pipeline tester it removes any remaining collected
     output files 
 
 ## Writing pipeline tests
@@ -166,14 +166,10 @@ in order to create a set of tests for a new pipeline.
 >   At the moment the tester only permits one test file per pipeline so all 
     tests for a given pipeline need to be composed in one file. 
 
-## Testing the pipeline utilities
-The pipeline utilities consist of a number of Python-based modules
-that can be tested using `setup.py`. To test these modules run the
-following from the `src/python` directory: -
-
-    $ python setup.py test
-
 ## Considerations for Windows
+>   Windows is not currently supported btu the following may help you
+    get started.
+
 The tests and test framework are designed to operate from within a unix-like
 environment but if you are forced to execute pipeline tests from Windows the
 following approach is recommended: -
@@ -211,20 +207,27 @@ tester by navigating to the sub-module in your pipelines project: -
     $ cd pipelines-utils
     $ ./gradlew runPipelineTester
 
-## Publishing im-pipelines-utils to PyPI
-The `src/python` directory contains common Python-based pipelines utilities
-used by other pipelines repositories. These utilities are published to PyPI
-for easy installation (normally automatically by the Travis CI/CD framework
+## Testing the pipeline utilities
+The pipeline utilities consist of a number of Python-based modules
+that provide some common processing but are also distributed in the
+pipeline container images. The distributed can be tested using `setup.py`.
+To test these modules run the following from the `src/python` directory: -
+
+    $ pip install -r requirements.txt
+    $ python setup.py test
+
+### Publishing the im-pipelines-utils package to PyPI
+The utilities are published to PyPI for easy installation
+(normally automatically by the Travis CI/CD framework
 when the repository is tagged on master).
 
-If you are going to publish the utilties yourself (not recommended) you will
-need an account on PyPI. For Informatics Matters you should add the
-following to your `~/pypirc` file (or create one if you don't have one): -
+If you are going to publish the utilities yourself (not recommended) you will
+need our PyPI account details. For Informatics Matters you should add the
+following to your `~/.pypirc` file (or create one if you don't have one): -
 
     [pypi]
     username: informaticsmatters
     password: <password>
-
 
 To publish a new set of Python utilities you then simply need to build
 and upload them from the `src/python` directory: -
@@ -233,6 +236,17 @@ and upload them from the `src/python` directory: -
     $ python setup.py bdist_wheel
     $ twine upload dist/*
 
+>   Before publishing (or tagging for automatic publishing) you must ensure
+    that the package version is new (currently defined in `setup.py`).
+    If you re-publish a package PyPI will respond with an error. Once you
+    have released version 1.0.0 you cannot release it again. Ever.
+    
+>   For acceptable version number formatting you should follow [PEP-440].
+
+>   The Travis CI/CD service (controlled by the `.travis.yml` file)
+    automatically publishes the PyPI package when the `master` branch is tagged
+    using label begins `pypi-`
+    
 ---
 
 [Conda]: https://conda.io/docs/
@@ -240,6 +254,7 @@ and upload them from the `src/python` directory: -
 [Gradle]: https://gradle.org
 [Groovy]: http://groovy-lang.org
 [JAVA_HOME]: https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t/
+[PEP-440]: https://www.python.org/dev/peps/pep-0440/
 [PIP]: https://pypi.python.org/pypi
 [Pipelines]: https://github.com/InformaticsMatters/pipelines.git
 [PyPI]: https://pypi.python.org/pypi
