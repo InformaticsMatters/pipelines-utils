@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import org.apache.commons.cli.Option
+
 /**
  * The PipelineTester. A groovy script for the automated testing
  * of Informatics Matters pipeline scripts. This utility searches for
@@ -31,20 +33,24 @@
 
 // Version
 // Update with every change/release
-String version = '2.2.0'
+String version = '2.3.0'
 
-println "+----------------+"
-println "| PipelineTester | v$version"
-println "+----------------+"
+println "+------------------+"
+println "|  PipelineTester  | v$version"
+println "+------------------+"
 
 // Build command-line processor
 // and then parse the command-line...
 def cli = new CliBuilder(usage:'groovy PipelineTester.groovy',
                          stopAtNonOption:false)
-cli.v(longOpt: 'verbose', "Display the pipeline's log")
-cli.d(longOpt: 'indocker', "Run tests using their container images")
-cli.s(longOpt: 'stoponerror', "Stop executing on the first test failure")
-cli.h(longOpt: 'help', "Print this message")
+cli.with {
+    v longOpt: 'verbose', "Display the pipeline's log"
+    d longOpt: 'indocker', "Run tests using their container images"
+    s longOpt: 'stoponerror', "Stop executing on the first test failure"
+    h longOpt: 'help', "Print this message"
+    o longOpt: 'only', args: Option.UNLIMITED_VALUES, argName: 'directory',
+                valueSeparator: ',', "Comma-separated list of test directories"
+}
 def options = cli.parse(args)
 if (!options) {
     System.exit(1)
@@ -54,11 +60,17 @@ if (options.help) {
     return
 }
 
+// Provide 'only' default (can't seem to do it with CliBuilder)
+def only = []
+if (options.o) {
+    only.addAll(options.os)
+}
 // Create a Tester object
 // and run all the tests that have been discovered...
 Tester pipelineTester = new Tester(verbose:options.v,
                                    inDocker:options.d,
-                                   stopOnError:options.s)
+                                   stopOnError:options.s,
+                                   onlySpec:only)
 boolean testResult = pipelineTester.run()
 
 // Leave with a non-zero exit code on failure...

@@ -35,6 +35,7 @@ class Tester {
     boolean verbose = false
     boolean inDocker = true
     boolean stopOnError = false
+    def onlySpec = []
 
     // Constants?
     int defaultTimeoutSeconds = 60
@@ -69,6 +70,8 @@ class Tester {
     int filesUsed = 0
     def failedTests = []
     def observedFiles = []
+    // The set of directories (pipeline repos) that contained test files.
+    Set observedDirectories = new HashSet()
 
     // The service descriptor for the current test file...
     def currentServiceDescriptor = null
@@ -111,15 +114,40 @@ class Tester {
 
         // Log supported test file versions
         Log.info('Tests', "Supporting test file versions: $supportedTestFileVersions")
-        Log.info('PYTHONPATH', System.getenv('PYTHONPATH'))
         Log.info('Stop on error', stopOnError)
+
+        // Only process some directories?
+        onlySpec.each {
+            Log.info('Only', it)
+        }
+
+        // List of directories skipped,
+        // used if the user has specified 'only'
+        def skippedDirectories = []
 
         // Before we start - cleanup (everything)
         cleanUpOutput()
 
         // Find all the potential test files
-        def testFiles = new FileNameFinder().getFileNames(testSearchDir, testFileSpec)
+        String searchRoot = new File(testSearchDir).getCanonicalPath()
+        def testFiles = new FileNameFinder().getFileNames(searchRoot, testFileSpec)
         for (String path : testFiles) {
+
+            // Keep every new root directory where a test file was found...
+            // But optionally skip if this directory if the user's specified
+            // an 'only' list and this directory is not in it.
+            String testDir = path[searchRoot.size()..-1].split(File.separator)[1]
+            if (avoid(testDir)) {
+                if (!skippedDirectories.contains(testDir)) {
+                    Log.separate()
+                    Log.info('Not in only', testDir)
+                    skippedDirectories.add(testDir)
+                }
+                continue
+            }
+
+            // Add to our list of observed directories
+            observedDirectories.add(testDir)
 
             // Reset filename and section number
             // along with other test-specific objects
@@ -184,7 +212,10 @@ class Tester {
                     if (section_key_lower.startsWith(setupPrefix)) {
                         processSetupCollection(section)
                     } else if (section_key_lower.startsWith(testPrefix)) {
-                        processTest(path, section)
+                        // Should we avoid this test?
+                        if (!avoid(testDir, section_key_lower)) {
+                            processTest(path, section)
+                        }
                     } else if (section_key_lower.startsWith(ignorePrefix)) {
                         Log.separate()
                         logTest(path, section)
@@ -229,8 +260,22 @@ class Tester {
         Log.separate()
         Log.info('Summary', '')
 
+        // List observed directories
+        if (skippedDirectories) {
+            Log.separate()
+            skippedDirectories.each { name ->
+                Log.info('Skipped directory', name)
+            }
+        }
+        // List observed directories
+        if (observedDirectories) {
+            Log.separate()
+            observedDirectories.each { name ->
+                Log.info('Test directory', name)
+            }
+        }
         // List failed tests...
-        if (failedTests.size() > 0) {
+        if (failedTests) {
             Log.separate()
             failedTests.each { name ->
                 Log.info('Failed', name)
@@ -245,7 +290,6 @@ class Tester {
         Log.info('Tests failed', sprintf('%3s', testsFailed ? testsFailed : '-'))
         Log.info('Tests skipped', sprintf('%3s', testsSkipped ? testsSkipped : '-'))
         Log.info('Tests ignored', sprintf('%3s', testsIgnored ? testsIgnored : '-'))
-//        Log.info('Warnings', sprintf('%3s', Log.numWarnings ? Log.numWarnings : '-'))
         Log.separate()
         if (testsFailed) {
             Log.info('Result', 'FAILURE')
@@ -255,6 +299,61 @@ class Tester {
         Log.separate()
 
         return testPassed
+
+    }
+
+    /**
+     * Returns true if the tester should avoid tests in this directory.
+     *
+     * @param directory The directory we're about to process
+     * @return True to avoid running in this directory
+     */
+    private boolean avoid(String directory) {
+
+        // If there's nothing in the 'only' list then we don't
+        // need to avoid anything
+        if (!onlySpec) {
+            return false
+        }
+
+        for (String spec : onlySpec) {
+            if (spec.tokenize('.')[0].equals(directory)) {
+                return false
+            }
+        }
+        // The named directory is not in the list.
+        // We should avoid this directory.
+        return true
+
+    }
+
+    /**
+     * Returns true if the tester should avoid this test
+     * (in the supplied directory).
+     *
+     * @param directory The directory we're processing
+     * @param test The test we're about to process
+     * @return True to avoid running in this directory
+     */
+    private boolean avoid(String directory, String test) {
+
+        // If there's nothing in the 'only' list then we don't
+        // need to avoid anything
+        if (!onlySpec) {
+            return false
+        }
+
+        // The spec is the combination of directory and test.
+        // i.e. dir='one' and test='two' has a spec of 'one.two'
+        String spec = directory + '.' + test
+        // This test can execute if:
+        // the directory is in the only list or the spec is.
+        if (onlySpec.contains(directory) || onlySpec.contains(spec)) {
+            return false
+        }
+        // The test is not in the only list.
+        // We must avoid this test.
+        return true
 
     }
 
@@ -635,7 +734,7 @@ class Tester {
         String executeDir = filename.take(filename.indexOf(File.separator,
                 executeAnchorDirPos + executeAnchorDir.length()))
         File testExecutionDir = new File(executeDir)
-        Log.info('ExeDir', testExecutionDir.toString())
+        Log.info('Run path', testExecutionDir.toString())
 
         String testSubDir = "${currentTestFilename}-${section.key}"
 

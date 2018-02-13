@@ -12,4 +12,6 @@ work
 .nextflow.log*
 **/tmp
 **/*.egg-info
+**/.eggs
 **/.DS_Store
+src/python/.coverage
