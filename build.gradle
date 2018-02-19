@@ -36,9 +36,17 @@ task runPipelineTester(type: Exec) {
 
 task runDockerPipelineTester(type: Exec) {
 
-    description 'Runs the PipelineTester Docker tests'
+    description 'Runs the PipelineTester Docker tests (add arguments with -Pptargs=-v)'
+
+    def args
+    if (project.hasProperty('ptargs')) {
+        args = project.property('ptargs')
+    } else {
+        args = ''
+    }
+    def currentDir = System.getProperty("user.dir")
 
     workingDir 'src/groovy'
-    commandLine 'groovy', 'PipelineTester.groovy', '-indocker'
+    commandLine 'groovy', 'PipelineTester.groovy', '-indocker', "$args"
 
 }
