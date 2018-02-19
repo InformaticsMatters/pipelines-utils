@@ -911,6 +911,10 @@ class Tester {
             println '!!!!!!!!!!!!!!!!!!!!!!!!!'
         }
 
+        // Report on the current test status - has anything failed?
+        String okSoFar = failedTests ? 'No' : 'Yes'
+        Log.info('OK so far', okSoFar)
+
     }
 
     /**

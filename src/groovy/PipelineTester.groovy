@@ -33,7 +33,7 @@ import org.apache.commons.cli.Option
 
 // Version
 // Update with every change/release
-String version = '2.3.0'
+String version = '2.3.1'
 
 println "+------------------+"
 println "|  PipelineTester  | v$version"

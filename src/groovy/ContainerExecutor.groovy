@@ -62,7 +62,7 @@ class ContainerExecutor {
         //       rather than insisting on ${PIN}/file which would fail if
         //       PIN wasn't defined - it's about lowest risk changes.
 
-        String cmd = "docker run -v $pin:/data -v $pout:/output" +
+        String cmd = "docker run --rm -v $pin:/data -v $pout:/output" +
                      " -w /output -e PIN=/data/ -e POUT=/output/ $imageName" +
                      " sh -c '$command'"
 
