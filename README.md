@@ -38,7 +38,13 @@ installed as normal:
 
 ## Running the test framework
 
-### Redirecting output
+### Redirecting input (PIN)
+The test utility sets up the `PIN` environment variable, which is set
+to the data directory within your pipelines project
+(`<project-root>/src/data`). All input date files that you want to use for
+your testing must reside in this directory.
+
+### Redirecting output (POUT)
 Normally pipeline output files are written to a `tmp` directory inside
 the working copy of the `pipelines-utils` repository you're running in.
 Alternatively you can write test output to your own directory
@@ -47,6 +53,16 @@ Alternatively you can write test output to your own directory
     $ export POUT=/tmp/blob/
 
 >   Output files are removed when the test suite starts and when it passes.
+
+### The Program Root (PROOT)
+Some tests rely on the definition of the `PROOT` environment variable.
+If `PROOT` is used it will have been defined in the the Dockerfile that
+accompanies the pipelines project.
+
+For shell (outside Docker) execution the test utility defines this for you.
+`PROOT` is set to the execution directory, typically
+`<project-root>/src/python`. If you have pipelines-specific files (Pickle
+files and the like) tey should be located relative to this directory.
 
 ### From here
 If you have working copies of all your pipeline repositories checked-out
