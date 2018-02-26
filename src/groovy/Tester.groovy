@@ -733,6 +733,9 @@ class Tester {
         // The execution directory is: -
         //      /Users/user/pipelines-a/src/python
         //
+        // This is also used to set the PROOT environment variable
+        // expected by the test when run in the ShellExecutor.
+        //
         int executeAnchorDirPos = filename.indexOf(executeAnchorDir)
         String executeDir = filename.take(filename.indexOf(File.separator,
                 executeAnchorDirPos + executeAnchorDir.length()))
@@ -741,7 +744,7 @@ class Tester {
 
         String testSubDir = "${currentTestFilename}-${section.key}"
 
-        // PIN (Pipeline inout data) is normally the project's data directory
+        // PIN (Pipeline input data) is normally the project's data directory
         test_pin = new File(executeDir, defaultInputPath).getCanonicalPath()
         // POUT is either set by the POUT environment variable or relative
         //      to the directory we've been executed from.

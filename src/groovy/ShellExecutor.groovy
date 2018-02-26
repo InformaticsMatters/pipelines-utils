@@ -56,7 +56,7 @@ class ShellExecutor {
         }
 
         // Append '/' to PIN and POUT to allow '${POUT}output'
-        String cmd = "PIN=$pin/; POUT=$pout/; " + command
+        String cmd = "PIN=$pin/; POUT=$pout/; PROOT=$edir; " + command
         def proc = ['sh', '-c', cmd].execute(null, edir)
         proc.consumeProcessOutput(sout, serr)
         proc.waitForOrKill((long)timeoutSeconds * 1000)
