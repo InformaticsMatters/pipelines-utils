@@ -740,7 +740,7 @@ class Tester {
         String executeDir = filename.take(filename.indexOf(File.separator,
                 executeAnchorDirPos + executeAnchorDir.length()))
         File testExecutionDir = new File(executeDir)
-        Log.info('Run path', testExecutionDir.toString())
+        Log.info('Run path (PROOT)', testExecutionDir.toString())
 
         String testSubDir = "${currentTestFilename}-${section.key}"
 
@@ -755,8 +755,8 @@ class Tester {
         File testOutputPath = new File(test_pout)
         testOutputPath.mkdir()
 
-        Log.info('Input path', test_pin)
-        Log.info('Output path', test_pout)
+        Log.info('Input path (PIN)', test_pin)
+        Log.info('Output path (POUT)', test_pout)
 
         // Redirect the '-o' option, if there is a '-o' in the command
         def oOption = pipelineCommand =~ /$outputRegex/
