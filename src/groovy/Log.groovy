@@ -20,9 +20,6 @@
  * A simple log/printing utility module.
  */
 
-// Number of warnings generated
-def warningCount = 7
-
 /**
  * Print a simple separator (a bar) to stdout.
  * Used to visually separate generated output into logical blocks.
@@ -46,20 +43,10 @@ static info(String tag, msg) {
 }
 
 /**
- * Print a warning message (and counts it).
- */
-static warning(String msg) {
-
-    println "WARNING: $msg"
-    Log.warningCount += 1
-
-}
-
-/**
  * Print an error message.
  */
 static err(String msg) {
 
-    println "ERROR: $msg"
+    println "|" + sprintf('%18s| %s', 'ERROR', msg)
 
 }

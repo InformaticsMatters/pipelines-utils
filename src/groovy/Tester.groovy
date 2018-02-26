@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import java.nio.file.Files
 import java.util.regex.Pattern
 
 import groovy.json.JsonSlurper
@@ -55,7 +56,9 @@ class Tester {
 
     final static String defaultInputPath = '..' + File.separator + '..' + File.separator + 'data'
     final static String defaultOutputPath = System.getProperty('user.dir') +
-            File.separator + 'tmp' + File.separator + 'PipelineTester'
+            File.separator + 'tmp' + File.separator + 'PipelineTester-out'
+    final static String alternativeInputPath = System.getProperty('user.dir') +
+            File.separator + 'tmp' + File.separator + 'PipelineTester-in'
 
     // Controlled by setup sections
     int testTimeoutSeconds = defaultTimeoutSeconds
@@ -75,6 +78,8 @@ class Tester {
 
     // The service descriptor for the current test file...
     def currentServiceDescriptor = null
+    // The current pipeline test directory
+    String currentTestDirectory = ''
     // The current test filename (short)
     String currentTestFilename = ''
     // A convenient list of normalised service descriptor option names
@@ -148,6 +153,7 @@ class Tester {
 
             // Add to our list of observed directories
             observedDirectories.add(testDir)
+            currentTestDirectory = testDir
 
             // Reset filename and section number
             // along with other test-specific objects
@@ -600,7 +606,7 @@ class Tester {
      */
     private recordFailedTest(testName) {
 
-        failedTests.add("${currentTestFilename}" + File.separator + "${testName}")
+        failedTests.add("${currentTestDirectory}/${currentTestFilename}.${testName}")
 
     }
 
@@ -615,6 +621,76 @@ class Tester {
         Log.info('Test', section.key.toString())
         Log.info('File', currentTestFilename)
         Log.info('Path', path)
+
+    }
+
+    /**
+     * Creates a temporary directory and links the defined input files
+     * into that directory using the 'expected' filename.
+     *
+     * @param pin The test's default data inout directory
+     * @param command The command that will be executed
+     * @param inputBlock The user's input block definition.
+     * @return A String representing the new data directory (null on failure).
+     */
+    private createTestInputData(String pin, String command, def inputBlock) {
+
+        boolean success = true
+
+        // Create the 'alternative' input directory (after deleting it).
+        // Test files wil be copied/linked to here.
+        destroyTestInputDataDir()
+        new File(alternativeInputPath).mkdir()
+
+        // Link each test file (inputBlock.item.value) to the expected file
+        // (inputBlock.item.key). The input will be in the
+        // the current 'PIN' and needs to be linked to the new (temporary)
+        // directory.
+        inputBlock.each { item ->
+            // The expected file must be in the command.
+            // i.e. if the user expects to replace input.data.gz with
+            // their own file the command must contain the string
+            // '{PIN}input.data.gz'
+            String iString = "\\{PIN\\}" + item.key.toString()
+            def iOption = command =~ /$iString/
+            if (iOption.count == 0) {
+                // Report every file that's missing...
+                Log.err("Alternative inputs defined but the command has no input called '${item.key}'")
+                if (success) {
+                    tmpDir.deleteDir()
+                    success = false
+                }
+            }
+            // Does the source file exist?
+            File src = new File(pin + File.separator + item.value)
+            if (!src.exists()) {
+                // Report every file that's missing...
+                Log.err("Alternative inputs defined but the alternative file does not exist (${src.toString()})")
+                if (success) {
+                    tmpDir.deleteDir()
+                    success = false
+                }
+            }
+            // If all is still OK then copy...
+            if (success) {
+                File dst = new File(alternativeInputPath.toString() + File.separator + item.key)
+                // For now - until we have a portable solution
+                // (i.e. symbolic links) or another way of redirecting
+                // input files we'll copy the source file.
+                Files.copy(src.toPath(), dst.toPath())
+            }
+        }
+
+        return success ? alternativeInputPath : null
+
+    }
+
+    /**
+     * Removes temporary data.
+     */
+    private destroyTestInputDataDir() {
+
+        new File(alternativeInputPath).deleteDir()
 
     }
 
@@ -660,6 +736,7 @@ class Tester {
         def paramsBlock = section.value['params']
         def stderrBlock = section.value['stderr']
         def stdoutBlock = section.value['stdout']
+        def inputBlock = section.value['input']
         def createsBlock = section.value['creates']
         def metricsBlock = section.value['metrics']
 
@@ -744,8 +821,20 @@ class Tester {
 
         String testSubDir = "${currentTestFilename}-${section.key}"
 
-        // PIN (Pipeline input data) is normally the project's data directory
+        // PIN (Pipeline input data) is normally the project's data directory.
+        // If the user has defined an 'input' block in their test file
+        // the test utility will create a temporary directory so that the
+        // user's alternative input files can be linked safely into it.
         test_pin = new File(executeDir, defaultInputPath).getCanonicalPath()
+        if (inputBlock) {
+            // This call does some validation. If all looks well then
+            // we'll get back a path. If there are problems we'll get null.
+            test_pin = createTestInputData(test_pin, pipelineCommand, inputBlock)
+            if (test_pin == null) {
+                recordFailedTest(section.key)
+                return
+            }
+        }
         // POUT is either set by the POUT environment variable or relative
         //      to the directory we've been executed from.
         test_pout = env_pout ? env_pout : defaultOutputPath
@@ -797,6 +886,12 @@ class Tester {
         // Dump pipeline output (written to stderr) if verbose
         if (verbose) {
             dumpCommandOutput(serr)
+        }
+
+        // Remove any temporary input directory
+        // (created if the user defined an `input` block)
+        if (inputBlock) {
+            destroyTestInputDataDir()
         }
 
         // If command execution was successful (exit value of 0)
@@ -937,9 +1032,6 @@ class Tester {
             dumpCommandOutput(sout)
             dumpCommandError(serr)
             recordFailedTest(section.key)
-            println '!!!!!!!!!!!!!!!!!!!!!!!!!'
-            println '!!  >> TEST  ERROR <<  !!'
-            println '!!!!!!!!!!!!!!!!!!!!!!!!!'
         }
 
         // Report on the current test status - has anything failed?

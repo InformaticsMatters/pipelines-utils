@@ -108,6 +108,30 @@
         stderr: [ 'Computation = 4.5673' ],
         stdout: [ 'Result = SUCCESS' ],
 
+        // Input files (optional)
+        //
+        // If your pipeline expects input files you can specify any file in
+        // your project's data directory ('data') as an alternative source.
+        // The alternative input definition is a map naming the command's
+        // expected input file and your alternative test file. The pipeline
+        // tester will create a temporary directory set PIN to this and link
+        // your test files into it using the expected name.
+        //
+        // You do this with the following block, which must provide
+        // alternatives for all of the command's expected input files.
+        //
+        // In the example below the files 'data/test-input.data.gz'
+        // and 'data/test-input-2.data.gz' will be used instead of the
+        // default command files of 'data/input.data.gz' and
+        // 'data/input-2.data.gz' respectively.
+        //
+        //        Expected file          Test file
+        //             |                     |
+        //             V                     V
+
+        input: [ 'input.data.gz': 'test-input.data.gz',
+                 'input-2.data.gz': 'test-input-2.data.gz' ],
+
         // Files created (optional).
         //
         // If your pipeline test creates files you can and should declare
