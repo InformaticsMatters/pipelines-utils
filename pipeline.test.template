@@ -96,15 +96,17 @@
                   volumes: 0.42,
                   temperature : [minValue: 14.0, maxValue: 22.0] ],
 
-        // Log validation.
+        // Log validation of stdout and stderr.
         //
-        // Optional checks against the pipeline's log.
-        // To simplify string checks against output that contains variable
-        // whitespace (like tabs etc.) spaces are automatically interpreted
-        // as the regular expression '[ \t]+', absorbing any non-line-breaking
-        // gaps. You can also use regular expressions.
+        // These are optional checks against the pipeline's log
+        // (stdout and/or stderr). To simplify string checks against output
+        // that contains variable whitespace (like tabs etc.) spaces are
+        // automatically interpreted as the regular expression '[ \t]+',
+        // absorbing any non-line-breaking gaps. You can also use regular
+        // expressions.
 
-        see: [ 'Computation = 4.5673' ],
+        stderr: [ 'Computation = 4.5673' ],
+        stdout: [ 'Result = SUCCESS' ],
 
         // Files created (optional).
         //

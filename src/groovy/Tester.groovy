@@ -407,8 +407,9 @@ class Tester {
      */
     private dumpCommandError(StringBuilder errString) {
 
+        println "$dumpErrPrefix STDERR Follows..."
         errString.toString().split('\n').each { line ->
-            System.err.println "$dumpErrPrefix $line"
+            println "$dumpErrPrefix $line"
         }
 
     }
@@ -418,6 +419,7 @@ class Tester {
      */
     private dumpCommandOutput(StringBuilder outString) {
 
+        println "$dumpOutPrefix STDOUT Follows..."
         outString.toString().split('\n').each { line ->
             println "$dumpOutPrefix $line"
         }
@@ -656,7 +658,8 @@ class Tester {
 
         def command = section.value['command']
         def paramsBlock = section.value['params']
-        def seeBlock = section.value['see']
+        def stderrBlock = section.value['stderr']
+        def stdoutBlock = section.value['stdout']
         def createsBlock = section.value['creates']
         def metricsBlock = section.value['metrics']
 
@@ -836,12 +839,14 @@ class Tester {
                 }
             }
 
-            // Has the user asked us to check text that has been logged?
-            if (validated && seeBlock != null) {
+            // There are optional stderr and stdout blocks.
+            // Has the user asked us to check any stderr text
+            // that has been logged?
+            if (validated && stderrBlock != null) {
 
                 // Check that we see everything the test tells us to see.
-                seeBlock.each { see ->
-                    // Replace spaces in the 'see' string
+                stderrBlock.each { see ->
+                    // Replace spaces in the strings
                     // with a simple _variable whitespace_ regex (excluding
                     // line-breaks and form-feeds).
                     // This simplifies the user's world so they can avoid the
@@ -849,10 +854,32 @@ class Tester {
                     // 'Cmax 0.42' rather than thew rather un-human
                     // 'Cmax\\s+0.42' for example.
                     // Of course they can always use regular expressions.
-                    String seeExpr = see.replaceAll(/\s+/, '[ \\\\t]+')
-                    def finder = (serr =~ /$seeExpr/)
+                    String stderrExpr = see.replaceAll(/\s+/, '[ \\\\t]+')
+                    def finder = (serr =~ /$stderrExpr/)
                     if (finder.count == 0) {
-                        Log.err("Expected to see '$see' but it was not in the command's output")
+                        Log.err("Expected to see '$see' but it was not in the command's stderr")
+                        validated = false
+                    }
+                }
+
+            }
+            if (validated && stdoutBlock != null) {
+
+                // Check that we see everything the test tells us to see
+                // on the stdout stream.
+                stdoutBlock.each { see ->
+                    // Replace spaces in the strings
+                    // with a simple _variable whitespace_ regex (excluding
+                    // line-breaks and form-feeds).
+                    // This simplifies the user's world so they can avoid the
+                    // pitfalls of regular expressions and can use
+                    // 'Cmax 0.42' rather than thew rather un-human
+                    // 'Cmax\\s+0.42' for example.
+                    // Of course they can always use regular expressions.
+                    String stdoutExpr = see.replaceAll(/\s+/, '[ \\\\t]+')
+                    def finder = (sout =~ /$stdoutExpr/)
+                    if (finder.count == 0) {
+                        Log.err("Expected to see '$see' but it was not in the command's stdout")
                         validated = false
                     }
                 }
@@ -904,6 +931,7 @@ class Tester {
             Log.info('Result', 'SUCCESS')
         } else {
             // Test failed.
+            dumpCommandOutput(sout)
             dumpCommandError(serr)
             recordFailedTest(section.key)
             println '!!!!!!!!!!!!!!!!!!!!!!!!!'
