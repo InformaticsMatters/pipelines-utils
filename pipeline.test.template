@@ -168,9 +168,9 @@
                   volumes: 0.82,
                   temperature : [minValue: 14.0, maxValue: 22.0] ],
 
-        see: [ 'Computation = 4.5673',
-               'Computation = 5.5673',
-               'Computation = 6.5673' ]
+        stdout: [ 'Computation = 4.5673',
+                  'Computation = 5.5673',
+                  'Computation = 6.5673' ]
 
     ],
 
