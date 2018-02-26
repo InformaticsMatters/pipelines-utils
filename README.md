@@ -15,6 +15,7 @@ You will need: -
 -   Conda
 -   Groovy (v2.4)
 -   Python
+-   An operating system that supports symbolic links
 
 >   It is vital that you install and setup a Java installation (especially by
     also setting `JAVA_HOME` correctly) _before_ you install groovy. Observed

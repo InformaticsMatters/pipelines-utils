@@ -117,6 +117,13 @@
         // tester will create a temporary directory set PIN to this and link
         // your test files into it using the expected name.
         //
+        // To use this feature you must use the PIN environment variable
+        // in your command, i.e. with something like '-i ${PIN}input.data.gz'
+        // or '-i \\${PIN}input.data.gz' when used in a service descriptor.
+        //
+        // Although it looks odd for backwards compatibility the ${PIN}
+        // variable should not be followed by a directory delimiter.
+        //
         // You do this with the following block, which must provide
         // alternatives for all of the command's expected input files.
         //

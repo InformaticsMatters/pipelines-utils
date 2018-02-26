@@ -626,7 +626,9 @@ class Tester {
 
     /**
      * Creates a temporary directory and links the defined input files
-     * into that directory using the 'expected' filename.
+     * into that directory using the 'expected' filename. This method is
+     * called if the test being executed has a map of input test
+     * file replacements (i.e. an 'inputBlock').
      *
      * @param pin The test's default data inout directory
      * @param command The command that will be executed
@@ -655,9 +657,10 @@ class Tester {
             def iOption = command =~ /$iString/
             if (iOption.count == 0) {
                 // Report every file that's missing...
-                Log.err("Alternative inputs defined but the command has no input called '${item.key}'")
+                Log.err("Alternative inputs defined" +
+                        " but the command has no '\${PIN}${item.key}' input")
                 if (success) {
-                    tmpDir.deleteDir()
+                    destroyTestInputDataDir()
                     success = false
                 }
             }
@@ -665,19 +668,18 @@ class Tester {
             File src = new File(pin + File.separator + item.value)
             if (!src.exists()) {
                 // Report every file that's missing...
-                Log.err("Alternative inputs defined but the alternative file does not exist (${src.toString()})")
+                Log.err("Alternative inputs defined" +
+                        " but the alternative file does not exist" +
+                        " (${src.toString()})")
                 if (success) {
-                    tmpDir.deleteDir()
+                    destroyTestInputDataDir()
                     success = false
                 }
             }
-            // If all is still OK then copy...
+            // If all is still OK then link...
             if (success) {
                 File dst = new File(alternativeInputPath.toString() + File.separator + item.key)
-                // For now - until we have a portable solution
-                // (i.e. symbolic links) or another way of redirecting
-                // input files we'll copy the source file.
-                Files.copy(src.toPath(), dst.toPath())
+                Files.createSymbolicLink(dst.toPath(), src.toPath())
             }
         }
 
@@ -821,20 +823,6 @@ class Tester {
 
         String testSubDir = "${currentTestFilename}-${section.key}"
 
-        // PIN (Pipeline input data) is normally the project's data directory.
-        // If the user has defined an 'input' block in their test file
-        // the test utility will create a temporary directory so that the
-        // user's alternative input files can be linked safely into it.
-        test_pin = new File(executeDir, defaultInputPath).getCanonicalPath()
-        if (inputBlock) {
-            // This call does some validation. If all looks well then
-            // we'll get back a path. If there are problems we'll get null.
-            test_pin = createTestInputData(test_pin, pipelineCommand, inputBlock)
-            if (test_pin == null) {
-                recordFailedTest(section.key)
-                return
-            }
-        }
         // POUT is either set by the POUT environment variable or relative
         //      to the directory we've been executed from.
         test_pout = env_pout ? env_pout : defaultOutputPath
@@ -843,9 +831,6 @@ class Tester {
         // Construct and make the path for any '-o' output
         File testOutputPath = new File(test_pout)
         testOutputPath.mkdir()
-
-        Log.info('Input path (PIN)', test_pin)
-        Log.info('Output path (POUT)', test_pout)
 
         // Redirect the '-o' option, if there is a '-o' in the command
         def oOption = pipelineCommand =~ /$outputRegex/
@@ -862,6 +847,24 @@ class Tester {
         }
 
         Log.info('Command', pipelineCommand)
+
+        // PIN (Pipeline input data) is normally the project's data directory.
+        // If the user has defined an 'input' block in their test file
+        // the test utility will create a temporary directory so that the
+        // user's alternative input files can be linked safely into it.
+        test_pin = new File(executeDir, defaultInputPath).getCanonicalPath()
+        if (inputBlock) {
+            // This call does some validation. If all looks well then
+            // we'll get back a path. If there are problems we'll get null.
+            test_pin = createTestInputData(test_pin, pipelineCommand, inputBlock)
+            if (test_pin == null) {
+                recordFailedTest(section.key)
+                return
+            }
+        }
+
+        Log.info('Input path (PIN)', test_pin)
+        Log.info('Output path (POUT)', test_pout)
 
         // Execute the command, using the shell, giving it time to complete,
         // while also collecting stdout & stderr
