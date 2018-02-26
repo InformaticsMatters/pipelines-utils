@@ -819,7 +819,6 @@ class Tester {
         String executeDir = filename.take(filename.indexOf(File.separator,
                 executeAnchorDirPos + executeAnchorDir.length()))
         File testExecutionDir = new File(executeDir)
-        Log.info('Run path (PROOT)', testExecutionDir.toString())
 
         String testSubDir = "${currentTestFilename}-${section.key}"
 
@@ -863,6 +862,7 @@ class Tester {
             }
         }
 
+        Log.info('Run path (PROOT)', testExecutionDir.toString())
         Log.info('Input path (PIN)', test_pin)
         Log.info('Output path (POUT)', test_pout)
 
