@@ -697,6 +697,34 @@ class Tester {
     }
 
     /**
+     * Replaces key items in a string that may be confused with
+     * regular expression syntax to simplify (?) string comparisons
+     * for the tester.
+     *
+     * @param stringValue The string that needs 'sanitising'
+     * @return New reg-ex-friendly string
+     */
+    private static escapeString(stringValue) {
+
+        // Escape brackets
+        String escapedString = stringValue.replaceAll(/\(/, '\\\\(')
+        escapedString = escapedString.replaceAll(/\)/, '\\\\)')
+
+        // Replace spaces in the strings
+        // with a simple _variable whitespace_ regex (excluding
+        // line-breaks and form-feeds).
+        // This simplifies the user's world so they can avoid the
+        // pitfalls of regular expressions and can use
+        // 'Cmax 0.42' rather than thew rather un-human
+        // 'Cmax\\s+0.42' for example.
+        // Of course they can always use regular expressions.
+        escapedString = escapedString.replaceAll(/\s+/, '[ \\\\t]+')
+
+        return escapedString
+
+    }
+
+    /**
      * Processes (runs) an individual test.
      *
      * If the test fails its name is added to the list of failed tests
@@ -947,15 +975,7 @@ class Tester {
 
                 // Check that we see everything the test tells us to see.
                 stderrBlock.each { see ->
-                    // Replace spaces in the strings
-                    // with a simple _variable whitespace_ regex (excluding
-                    // line-breaks and form-feeds).
-                    // This simplifies the user's world so they can avoid the
-                    // pitfalls of regular expressions and can use
-                    // 'Cmax 0.42' rather than thew rather un-human
-                    // 'Cmax\\s+0.42' for example.
-                    // Of course they can always use regular expressions.
-                    String stderrExpr = see.replaceAll(/\s+/, '[ \\\\t]+')
+                    String stderrExpr = escapeString(see)
                     def finder = (serr =~ /$stderrExpr/)
                     if (finder.count == 0) {
                         Log.err("Expected to see '$see' but it was not in the command's stderr")
@@ -969,15 +989,7 @@ class Tester {
                 // Check that we see everything the test tells us to see
                 // on the stdout stream.
                 stdoutBlock.each { see ->
-                    // Replace spaces in the strings
-                    // with a simple _variable whitespace_ regex (excluding
-                    // line-breaks and form-feeds).
-                    // This simplifies the user's world so they can avoid the
-                    // pitfalls of regular expressions and can use
-                    // 'Cmax 0.42' rather than thew rather un-human
-                    // 'Cmax\\s+0.42' for example.
-                    // Of course they can always use regular expressions.
-                    String stdoutExpr = see.replaceAll(/\s+/, '[ \\\\t]+')
+                    String stdoutExpr = escapeString(see)
                     def finder = (sout =~ /$stdoutExpr/)
                     if (finder.count == 0) {
                         Log.err("Expected to see '$see' but it was not in the command's stdout")
@@ -1005,7 +1017,8 @@ class Tester {
                             Log.err("Metric for '$metric.key' is not in the metrics file")
                             validated = false
                         } else {
-                            def finder = (fileProperty =~ /${metric.value}/)
+                            String valueExpr = escapeString(metric.value)
+                            def finder = (fileProperty =~ /$valueExpr/)
                             if (finder.count == 0) {
                                 Log.err("Expected value for metric '$metric.key' ($metric.value)" +
                                         " does not match file value ($fileProperty)")
