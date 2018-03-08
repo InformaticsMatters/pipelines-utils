@@ -66,7 +66,7 @@ class Tester {
     // Material accumulated as the tests execute
     int testScriptVersion = 0
     int sectionNumber = 0
-    int testsFound = 0
+    int numTestsFound = 0
     int testsIgnored = 0
     int testsSkipped = 0
     int testsPassed = 0
@@ -291,7 +291,7 @@ class Tester {
         Log.separate()
         int testsFailed = failedTests.size()
         Log.info('Test files', sprintf('%3s', filesUsed ? filesUsed : '-'))
-        Log.info('Tests found', sprintf('%3s', testsFound ? testsFound : '-'))
+        Log.info('Tests found', sprintf('%3s', numTestsFound ? numTestsFound : '-'))
         Log.info('Tests passed',sprintf('%3s', testsPassed ? testsPassed : '-'))
         Log.info('Tests failed', sprintf('%3s', testsFailed ? testsFailed : '-'))
         Log.info('Tests skipped', sprintf('%3s', testsSkipped ? testsSkipped : '-'))
@@ -757,7 +757,7 @@ class Tester {
      **/
     def processTest(filename, section) {
 
-        testsFound += 1
+        numTestsFound += 1
 
         Log.separate()
         logTest(filename, section)
@@ -893,6 +893,12 @@ class Tester {
         Log.info('Run path (PROOT)', testExecutionDir.toString())
         Log.info('Input path (PIN)', test_pin)
         Log.info('Output path (POUT)', test_pout)
+
+        if (numTestsFound > 1) {
+            // Report on the current test status - has anything failed?
+            String okSoFar = failedTests ? 'No' : 'Yes'
+            Log.info('Testing OK so far', okSoFar)
+        }
 
         // Execute the command, using the shell, giving it time to complete,
         // while also collecting stdout & stderr
@@ -1049,10 +1055,6 @@ class Tester {
             dumpCommandError(serr)
             recordFailedTest(section.key)
         }
-
-        // Report on the current test status - has anything failed?
-        String okSoFar = failedTests ? 'No' : 'Yes'
-        Log.info('OK so far', okSoFar)
 
     }
 
