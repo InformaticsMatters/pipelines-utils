@@ -107,6 +107,12 @@ from further explanation: -
 ### Limiting test search
 You can limit the tests that are executed by defining the parent
 directories that you want the tester to explore via the command-line.
+
+>   For simple single argument execution you can run form within gradle.
+    For fine control and multiple arguments you're better-off navigating
+    to the PipelineTester implementation (`src/groovy`) and running it
+    manually: `groovy PipelineTester.groovy -s -o pipelines-sygnature`.
+ 
 From gradle you can add the test directories as a comma-separated list
 with the `-o` option. To only run the tests in the `pipelines` project your
 command-line would look like this: -

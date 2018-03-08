@@ -30,7 +30,7 @@ task runPipelineTester(type: Exec) {
     def currentDir = System.getProperty("user.dir")
 
     workingDir 'src/groovy'
-    commandLine 'groovy', 'PipelineTester.groovy', "$args"
+    commandLine 'groovy', 'PipelineTester.groovy', args
 
 }
 
@@ -47,6 +47,6 @@ task runDockerPipelineTester(type: Exec) {
     def currentDir = System.getProperty("user.dir")
 
     workingDir 'src/groovy'
-    commandLine 'groovy', 'PipelineTester.groovy', '-indocker', "$args"
+    commandLine 'groovy', 'PipelineTester.groovy', '-indocker', args
 
 }
