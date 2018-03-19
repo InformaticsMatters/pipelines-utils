@@ -54,13 +54,16 @@ class ShellExecutor {
 
             // Windows
 
-            pin = pin.replace('\\', '/')
-            pin = pin.replace('C:', '/c')
-            pout = pout.replace('\\', '/')
-            pout = pout.replace('C:', '/c')
+            cmd = command.replace('\${PIN}', Pattern.quote($pin))
+            cmd = cmd.replace('\${POUT}', Pattern.quote($pout))
+            cmd = cmd.replace('\${PROOT}', Pattern.quote($edir))
 
-            cmd = "set PIN=$pin/ & set POUT=$pout/ & PROOT=$edir & " + command
             cmd = command.replace('\n','"^\n\n"')
+
+            println 'Command...'
+            println cmd
+            println '...Command'
+
             proc = ['cmd', cmd].execute(null, edir)
 
         } else {
