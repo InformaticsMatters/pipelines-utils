@@ -56,11 +56,11 @@ class ShellExecutor {
 
             // Windows
 
-            cmd = command.replace('${PIN}', Pattern.quote(pin))
-            cmd = cmd.replace('${POUT}', Pattern.quote(pout))
-            cmd = cmd.replace('${PROOT}', Pattern.quote(edir.getAbsolutePath()))
-
             cmd = command.replace('\n','"^\n\n"')
+
+            cmd = cmd.replace('${PIN}', pin + '\\')
+            cmd = cmd.replace('${POUT}', pout + '\\')
+            cmd = cmd.replace('${PROOT}', edir.getAbsolutePath() + '\\')
 
             println 'Command...'
             println cmd
