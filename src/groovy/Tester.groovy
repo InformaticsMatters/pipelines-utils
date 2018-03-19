@@ -141,7 +141,7 @@ class Tester {
             // Keep every new root directory where a test file was found...
             // But optionally skip if this directory if the user's specified
             // an 'only' list and this directory is not in it.
-            String testDir = path[searchRoot.size()..-1].split(File.separator)[1]
+            String testDir = path[searchRoot.size()..-1].split(Pattern.quote(File.separator))[1]
             if (avoid(testDir)) {
                 if (!skippedDirectories.contains(testDir)) {
                     Log.separate()

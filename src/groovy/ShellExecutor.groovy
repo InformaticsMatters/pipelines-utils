@@ -47,17 +47,32 @@ class ShellExecutor {
         StringBuilder serr = new StringBuilder()
 
         // Windows/Git-Bash PIN/POUT path tweak...
+        def proc
+        String cmd
         String osName = System.properties['os.name']
         if (osName && osName.startsWith('Win')) {
+
+            // Windows
+
             pin = pin.replace('\\', '/')
             pin = pin.replace('C:', '/c')
             pout = pout.replace('\\', '/')
             pout = pout.replace('C:', '/c')
+
+            cmd = "set PIN=$pin/ & set POUT=$pout/ & PROOT=$edir & " + command
+            cmd = command.replace('\n','"^\n\n"')
+            proc = ['cmd', cmd].execute(null, edir)
+
+        } else {
+
+            // Everywhere else
+
+            // Append '/' to PIN and POUT to allow '${POUT}output'
+            cmd = "PIN=$pin/; POUT=$pout/; PROOT=$edir; " + command
+            proc = ['sh', '-c', cmd].execute(null, edir)
+
         }
 
-        // Append '/' to PIN and POUT to allow '${POUT}output'
-        String cmd = "PIN=$pin/; POUT=$pout/; PROOT=$edir; " + command
-        def proc = ['sh', '-c', cmd].execute(null, edir)
         proc.consumeProcessOutput(sout, serr)
         proc.waitForOrKill((long)timeoutSeconds * 1000)
         int exitValue = proc.exitValue()
