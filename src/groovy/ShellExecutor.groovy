@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import java.util.regex.Pattern
+
 /**
  * The PipelineTester Shell (command-line) Executor class. The class is
  * responsible for executing a pipeline command using the command-line.
