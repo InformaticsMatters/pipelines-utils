@@ -58,7 +58,7 @@ class ShellExecutor {
 
             cmd = command.replace('\${PIN}', Pattern.quote(pin))
             cmd = cmd.replace('\${POUT}', Pattern.quote(pout))
-            cmd = cmd.replace('\${PROOT}', Pattern.quote(edir))
+            cmd = cmd.replace('\${PROOT}', Pattern.quote(edir.getAbsolutePath()))
 
             cmd = command.replace('\n','"^\n\n"')
 
