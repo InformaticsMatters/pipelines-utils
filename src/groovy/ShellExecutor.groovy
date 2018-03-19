@@ -54,9 +54,9 @@ class ShellExecutor {
 
             // Windows
 
-            cmd = command.replace('\${PIN}', Pattern.quote($pin))
-            cmd = cmd.replace('\${POUT}', Pattern.quote($pout))
-            cmd = cmd.replace('\${PROOT}', Pattern.quote($edir))
+            cmd = command.replace('\${PIN}', Pattern.quote(pin))
+            cmd = cmd.replace('\${POUT}', Pattern.quote(pout))
+            cmd = cmd.replace('\${PROOT}', Pattern.quote(edir))
 
             cmd = command.replace('\n','"^\n\n"')
 
