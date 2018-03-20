@@ -39,6 +39,7 @@ class Tester {
     boolean verbose = false
     boolean inDocker = true
     boolean stopOnError = false
+    boolean keepOutput = false
     def onlySpec = []
 
     // Constants?
@@ -124,6 +125,7 @@ class Tester {
         // Log supported test file versions
         Log.info('Tests', "Supporting test file versions: $supportedTestFileVersions")
         Log.info('Stop on error', stopOnError)
+        Log.info('Keep output', keepOutput)
         Log.info('OS Name', osName)
 
         // Only process some directories?
@@ -135,8 +137,10 @@ class Tester {
         // used if the user has specified 'only'
         def skippedDirectories = []
 
-        // Before we start - cleanup (everything)
-        cleanUpOutput()
+        if (!keepOutput) {
+            // Before we start - cleanup (everything)
+            cleanUpOutput()
+        }
 
         // Find all the potential test files
         String searchRoot = new File(testSearchDir).getCanonicalPath()
@@ -262,7 +266,9 @@ class Tester {
         boolean testPassed = false
         if (failedTests.size() == 0) {
             Log.separate()
-            cleanUpOutput()
+            if (!keepOutput) {
+                cleanUpOutput()
+            }
             testPassed = true
         }
 

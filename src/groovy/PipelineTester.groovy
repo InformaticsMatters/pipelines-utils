@@ -33,7 +33,7 @@ import org.apache.commons.cli.Option
 
 // Version
 // Update with every change/release
-String version = '2.5.0'
+String version = '2.5.1'
 
 println "+------------------+"
 println "|  PipelineTester  | v$version"
@@ -45,6 +45,7 @@ def cli = new CliBuilder(usage:'groovy PipelineTester.groovy',
                          stopAtNonOption:false)
 cli.with {
     v longOpt: 'verbose', "Display the pipeline's log"
+    k longOpt: 'keepoutput', "Keep execution output, even on failure"
     d longOpt: 'indocker', "Run tests using their container images"
     s longOpt: 'stoponerror', "Stop executing on the first test failure"
     h longOpt: 'help', "Print this message"
@@ -68,6 +69,7 @@ if (options.o) {
 // Create a Tester object
 // and run all the tests that have been discovered...
 Tester pipelineTester = new Tester(verbose:options.v,
+                                   keepOutput:options.k,
                                    inDocker:options.d,
                                    stopOnError:options.s,
                                    onlySpec:only)
