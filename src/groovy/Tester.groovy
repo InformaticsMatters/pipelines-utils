@@ -32,6 +32,9 @@ class Tester {
     // Supported test-script versions
     def supportedTestFileVersions = [1]
 
+    // Execution OS
+    String osName = System.properties['os.name']
+
     // Controlled by command-line
     boolean verbose = false
     boolean inDocker = true
@@ -67,6 +70,7 @@ class Tester {
     int testScriptVersion = 0
     int sectionNumber = 0
     int numTestsFound = 0
+    int numTestsExcluded = 0
     int testsIgnored = 0
     int testsSkipped = 0
     int testsPassed = 0
@@ -120,6 +124,7 @@ class Tester {
         // Log supported test file versions
         Log.info('Tests', "Supporting test file versions: $supportedTestFileVersions")
         Log.info('Stop on error', stopOnError)
+        Log.info('OS Name', osName)
 
         // Only process some directories?
         onlySpec.each {
@@ -296,6 +301,7 @@ class Tester {
         Log.info('Tests failed', sprintf('%3s', testsFailed ? testsFailed : '-'))
         Log.info('Tests skipped', sprintf('%3s', testsSkipped ? testsSkipped : '-'))
         Log.info('Tests ignored', sprintf('%3s', testsIgnored ? testsIgnored : '-'))
+        Log.info('Tests excluded', sprintf('%3s', numTestsExcluded ? numTestsExcluded : '-'))
         Log.separate()
         if (testsFailed) {
             Log.info('Result', 'FAILURE')
@@ -569,8 +575,21 @@ class Tester {
      */
     private static String expandTemplate(String text, def values) {
 
+        // Just return the original text if there are no values....
+        if (values == null) {
+            return text
+        }
+
+        // Cope with missing parameter expansion.
+        // This allows us to replace legitimate user values
+        // like --dose \"$doses\" but preserve system values
+        // like ${PIN}. If we don't do this we'll get a
+        // groovy.lang.MissingPropertyException with something like
+        // "No such property: PIN"
+        def binding = values.withDefault { x -> '${' + x + '}' }
+
         def engine = new SimpleTemplateEngine()
-        def template = engine.createTemplate(text).make(values)
+        def template = engine.createTemplate(text).make(binding)
         return template.toString()
 
     }
@@ -769,12 +788,16 @@ class Tester {
         def inputBlock = section.value['input']
         def createsBlock = section.value['creates']
         def metricsBlock = section.value['metrics']
+        def excludeBlock = section.value['exclude']
 
-        // Enforce conditions on block combinations...
-        if (command != null && paramsBlock != null) {
-            Log.err('Found "command" and "params". Use one or the other.')
-            recordFailedTest(section.key)
-            return
+        // Is this OS excluded?
+        for (String exclusion in excludeBlock) {
+            if (osName ==~ exclusion) {
+                Log.info('Excluding', exclusion)
+                // Increment the number of excluded tests
+                numTestsExcluded += 1
+                return
+            }
         }
 
         // Unless a test-specific command has been defined
@@ -794,12 +817,7 @@ class Tester {
 
             // No raw command defined in the test block,
             // so use the command defined in the service descriptor...
-            String the_command = currentServiceDescriptor.command
-
-            // Replace the respective values in the command string...
-            pipelineCommand = expandTemplate(the_command, paramsBlock)
-            // Replace newlines with '\n'
-            pipelineCommand = pipelineCommand.replace(System.lineSeparator(), '\n')
+            pipelineCommand = currentServiceDescriptor.command
 
         } else {
 
@@ -812,6 +830,11 @@ class Tester {
             pipelineCommand = the_command.trim()
 
         }
+
+        // Replace the respective values in the command string...
+        pipelineCommand = expandTemplate(pipelineCommand, paramsBlock)
+        // Replace newlines with '\n'
+        pipelineCommand = pipelineCommand.replace(System.lineSeparator(), '\n')
 
         // Try to construct an image name (appending ':latest' when required)
         imageName = (currentServiceDescriptor != null) ? currentServiceDescriptor.imageName : null

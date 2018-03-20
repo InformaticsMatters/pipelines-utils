@@ -82,11 +82,21 @@
                  --my-own-param-1 32
                  --my-own-param-2 18.5```,
 
+        // Optional ability to exclude certain shells/operating systems.
+        // Initially this was added to avoid tests that relied on multi-line
+        // parameter strings, which (at the time of writing) are extremely
+        // difficult to handle using the Windows command-line processor.
+        //
+        // The value should be a Groovy regular expression
+        // that matches the operating systems you wish to exclude.
+
+        exclude: [ 'Windows.*' ],
+
         // Test parameters.
         //
-        // Unless you are testing a raw command (see above) you need to
-        // provide the built-in service descriptor command wih parameters
-        // and values.
+        // Unless you are testing a raw command that takes no parameters
+        // you need to provide the built-in service descriptor command or
+        // your raw command wih parameters and values.
         //
         // You can provide values for every option. At the very least
         // you _must_ provide a parameter value for each option that does not

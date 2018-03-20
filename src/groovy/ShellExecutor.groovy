@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import java.util.regex.Pattern
-
 /**
  * The PipelineTester Shell (command-line) Executor class. The class is
  * responsible for executing a pipeline command using the command-line.
@@ -56,17 +54,12 @@ class ShellExecutor {
 
             // Windows
 
-            cmd = command.replace('\n','"^\n\n"')
-
-            cmd = cmd.replace('${PIN}', pin + '\\')
+            // Expand PIN/POUT/PROOT for simplicity
+            // Oh - no spaces in directory paths please!
+            cmd = command.replace('${PIN}', pin + '\\')
             cmd = cmd.replace('${POUT}', pout + '\\')
             cmd = cmd.replace('${PROOT}', edir.getAbsolutePath() + '\\')
-
-            println 'Command...'
-            println cmd
-            println '...Command'
-
-            proc = ['cmd', cmd].execute(null, edir)
+            proc = cmd.execute(null, edir)
 
         } else {
 
