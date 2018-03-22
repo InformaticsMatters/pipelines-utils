@@ -102,9 +102,9 @@ from further explanation: -
 -   `Tests skipped` are the tests that were found but not executed.
     Normally these are the tests found during a _Container_ test
     that can't be run (because the test has no corresponding container image).
--   `Tests ignored` are test found that are not run because they have
+-   `Tests ignored` are tests found that are not run because they have
     been marked for non-execution as the test name begins with `ignore_`. 
--   `Tests excluded` are test found that are not run because the
+-   `Tests excluded` are tests found that are not run because the
     operating system matches a regular expression in the test's
     `exlcude` declaration. 
     
