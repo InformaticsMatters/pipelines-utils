@@ -51,7 +51,7 @@ class Tester {
     String sdExt = '.dsd.json'
     String optionPrefix = 'arg.'
     String metricsFile = 'output_metrics.txt'
-    String outputRegex = '-o (\\S+)'
+    String outputRegex = '(-o|--output) (\\S+)'
     String dumpOutPrefix = '   #'
     String dumpErrPrefix = '   |'
     String setupPrefix = 'setup_'
@@ -893,7 +893,7 @@ class Tester {
         if (oOption.count > 0) {
 
             // Redirect output
-            String outputFileBaseName = oOption[0][1]
+            String outputFileBaseName = oOption[0][-1]
             String testOutputFile = '\\${POUT}' + outputFileBaseName
             // Now swap-out the original '-o'...
             String redirectedOutputOption = "-o ${testOutputFile}"
