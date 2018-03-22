@@ -91,6 +91,7 @@ of the number of test files and individual tests that were executed: -
     |      Tests failed|   -
     |     Tests skipped|  19
     |     Tests ignored|   3
+    |    Tests excluded|   -
     +------------------+
     |            Result| SUCCESS
     +------------------+
@@ -103,6 +104,9 @@ from further explanation: -
     that can't be run (because the test has no corresponding container image).
 -   `Tests ignored` are test found that are not run because they have
     been marked for non-execution as the test name begins with `ignore_`. 
+-   `Tests excluded` are test found that are not run because the
+    operating system matches a regular expression in the test's
+    `exlcude` declaration. 
     
 ### Limiting test search
 You can limit the tests that are executed by defining the parent
