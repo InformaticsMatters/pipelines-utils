@@ -591,11 +591,15 @@ class Tester {
         // like --dose \"$doses\" but preserve system values
         // like ${PIN}. If we don't do this we'll get a
         // groovy.lang.MissingPropertyException with something like
-        // "No such property: PIN"
-        def binding = values.withDefault { x -> '${' + x + '}' }
+        // "No such property: PIN".
+        //
+        // The 'dummy' structure takes care of expansion of
+        // commands that use `${binding.variables`
+        def dummy = [variables: values]
+        def valuesWithDefault = values.withDefault { x -> x == 'binding' ? dummy : '${' + x + '}' }
 
         def engine = new SimpleTemplateEngine()
-        def template = engine.createTemplate(text).make(binding)
+        def template = engine.createTemplate(text).make(valuesWithDefault)
         return template.toString()
 
     }
