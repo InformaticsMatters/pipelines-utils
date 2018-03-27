@@ -21,7 +21,7 @@ stages:
 - name: test
   if: not tag is present
 - name: deploy
-  if: tag is present and branch = master
+  if: tag is present
 
 # Run Travis on all branches
 # (normally it only runs on master)
