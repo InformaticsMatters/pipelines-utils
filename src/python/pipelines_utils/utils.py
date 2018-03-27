@@ -18,7 +18,8 @@
 from __future__ import print_function
 import sys, gzip, json, uuid
 from math import log10, floor
-from pipelines_utils import BasicObjectWriter, TsvWriter
+from pipelines_utils.BasicObjectWriter import BasicObjectWriter
+from pipelines_utils.TsvWriter import TsvWriter
 
 def log(*args, **kwargs):
     """
