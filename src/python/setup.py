@@ -13,7 +13,7 @@ def get_long_description():
 setup(
 
     name='im-pipelines-utils',
-    version='1.0.2',
+    version='2.0.0',
     author='Alan Christie',
     author_email='achristie@informaticsmatters.com',
     url='https://github.com/InformaticsMatters/pipelines-utils',

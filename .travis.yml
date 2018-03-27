@@ -34,8 +34,6 @@ branches:
 install:
 - pip install -r requirements.txt
 - pip install -r package-requirements.txt
-- cd ${TRAVIS_BUILD_DIR}/mock-rdkit
-- python setup.py install
 
 # Test/build execution steps...
 # All in the default 'test' stage.

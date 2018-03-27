@@ -26,14 +26,6 @@ Although the project is based on [Gradle], which is Groovy-based,
 you will need to install **Groovy**. We've tested this framework using Groovy
 `v2.4.11`.
 
-The pipelines are based on the [RDKit] Open-Source Cheminformatics Software
-and are best executed from within a suitably configured [Conda] environment.
-You may need to install some additional modules before you can run the tests,
-these dependencies are captured in our own `requiremenmts.txt` file and
-installed as normal:
-
-    $ pip install -r requiremenmts.txt
-
 >   The module utilities should support both Python 2 and 3 but we recommend
     any modules/pipelines you write support both flavours.
 
@@ -285,5 +277,3 @@ and upload them from the `src/python` directory: -
 [PIP]: https://pypi.python.org/pypi
 [Pipelines]: https://github.com/InformaticsMatters/pipelines.git
 [PyPI]: https://pypi.python.org/pypi
-[RDKit]: http://www.rdkit.org
-[Submodule]: https://git-scm.com/docs/gitsubmodules
