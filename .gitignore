@@ -15,3 +15,5 @@ work
 **/.eggs
 **/.DS_Store
 src/python/.coverage
+src/python/*.gz
+src/python/*.metadata
