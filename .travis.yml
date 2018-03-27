@@ -73,4 +73,3 @@ jobs:
       on:
         tags: true
         branch: master
-        condition: $TRAVIS_TAG =~ ^pypi*$
