@@ -18,7 +18,7 @@
 from __future__ import print_function
 import sys, gzip, json, uuid
 from math import log10, floor
-from . import BasicObjectWriter, TsvWriter
+from pipelines_utils import BasicObjectWriter, TsvWriter
 
 def log(*args, **kwargs):
     """
@@ -28,7 +28,7 @@ def log(*args, **kwargs):
 
 def round_sig(x, sig):
     """Round the number to the specified number of significant figures"""
-    return round(x,a sig-int(floor(log10(abs(x))))-1)
+    return round(x, sig - int(floor(log10(abs(x))))-1)
 
 def add_default_input_args(parser):
     parser.add_argument('-i', '--input', help="Input file, if not defined the STDIN is used")
