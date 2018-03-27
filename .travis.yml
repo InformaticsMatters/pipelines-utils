@@ -61,7 +61,7 @@ before_deploy:
 deploy:
   on:
     branch: master
-    condition: $TRAVIS_TAG =~ ^pypi\-*$
+    condition: $TRAVIS_TAG =~ ^pypi*$
   provider: pypi
   user: informaticsmatters
   password:
