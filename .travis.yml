@@ -20,7 +20,7 @@ os:
 stages:
 - name: test
 - name: deploy
-  if: tag =~ ^pypi\-?* and branch = master
+  if: tag =~ ^pypi\-?*
 
 # Run Travis on all branches
 # (normally it only runs on master)
