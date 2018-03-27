@@ -1,10 +1,4 @@
 # Additional modules we depend on.
 # Required from within an RDKIT Conda environment
 
-im-pipelines-utils == 1.0.*
-
-matplotlib == 2.1.1
-molvs == 0.0.9
-scikit-learn == 0.19.1
-scipy == 1.0.0
-standardiser == 0.1.9
+# Nothing

@@ -1,9 +1,9 @@
 import os
 import unittest
 
-from rdkit_utils import StreamJsonListLoader
+from pipelines_utils import StreamJsonListLoader
 
-DATA_DIR = os.path.join('test', 'rdkit_utils', 'data')
+DATA_DIR = os.path.join('test', 'pipelines_utils', 'data')
 
 class StreamJsonListLoaderTestCase(unittest.TestCase):
 
