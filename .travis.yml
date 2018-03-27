@@ -68,7 +68,7 @@ jobs:
     - provider: pypi
       user: informaticsmatters
       password:
-        secure: "WfnusbdpuGVQ1YGpZ1uPKXrp7/yl5IJj/l38pH74DbicKbLze+weAYmR/TCm5lOOgtuOVOdZu300NIU5bmrSMWL6QXAX6hNA3COJERmDKrjNBwvLHsOK/0zq5T3CEYUUuFwrngshZfDyoL6JW0gGyjV/Ep7D/gO5J00/L2B1YtGTxOanOiwcwuSMikrs7zIc+PBuRHw4Zzs7+GuBsVFIvnhwMhADiE/Tc9NLx/iRNtcS5OWRXcvh4eKOguxgmDH1Y/gNH6dwbWYYSsSdT5kq/ViA8zKMquHSyhYPHBnvSA+lH2L4pEhOGipxwlU5xhLWI9Tpp627wDzTsde5CwuXzErs3CRQhTB18ZKwWkXyHAuuijvNctKP8jGh12/bO2CJRH6jCXU1gLpJJ9NT+m7un7yeKI7CRVIoMR5+Kk+gMIJNqL5uAUxkMcBhfogDrPKja8zH+9xymY2TJ25VG5TP7nT2rctVUuQ57VSDpCQa2uqNwDw94kb6zGfJhtBySOgJOdJ72xVt9Oc6GcKFEi87wgdt/AZt/b5zcsyiVSjqwuACax4Anr3moDc6bvpRmo62Wnat33C+9jjQfuvpQW3DjfTtrvlGA7OsHLgEgC6Q0EZwGKg3bsNwzIPdkLQ5ZJtm31o7726+oLXnCWeAPZzZgYkYkT8JjGZns726s+/4xps="
+        secure: "TLkViW8ZQN9K4WTtorfKyj9TOn9nFwUwCRToSUgNoV2udp3sR53mEV/4LWR7QB2YOHpIKrn/0CMJaUyCzy7Jhofqm+0//6N7Vy6fJ0GzMRxbkn4/Qi3B+7W4B0u9HbeittOcSzZkOKEGjBF2Wzo0opt6GN5kttnQPj8oyeGo/hSe/MLe2deV/2qrnaP+nN7ES5/SrNoj8SLFvFKoJ8Guh+9+5hYbKB+G4wOCW0kvIGQc7GFQ8x8xVqB9HrFszPiJN4iL/j2TtxLkAK+3Yp5COqkLTZ6X7JZHg/nKGxkabioxkByAK7/U01nYEvht21o2tDO3r+oTMPyE2OQsVzX0PDsS5aJC/ze1jegBKsdXjJMHrsvtoVe+660Eo+F1icOlG0rXsEC75OWO04TZMo/+5CXzh2Hwq/T1kWNawlDqdgpXbHp+wbyPIX5TCDlHekVqrgvdZoCYBJAJ56Lc0RaB2zrinFZOyvbHGH0/gIrzy9TwQPXeH5TDIbJWVOyduInEIUzcgpsf8FxLUeKbCjUA60ghVk/LOBFAVo5XDXm6gOChp0sdUVpuOQ7dhiRUpvNzE8Cdtd3PTUKhevT+OECImFpj6GV4Wj1ebUsJwig/TVHksx90mNGNyWVnSriXMQi1XEeTz5/YT1GTUiKxrDa92gKEW9XkU/NdvsswmSL1OsM="
       distributions: bdist_wheel
       on:
         tags: true
