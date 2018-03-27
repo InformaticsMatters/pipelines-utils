@@ -16,14 +16,15 @@ os:
 # (`test` is basically a travis default default so we don't need to name it).
 # But we do want a `deploy` stage that only runs if the the commit is tagged
 # (with a label that begins `pypi-` and it's on the master branch).
-# Our tags for PyPI distributions will be of the form `pypi-1.0.1`.
+# Our tags for PyPI distributions will be of the form `pypi-1.0.1`.
 stages:
 - name: test
   if: not tag is present
 - name: deploy
+  if: tag =~ ^pypi*$ and branch = master
 
 # Run Travis on all branches
-# (normally it only runs on master)
+# (normally it only runs on master)
 branches:
   only:
   - "/.*/"
@@ -45,7 +46,7 @@ script:
 
 # Execution jobs.
 # Let's run the script against various Python versions
-# and then move to our deploy stage. Travis will only run the deploy stage
+# and then move to our deploy stage. Travis will only run the deploy stage
 # when the test stages have passed. Deployment will also only execute
 # if this triggering commit is tagged and we're on the master branch.
 jobs:
@@ -54,15 +55,18 @@ jobs:
   - python: 3.5
   - python: 3.6
 
-before_deploy:
-- cd ${TRAVIS_BUILD_DIR}/src/python
-
-deploy:
-  on:
-    branch: master
-    condition: $TRAVIS_TAG =~ ^pypi*$
-  provider: pypi
-  user: informaticsmatters
-  password:
-    secure: "FgNbSAEtomSpBwIF26CXF1f+8z4FWAYVC6aae5ZTTRvUA9rjhj64OKzdxe4hRYnrw4PLk615wNbJSwDm4NQds8hX2MJxwSa+oLOdwuDXq4dYikJuT1YIaMgNAKN+gjLNEf+vSpLDbyG8QIJgLgjEHVx5rxNrvGglXPg52jN1mVZvoL79UXgHzjFmlG0UuaU5AEUL57Sv9NX5iOUAdHWr+v5hNmeAq0Nz92e4O2byLoizCsdbPd20K9P56aL/Lo/hwO1mVcR5BLz2/oQBynMiQGlp+yrg+lbxc3HSYUaM/hMvwK08Y5ITkQzoqNoClyeuw43FsqInvs8DjGRFCZNOpf1gWSNY7bHjIUvCqVLPZu5Cd76B0SQCd8guFwDawOc0HWKc1g7P1XZ3h2BH6XkiPohJT2zSdYboRwSHY658dobJXcj5Q4ZUp73qhRoKb/8XXVUzQwYCp2Hp3dRvuGjJXVCb5VX4VzJQXJqMHjK8+Z0QzPvN+YOoAEFgE3Yxjykov3TeSs+AHdLTHq9osWv/zAPGSVxzBjgFnUp8qT8iwz5gPlYqukHudvQx2nJAH73CVSDJYCiecYqVFdPxFw7xCg2MYCqlrlvONMsSEPGssyngX8gKzrSQxmunCf3r0QzHl9/mXvndHEOQyI1NmzNHPB8+FItYT1UlOnIcr9eOC8k="
-  distributions: bdist_wheel
+  - stage: deploy
+    python: 3.6
+    # No need to re-run scripted commands here.
+    # They're all part of the above test stages.
+    script: skip
+    # Our module and setup.py is not located in the root of the project.
+    # Move to it before we deploy.
+    before_deploy:
+    - cd ${TRAVIS_BUILD_DIR}/src/python
+    deploy:
+      provider: pypi
+      user: informaticsmatters
+      password:
+        secure: "FgNbSAEtomSpBwIF26CXF1f+8z4FWAYVC6aae5ZTTRvUA9rjhj64OKzdxe4hRYnrw4PLk615wNbJSwDm4NQds8hX2MJxwSa+oLOdwuDXq4dYikJuT1YIaMgNAKN+gjLNEf+vSpLDbyG8QIJgLgjEHVx5rxNrvGglXPg52jN1mVZvoL79UXgHzjFmlG0UuaU5AEUL57Sv9NX5iOUAdHWr+v5hNmeAq0Nz92e4O2byLoizCsdbPd20K9P56aL/Lo/hwO1mVcR5BLz2/oQBynMiQGlp+yrg+lbxc3HSYUaM/hMvwK08Y5ITkQzoqNoClyeuw43FsqInvs8DjGRFCZNOpf1gWSNY7bHjIUvCqVLPZu5Cd76B0SQCd8guFwDawOc0HWKc1g7P1XZ3h2BH6XkiPohJT2zSdYboRwSHY658dobJXcj5Q4ZUp73qhRoKb/8XXVUzQwYCp2Hp3dRvuGjJXVCb5VX4VzJQXJqMHjK8+Z0QzPvN+YOoAEFgE3Yxjykov3TeSs+AHdLTHq9osWv/zAPGSVxzBjgFnUp8qT8iwz5gPlYqukHudvQx2nJAH73CVSDJYCiecYqVFdPxFw7xCg2MYCqlrlvONMsSEPGssyngX8gKzrSQxmunCf3r0QzHl9/mXvndHEOQyI1NmzNHPB8+FItYT1UlOnIcr9eOC8k="
+      distributions: bdist_wheel
