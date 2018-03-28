@@ -1,5 +1,7 @@
 import unittest
 
+import argparse
+
 from pipelines_utils import parameter_utils
 
 
@@ -63,3 +65,49 @@ class ParameterUtilsTestCase(unittest.TestCase):
         a, b, c, d, e, f, g = parameter_utils.expandParameters(t1, t2, t3, t4, t5, t6, t7)
         self.assertEquals([0.135, 0.675, 1.35], a)
         self.assertEquals([0.29, 0.23, 0.23], g)
+
+    def test_add_default_input_args_with_short_options(self):
+        """Checks ArgParse manipulation.
+        """
+        parser = argparse.ArgumentParser()
+
+        parameter_utils.add_default_input_args(parser)
+
+        result = parser.parse_args('-i inputfile -if sdf'.split())
+        self.assertEquals('inputfile', result.input)
+        self.assertEquals('sdf', result.informat)
+
+    def test_add_default_output_args_with_short_options(self):
+        """Checks ArgParse manipulation.
+        """
+        parser = argparse.ArgumentParser()
+
+        parameter_utils.add_default_output_args(parser)
+
+        result = parser.parse_args('-o outputfile -of sdf --meta'.split())
+        self.assertEquals('outputfile', result.output)
+        self.assertEquals('sdf', result.outformat)
+        self.assertTrue(result.meta)
+
+    def test_add_default_input_args_with_long_options(self):
+        """Checks ArgParse manipulation.
+        """
+        parser = argparse.ArgumentParser()
+
+        parameter_utils.add_default_input_args(parser)
+
+        result = parser.parse_args('--input inputfile --informat sdf'.split())
+        self.assertEquals('inputfile', result.input)
+        self.assertEquals('sdf', result.informat)
+
+    def test_add_default_output_args_with_long_options(self):
+        """Checks ArgParse manipulation.
+        """
+        parser = argparse.ArgumentParser()
+
+        parameter_utils.add_default_output_args(parser)
+
+        result = parser.parse_args('--output outputfile --outformat sdf --meta'.split())
+        self.assertEquals('outputfile', result.output)
+        self.assertEquals('sdf', result.outformat)
+        self.assertTrue(result.meta)

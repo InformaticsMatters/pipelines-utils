@@ -2,7 +2,7 @@ import unittest
 
 import os
 
-from pipelines_utils import utils
+from pipelines_utils import parameter_utils, utils
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -69,3 +69,37 @@ class UtilsTestCase(unittest.TestCase):
         os.remove(m_filename)
         self.assertTrue(found_a)
         self.assertTrue(found_b)
+
+    def test_generate_molecule_object_dict_without_values(self):
+        """Checks molecule object creation without values.
+        """
+        source = 'COCC(=O)NC=1C=CC=C(NC(=O)C)C1'
+        format = 'smiles'
+        values = None
+
+        m = utils.generate_molecule_object_dict(source, format, values)
+
+        self.assertEquals(3, len(m))
+        self.assertTrue('uuid' in m)
+        self.assertTrue('source' in m)
+        self.assertTrue('format' in m)
+        self.assertEquals('smiles', m['format'])
+        self.assertEquals(source, m['source'])
+
+    def test_generate_molecule_object_dict_with_values(self):
+        """Checks molecule object creation with values.
+        """
+        source = 'COCC(=O)NC=1C=CC=C(NC(=O)C)C1'
+        format = 'smiles'
+        values = {'a':1}
+
+        m = utils.generate_molecule_object_dict(source, format, values)
+
+        self.assertEquals(4, len(m))
+        self.assertTrue('uuid' in m)
+        self.assertTrue('source' in m)
+        self.assertTrue('format' in m)
+        self.assertTrue('values' in m)
+        self.assertEquals('smiles', m['format'])
+        self.assertEquals(source, m['source'])
+        self.assertEquals(values, m['values'])
