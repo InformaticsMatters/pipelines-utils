@@ -50,7 +50,3 @@ class TsvWriter():
     def close(self):
         if self.file:
             self.file.close()
-
-
-
-

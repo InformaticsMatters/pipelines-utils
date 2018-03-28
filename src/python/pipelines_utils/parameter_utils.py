@@ -21,6 +21,31 @@ parameter values into lists/tuples.
 """
 
 
+def add_default_input_args(parser):
+    parser.add_argument('-i', '--input',
+                        help="Input file, if not defined the STDIN is used")
+    parser.add_argument('-if', '--informat', choices=['sdf', 'json'],
+                        help="Input format."
+                             " When using STDIN this must be specified.")
+
+
+def add_default_output_args(parser):
+    parser.add_argument('-o', '--output',
+                        help="Base name for output file (no extension)."
+                             " If not defined then SDTOUT is used for the"
+                             " structures and output is used as base name"
+                             " of the other files.")
+    parser.add_argument('-of', '--outformat', choices=['sdf', 'json'],
+                        help="Output format. Defaults to 'sdf'.")
+    parser.add_argument('--meta', action='store_true',
+                        help='Write metadata and metrics files')
+
+
+def add_default_io_args(parser):
+    add_default_input_args(parser)
+    add_default_output_args(parser)
+
+
 def splitValues(textStr):
     """Splits a comma-separated number sequence into a list (of floats).
     """

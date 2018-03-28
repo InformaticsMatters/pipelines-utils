@@ -14,57 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from __future__ import print_function
 import sys, gzip, json, uuid
 from math import log10, floor
 from pipelines_utils.BasicObjectWriter import BasicObjectWriter
 from pipelines_utils.TsvWriter import TsvWriter
 
+
 def log(*args, **kwargs):
-    """
-    Log output to STDERR
+    """Log output to STDERR
     """
     print(*args, file=sys.stderr, **kwargs)
 
+
 def round_sig(x, sig):
     """Round the number to the specified number of significant figures"""
-    return round(x, sig - int(floor(log10(abs(x))))-1)
-
-def add_default_input_args(parser):
-    parser.add_argument('-i', '--input', help="Input file, if not defined the STDIN is used")
-    parser.add_argument('-if', '--informat', choices=['sdf', 'json'], help="Input format. When using STDIN this must be specified.")
-
-def add_default_output_args(parser):
-    parser.add_argument('-o', '--output', help="Base name for output file (no extension). If not defined then SDTOUT is used for the structures and output is used as base name of the other files.")
-    parser.add_argument('-of', '--outformat', choices=['sdf', 'json'], help="Output format. Defaults to 'sdf'.")
-    parser.add_argument('--meta', action='store_true', help='Write metadata and metrics files')
-
-def add_default_io_args(parser):
-    add_default_input_args(parser)
-    add_default_output_args(parser)
-
-
-def default_open_input_output(inputDef, inputFormat, outputDef, defaultOutput, outputFormat, thinOutput=False, valueClassMappings=None,
-                              datasetMetaProps=None, fieldMetaProps=None):
-    """Default approach to handling the inputs and outputs"""
-    input, suppl = default_open_input(inputDef, inputFormat)
-    output,writer,outputBase = default_open_output(outputDef, defaultOutput, outputFormat, thinOutput=thinOutput,
-                                                   valueClassMappings=valueClassMappings, datasetMetaProps=datasetMetaProps, fieldMetaProps=fieldMetaProps)
-    return input,output,suppl,writer,outputBase
-
-
-def default_open_input(inputDef, inputFormat):
-    if not inputDef and not inputFormat:
-        raise ValueError('Must specify either an input file name or an input format (or both)')
-    elif inputFormat == 'sdf' or (inputDef and (inputDef.lower().endswith('.sdf') or inputDef.lower().endswith('.sdf.gz'))):
-        input, suppl = default_open_input_sdf(inputDef)
-    elif inputFormat == 'json' or (inputDef and (inputDef.lower().endswith('.data') or inputDef.lower().endswith('.data.gz'))):
-        input, suppl = default_open_input_json(inputDef)
-    else:
-        raise ValueError('Unsupported input format')
-
-    return input, suppl
+    return round(x, sig - int(floor(log10(abs(x)))) - 1)
 
 
 def open_file(filename):
@@ -75,8 +40,11 @@ def open_file(filename):
         return open(filename, 'r')
 
 
-def create_simple_writer(outputDef, defaultOutput, outputFormat, fieldNames, compress=True, valueClassMappings=None, datasetMetaProps=None, fieldMetaProps=None):
-    """Create a simple writer suitable for writing flat data e.g. as BasicObject or TSV"""
+def create_simple_writer(outputDef, defaultOutput, outputFormat, fieldNames,
+                         compress=True, valueClassMappings=None,
+                         datasetMetaProps=None, fieldMetaProps=None):
+    """Create a simple writer suitable for writing flat data
+    e.g. as BasicObject or TSV."""
 
     if not outputDef:
         outputBase = defaultOutput
@@ -84,9 +52,8 @@ def create_simple_writer(outputDef, defaultOutput, outputFormat, fieldNames, com
         outputBase = outputDef
 
     if outputFormat == 'json':
-
-        write_squonk_datasetmetadata(outputBase, True, valueClassMappings, datasetMetaProps, fieldMetaProps)
-
+        write_squonk_datasetmetadata(outputBase, True, valueClassMappings,
+                                     datasetMetaProps, fieldMetaProps)
         return BasicObjectWriter(open_output(outputDef, 'data', compress)), outputBase
 
     elif outputFormat == 'tsv':
@@ -94,6 +61,7 @@ def create_simple_writer(outputDef, defaultOutput, outputFormat, fieldNames, com
 
     else:
         raise ValueError("Unsupported format: " + outputFormat)
+
 
 def open_output(basename, ext, compress):
     if basename:
@@ -109,6 +77,7 @@ def open_output(basename, ext, compress):
             return sys.stdout
         else:
             return sys.stdout
+
 
 def write_squonk_datasetmetadata(outputBase, thinOutput, valueClassMappings, datasetMetaProps, fieldMetaProps):
     """This is a temp hack to write the minimal metadata that Squonk needs.
@@ -150,7 +119,8 @@ def write_squonk_datasetmetadata(outputBase, thinOutput, valueClassMappings, dat
 def write_metrics(baseName, values):
     """Write the metrics data
 
-    :param baseName: The base name of the output files. e.g. extensions will be appended to this base name
+    :param baseName: The base name of the output files.
+                     e.g. extensions will be appended to this base name
     :param values dictionary of values to write
     """
     m = open(baseName  + '_metrics.txt', 'w')
@@ -161,7 +131,8 @@ def write_metrics(baseName, values):
 
 
 def generate_molecule_object_dict(source, format, values):
-    """Generate a dictionary that represents a Squonk MoleculeObject when writen as JSON
+    """Generate a dictionary that represents a Squonk MoleculeObject when
+    writen as JSON
 
     :param source: Molecules in molfile or smiles format
     :param format: The format of the molecule. Either 'mol' or 'smiles'
