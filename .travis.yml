@@ -71,6 +71,4 @@ jobs:
         secure: "TLkViW8ZQN9K4WTtorfKyj9TOn9nFwUwCRToSUgNoV2udp3sR53mEV/4LWR7QB2YOHpIKrn/0CMJaUyCzy7Jhofqm+0//6N7Vy6fJ0GzMRxbkn4/Qi3B+7W4B0u9HbeittOcSzZkOKEGjBF2Wzo0opt6GN5kttnQPj8oyeGo/hSe/MLe2deV/2qrnaP+nN7ES5/SrNoj8SLFvFKoJ8Guh+9+5hYbKB+G4wOCW0kvIGQc7GFQ8x8xVqB9HrFszPiJN4iL/j2TtxLkAK+3Yp5COqkLTZ6X7JZHg/nKGxkabioxkByAK7/U01nYEvht21o2tDO3r+oTMPyE2OQsVzX0PDsS5aJC/ze1jegBKsdXjJMHrsvtoVe+660Eo+F1icOlG0rXsEC75OWO04TZMo/+5CXzh2Hwq/T1kWNawlDqdgpXbHp+wbyPIX5TCDlHekVqrgvdZoCYBJAJ56Lc0RaB2zrinFZOyvbHGH0/gIrzy9TwQPXeH5TDIbJWVOyduInEIUzcgpsf8FxLUeKbCjUA60ghVk/LOBFAVo5XDXm6gOChp0sdUVpuOQ7dhiRUpvNzE8Cdtd3PTUKhevT+OECImFpj6GV4Wj1ebUsJwig/TVHksx90mNGNyWVnSriXMQi1XEeTz5/YT1GTUiKxrDa92gKEW9XkU/NdvsswmSL1OsM="
       distributions: bdist_wheel
       on:
-        tags: true
-        branch: master
         condition: $TRAVIS_TAG =~ ^pypi
