@@ -51,7 +51,6 @@ class Tester {
     String sdExt = '.dsd.json'
     String optionPrefix = 'arg.'
     String metricsFile = 'output_metrics.txt'
-    String outputRegex = '(-o|--output) (\\S+)'
     String dumpOutPrefix = '   #'
     String dumpErrPrefix = '   |'
     String setupPrefix = 'setup_'
@@ -888,23 +887,9 @@ class Tester {
         test_pout = env_pout ? env_pout : defaultOutputPath
         test_pout += File.separator + testSubDir
 
-        // Construct and make the path for any '-o' output
+        // Construct and make the path for any 'POUT' output
         File testOutputPath = new File(test_pout)
         testOutputPath.mkdir()
-
-        // Redirect the '-o' option, if there is a '-o' in the command
-        def oOption = pipelineCommand =~ /$outputRegex/
-        if (oOption.count > 0) {
-
-            // Redirect output
-            String outputFileBaseName = oOption[0][-1]
-            String testOutputFile = '\\${POUT}' + outputFileBaseName
-            // Now swap-out the original '-o'...
-            String redirectedOutputOption = "-o ${testOutputFile}"
-            pipelineCommand = pipelineCommand.replaceAll(/$outputRegex/,
-                    redirectedOutputOption)
-
-        }
 
         Log.info('Command', pipelineCommand)
 
