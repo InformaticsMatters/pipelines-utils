@@ -35,7 +35,7 @@ def round_sig(x, sig):
 def open_file(filename):
     """Open the file gunzipping it if it ends with .gz"""
     if filename.lower().endswith('.gz'):
-        return gzip.open(filename)
+        return gzip.open(filename, 'rt')
     else:
         return open(filename, 'r')
 
@@ -68,7 +68,7 @@ def open_output(basename, ext, compress):
         fname = basename + '.' + ext
         if compress:
             fname += ".gz"
-            return gzip.open(fname, 'w+')
+            return gzip.open(fname, 'at')
         else:
             return open(fname, 'w+')
     else:
