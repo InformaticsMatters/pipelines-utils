@@ -118,6 +118,11 @@
         stderr: [ 'Computation = 4.5673' ],
         stdout: [ 'Result = SUCCESS' ],
 
+        // If your test causes the pipeline to exit with a non-zero exit code
+        // you need to declare this with an `exit_error` block.
+        // The block defines a string that is expected to be found on stderr.
+        exit_error: 'Command-line error',
+
         // Input files (optional)
         //
         // If your pipeline expects input files you can specify any file in

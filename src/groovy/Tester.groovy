@@ -794,6 +794,7 @@ class Tester {
         def paramsBlock = section.value['params']
         def stderrBlock = section.value['stderr']
         def stdoutBlock = section.value['stdout']
+        def exitErrorBlock = section.value['exit_error']
         def inputBlock = section.value['input']
         def createsBlock = section.value['creates']
         def metricsBlock = section.value['metrics']
@@ -923,6 +924,7 @@ class Tester {
         StringBuilder sout
         StringBuilder serr
         int exitValue
+        boolean expectedExit    // If we got a non-zero exit but it was expected
         boolean timeout
         if (imageName && inDocker) {
             Log.info('Docker', 'Yes')
@@ -1057,14 +1059,33 @@ class Tester {
             }
 
         } else {
+
+            expectedExit = false
             if (timeout) {
                 Log.err("Execution was terminated" +
-                    " (taking longer than ${testTimeoutSeconds}S)")
+                        " (taking longer than ${testTimeoutSeconds}S)")
+            } else {
+                // Otherwise, was an 'exit_error' defined for this test?
+                if (exitErrorBlock != null) {
+                    String stderrExpr = escapeString(exitErrorBlock)
+                    def finder = (serr =~ /$stderrExpr/)
+                    if (finder.count == 0) {
+                        Log.err("Test failed." +
+                                " This was expected but did not see '$exitErrorBlock'" +
+                                " in the command's stderr")
+                    } else {
+                        expectedExit = true
+                    }
+                }
             }
-            Log.err("Pipeline exitValue=$exitValue. <stderr> follows...")
+
+            if (!expectedExit) {
+                Log.err("Pipeline exitValue=$exitValue. <stderr> follows...")
+            }
         }
 
-        if (exitValue == 0 && validated) {
+        if (validated &&
+            (exitValue == 0 || (exitValue != 0 && expectedExit) )) {
             testsPassed += 1
             Log.info('Result', 'SUCCESS')
         } else {
