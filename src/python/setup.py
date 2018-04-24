@@ -13,7 +13,7 @@ def get_long_description():
 setup(
 
     name='im-pipelines-utils',
-    version='2.2.2',
+    version='2.3.0',
     author='Alan Christie',
     author_email='achristie@informaticsmatters.com',
     url='https://github.com/InformaticsMatters/pipelines-utils',
@@ -48,7 +48,7 @@ setup(
     ],
 
     # Root of the test suite
-    test_suite = 'test',
+    test_suite='test',
 
     zip_safe=False,
 

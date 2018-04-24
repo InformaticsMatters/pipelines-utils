@@ -103,3 +103,10 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEquals('smiles', m['format'])
         self.assertEquals(source, m['source'])
         self.assertEquals(values, m['values'])
+
+    def test_get_undecorated_calling_module(self):
+        """Checks we can get our calling module.
+        """
+        m = utils.get_undecorated_calling_module()
+
+        self.assertEquals('case', m)
