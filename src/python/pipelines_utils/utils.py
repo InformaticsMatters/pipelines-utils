@@ -154,5 +154,5 @@ def get_undecorated_calling_module():
     frame = inspect.stack()[2]
     module = inspect.getmodule(frame[0])
     # Return the module's file (the last in the path)
-    # and omit the trailing '.py'...
-    return os.path.split(module.__file__)[-1][:-3]
+    # and omit the extension...
+    return os.path.split(module.__file__)[-1].split('.')[0]
