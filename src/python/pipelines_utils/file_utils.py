@@ -34,15 +34,15 @@ def _get_file_root():
     return os.environ.get(FILE_ROOT_ENV, '/root/sd-files')
 
 
-def pick(file, namespace=None):
+def pick(filename, namespace=None):
     """Returns the named file for the given namespace
     (the calling module's name). Files are expected to be located in
     `<_FILE_ROOT>/<namespace>`. If the file does not exist `None` is returned.
 
     If `xyx_module.py` makes a call to `pick` the namespace is `xyz_module`.
 
-    :param file: The file, whose path is required.
-    :type file: ``str``
+    :param filename: The file, whose path is required.
+    :type filename: ``str``
     :param namespace: An optional namespace (sub-directory of the file root).
                       If not provided it is calculated automatically.
     :type namespace: ``str``
@@ -51,18 +51,20 @@ def pick(file, namespace=None):
     """
     if namespace is None:
         namespace = utils.get_undecorated_calling_module()
-    file_path = os.path.join(_get_file_root(), namespace, file)
+    file_path = os.path.join(_get_file_root(), namespace, filename)
     return file_path if os.path.isfile(file_path) else None
 
 
-def pick_sdf(file, namespace=None):
+def pick_sdf(filename, namespace=None):
     """Returns a full path to the chosen SDF file. The supplied file
     is not expected to contain the SDF extension, this is added automatically.
 
+    :param filename: The SDF file basename, whose path is required.
+    :type filename: ``str``
     :param namespace: An optional namespace (sub-directory of the file root).
                       If not provided it is calculated automatically.
     :type namespace: ``str``
     """
     if namespace is None:
         namespace = utils.get_undecorated_calling_module()
-    return pick(file + _SDF_EXT, namespace)
+    return pick(filename + _SDF_EXT, namespace)
