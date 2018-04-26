@@ -18,10 +18,11 @@ from __future__ import print_function
 import os
 from . import utils
 
-# Files are normally located in sub-directories of the pipeline module
-# path. For example a pipeline module 'pipeline_a.py' in 'pipelines/demo'
-# that expects to use a file or SDF picker would place its files in
-# the directory 'pipelines/demo/pipeline_a'.
+# Files are normally located in sub-directories of the pipeline module path.
+# For example a pipeline module 'pipeline_a.py'  that expects to use a file
+# or SDF picker would place its files in the directory
+# 'pipelines/demo/pipeline_a'.
+
 
 def pick(filename, directory=None):
     """Returns the named file. If directory is not specified the file is
@@ -67,10 +68,10 @@ def pick_sdf(filename, directory=None):
         # Remove the CWD and the anticipated '/' from the front of the module
         directory = directory[len(os.getcwd()) + 1:]
 
-#    print("SDF-FILE=%s" % directory)
     file_path = os.path.join(directory, filename)
-    if os.path.isfile(file_path + '.sdf.gz') or \
-            os.path.isfile(file_path + '.sdf'):
-        return file_path
+    if os.path.isfile(file_path + '.sdf.gz'):
+        return file_path + '.sdf.gz'
+    elif os.path.isfile(file_path + '.sdf'):
+        return file_path + '.sdf'
     # Couldn't find a suitable SDF file
     return None
