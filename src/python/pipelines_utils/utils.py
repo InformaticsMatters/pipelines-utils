@@ -132,7 +132,7 @@ def write_metrics(baseName, values):
 
 def generate_molecule_object_dict(source, format, values):
     """Generate a dictionary that represents a Squonk MoleculeObject when
-    writen as JSON
+    written as JSON
 
     :param source: Molecules in molfile or smiles format
     :param format: The format of the molecule. Either 'mol' or 'smiles'
