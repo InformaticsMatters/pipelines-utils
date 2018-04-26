@@ -5,15 +5,24 @@
 #
 # Jan 2018
 
+import platform
 from setuptools import setup, find_packages
+
+# By default the test suite is the root test suite.
+# Unless it's Python 2.
+_TEST_SUITE = 'test'
+if int(platform.python_version_tuple()[0]) == 2:
+    _TEST_SUITE = 'test.python2_3'
+
 
 def get_long_description():
     return open('README.rst').read()
 
+
 setup(
 
     name='im-pipelines-utils',
-    version='2.2.2',
+    version='2.3.0',
     author='Alan Christie',
     author_email='achristie@informaticsmatters.com',
     url='https://github.com/InformaticsMatters/pipelines-utils',
@@ -48,7 +57,7 @@ setup(
     ],
 
     # Root of the test suite
-    test_suite = 'test',
+    test_suite=_TEST_SUITE,
 
     zip_safe=False,
 

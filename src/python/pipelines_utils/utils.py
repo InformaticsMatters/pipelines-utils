@@ -15,7 +15,7 @@
 # limitations under the License.
 
 from __future__ import print_function
-import sys, gzip, json, uuid
+import inspect, os, sys, gzip, json, uuid
 from math import log10, floor
 from pipelines_utils.BasicObjectWriter import BasicObjectWriter
 from pipelines_utils.TsvWriter import TsvWriter
@@ -132,7 +132,7 @@ def write_metrics(baseName, values):
 
 def generate_molecule_object_dict(source, format, values):
     """Generate a dictionary that represents a Squonk MoleculeObject when
-    writen as JSON
+    written as JSON
 
     :param source: Molecules in molfile or smiles format
     :param format: The format of the molecule. Either 'mol' or 'smiles'
@@ -142,3 +142,20 @@ def generate_molecule_object_dict(source, format, values):
     if values:
         m["values"] = values
     return m
+
+
+def get_undecorated_calling_module():
+    """Returns the module name of the caller's calling module.
+    If a.py makes a call to b() in b.py, b() can get the name of the
+    calling module (i.e. a) by calling get_undecorated_calling_module().
+
+    The module also includes its full path.
+
+    As the name suggests, this does not work for decorated functions.
+    """
+    frame = inspect.stack()[2]
+    module = inspect.getmodule(frame[0])
+    # Return the module's file and its path
+    # and omit the extension...
+    # so /a/c.py becomes /a/c
+    return module.__file__.rsplit('.', 1)[0]

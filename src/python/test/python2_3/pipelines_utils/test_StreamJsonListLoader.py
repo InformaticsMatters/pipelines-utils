@@ -3,7 +3,8 @@ import unittest
 
 from pipelines_utils import StreamJsonListLoader
 
-DATA_DIR = os.path.join('test', 'pipelines_utils', 'data')
+DATA_DIR = os.path.join('test', 'python2_3', 'pipelines_utils', 'data')
+
 
 class StreamJsonListLoaderTestCase(unittest.TestCase):
 
