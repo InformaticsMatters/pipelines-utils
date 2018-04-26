@@ -28,14 +28,14 @@ class FileUtilsTestCase(unittest.TestCase):
         """Test picking a file.
         We expect to be given a path to 'test_pick.sdf.gz'
         """
-        self.assertEquals(os.path.join(_TEST_FILE_ROOT, 'test_sdf_gz.sdf.gz'),
+        self.assertEquals(os.path.join(_TEST_FILE_ROOT, 'test_sdf_gz'),
                           file_utils.pick_sdf('test_sdf_gz', _TEST_FILE_ROOT))
 
     def test_pick_sdf(self):
         """Test picking a file.
         We expect to be given a path to 'test_pick.sdf'
         """
-        self.assertEquals(os.path.join(_TEST_FILE_ROOT, 'test_sdf.sdf'),
+        self.assertEquals(os.path.join(_TEST_FILE_ROOT, 'test_sdf'),
                           file_utils.pick_sdf('test_sdf', _TEST_FILE_ROOT))
 
     def test_pick_unknown_sdf_file(self):
