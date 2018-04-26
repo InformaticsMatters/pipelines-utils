@@ -6,7 +6,7 @@ from pipelines_utils import file_utils
 
 # Root of test files,
 # relative to test execution directory (src/python)
-_TEST_FILE_ROOT = os.path.join('test', 'python2_3', 'pipelines_utils', 'files')
+_TEST_FILE_ROOT = os.path.join('test', 'python3', 'pipelines_utils', 'files')
 
 
 class FileUtilsTestCase(unittest.TestCase):
