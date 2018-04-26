@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import unittest
 
 import os
@@ -16,7 +13,7 @@ class FileUtilsTestCase(unittest.TestCase):
 
     def test_pick(self):
         """Test picking a file.
-        We expect to find `test_pick.file`
+        We expect to find 'test_pick.file'
         """
         self.assertEquals(os.path.join(_TEST_FILE_ROOT, 'test_pick.text'),
                           file_utils.pick('test_pick.text', _TEST_FILE_ROOT))
@@ -29,14 +26,14 @@ class FileUtilsTestCase(unittest.TestCase):
 
     def test_pick_sdf_gz(self):
         """Test picking a file.
-        We expect to find `test_pick..sdf.gz`
+        We expect to be given a path to 'test_pick.sdf.gz'
         """
         self.assertEquals(os.path.join(_TEST_FILE_ROOT, 'test_sdf_gz.sdf.gz'),
                           file_utils.pick_sdf('test_sdf_gz', _TEST_FILE_ROOT))
 
     def test_pick_sdf(self):
         """Test picking a file.
-        We expect to find `test_pick..sdf.gz`
+        We expect to be given a path to 'test_pick.sdf'
         """
         self.assertEquals(os.path.join(_TEST_FILE_ROOT, 'test_sdf.sdf'),
                           file_utils.pick_sdf('test_sdf', _TEST_FILE_ROOT))
