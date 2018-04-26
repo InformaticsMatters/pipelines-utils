@@ -40,8 +40,11 @@ def pick(filename, directory=None):
     """
     if directory is None:
         directory = utils.get_undecorated_calling_module()
-        # Remove the CWD and the anticipated '/' from the front of the module
-        directory = directory[len(os.getcwd()) + 1:]
+        # If the 'cwd' is not '/output' (which indicates we're in a Container)
+        # then remove the CWD and the anticipated '/'
+        # from the front of the module
+        if os.getcwd() not in ['/output']:
+            directory = directory[len(os.getcwd()) + 1:]
 
     file_path = os.path.join(directory, filename)
     return file_path if os.path.isfile(file_path) else None
@@ -65,8 +68,11 @@ def pick_sdf(filename, directory=None):
     """
     if directory is None:
         directory = utils.get_undecorated_calling_module()
-        # Remove the CWD and the anticipated '/' from the front of the module
-        directory = directory[len(os.getcwd()) + 1:]
+        # If the 'cwd' is not '/output' (which indicates we're in a Container)
+        # then remove the CWD and the anticipated '/'
+        # from the front of the module
+        if os.getcwd() not in ['/output']:
+            directory = directory[len(os.getcwd()) + 1:]
 
     file_path = os.path.join(directory, filename)
     if os.path.isfile(file_path + '.sdf.gz'):
