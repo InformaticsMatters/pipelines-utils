@@ -1,5 +1,0 @@
-# Additional modules we depend on.
-# Required from within an RDKIT Conda environment
-
-im-pipelines-utils == 2.3.*
-im-pipelines-utils-rdkit == 1.4.*
