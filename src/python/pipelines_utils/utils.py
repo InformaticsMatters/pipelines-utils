@@ -146,8 +146,8 @@ def generate_molecule_object_dict(source, format, values):
 
 def get_undecorated_calling_module():
     """Returns the module name of the caller's calling module.
-    If `a.py` makes a call to `b()` in `b.py`, `b()` can get the name of the
-    calling module (i.e. `a`) by calling `get_undecorated_calling_module()`.
+    If a.py makes a call to b() in b.py, b() can get the name of the
+    calling module (i.e. a) by calling get_undecorated_calling_module().
 
     The module also includes its full path.
 
@@ -157,5 +157,5 @@ def get_undecorated_calling_module():
     module = inspect.getmodule(frame[0])
     # Return the module's file and its path
     # and omit the extension...
-    # /a/b/c/d.pyc becomes /a/b/c/d
+    # so /a/c.py becomes /a/c
     return module.__file__.rsplit('.', 1)[0]
