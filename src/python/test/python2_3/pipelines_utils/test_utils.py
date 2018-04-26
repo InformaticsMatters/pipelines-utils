@@ -109,4 +109,4 @@ class UtilsTestCase(unittest.TestCase):
         """
         m = utils.get_undecorated_calling_module()
 
-        self.assertEquals('case', m)
+        self.assertTrue(m.endswith('case'))
