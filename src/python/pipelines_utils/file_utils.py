@@ -18,53 +18,55 @@ from __future__ import print_function
 import os
 from . import utils
 
-# The root of the Service Descriptor file directory.
-# Files are located in here within directories based on the name
-# of the calling module, aka the`namespace`.
-FILE_ROOT_ENV = 'FILE_UTILS_FILE_ROOT'
-# Default sdf file extension
-_SDF_EXT = '.sdf.gz'
+# Files are normally located in sub-directories of the pipeline module
+# path. For example a pipeline module `pipeline_a.py` in `pipelines/demo`
+# that expects to use a file or SDF picker would place its files in
+# the directory `pipelines/demo/pipeline_a`.
 
-
-def _get_file_root():
-    """Returns the file root.
-    A function to allow dynamic environment changes during testing -
-    i.e. environment read during the calls rather than statically.
-    """
-    return os.environ.get(FILE_ROOT_ENV, '/root/sd-files')
-
-
-def pick(filename, namespace=None):
-    """Returns the named file for the given namespace
-    (the calling module's name). Files are expected to be located in
-    `<_FILE_ROOT>/<namespace>`. If the file does not exist `None` is returned.
-
-    If `xyx_module.py` makes a call to `pick` the namespace is `xyz_module`.
+def pick(filename, directory=None):
+    """Returns the named file. If directory is not specified the file is
+    expected to be located in a sub-directory whose name matches
+    that of the calling module otherwise the file is expected to be found in
+    the named directory.
 
     :param filename: The file, whose path is required.
     :type filename: ``str``
-    :param namespace: An optional namespace (sub-directory of the file root).
+    :param directory: An optional directory.
                       If not provided it is calculated automatically.
-    :type namespace: ``str``
+    :type directory: ``str``
     :return: The full path to the file, or None if it does not exist
     :rtype: ``str``
     """
-    if namespace is None:
-        namespace = utils.get_undecorated_calling_module()
-    file_path = os.path.join(_get_file_root(), namespace, filename)
+    if directory is None:
+        directory = utils.get_undecorated_calling_module()
+
+    file_path = os.path.join(directory, filename)
     return file_path if os.path.isfile(file_path) else None
 
 
-def pick_sdf(filename, namespace=None):
+def pick_sdf(filename, directory=None):
     """Returns a full path to the chosen SDF file. The supplied file
-    is not expected to contain the SDF extension, this is added automatically.
+    is not expected to contain a recognised SD~F extension, this is added
+    automatically.
+    If a file with the extension `.sdf.gz` or `.sdf` is found the path to it
+    is returned. If his fails, `None` is returned.
 
     :param filename: The SDF file basename, whose path is required.
     :type filename: ``str``
-    :param namespace: An optional namespace (sub-directory of the file root).
+    :param directory: An optional directory.
                       If not provided it is calculated automatically.
-    :type namespace: ``str``
+    :type directory: ``str``
+    :return: The full path to the file, or None if it does not exist
+    :rtype: ``str``
     """
-    if namespace is None:
-        namespace = utils.get_undecorated_calling_module()
-    return pick(filename + _SDF_EXT, namespace)
+    if directory is None:
+        directory = utils.get_undecorated_calling_module()
+
+    file_path = os.path.join(directory, filename + '.sdf.gz')
+    if os.path.isfile(file_path):
+        return file_path
+    file_path = os.path.join(directory, filename + '.sdf')
+    if os.path.isfile(file_path):
+        return file_path
+    # Couldn't find a suitable SDF file
+    return None
