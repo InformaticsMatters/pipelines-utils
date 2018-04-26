@@ -32,7 +32,6 @@ branches:
 # Installation steps.
 # We have more than one requirements file.
 install:
-- pip install -r requirements.txt
 - pip install -r package-requirements.txt
 
 # Test/build execution steps...
