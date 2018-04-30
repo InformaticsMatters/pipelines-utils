@@ -225,7 +225,7 @@ tester by navigating to the sub-module in your pipelines project: -
     $ cd pipelines-utils
     $ ./gradlew runPipelineTester
 
-## Testing the pipeline utilities
+## Testing the pipeline utilities Python utilities
 The pipeline utilities consist of a number of Python-based modules
 that provide some common processing but are also distributed in the
 pipeline container images. The distributed can be tested using `setup.py`.
@@ -234,11 +234,34 @@ To test these modules run the following from the `src/python` directory: -
     $ pip install -r requirements.txt
     $ python setup.py test
 
-### Publishing the im-pipelines-utils package to PyPI
-The utilities are published to PyPI for easy installation
-(normally automatically by the Travis CI/CD framework
-when the repository is tagged on master).
+# Publishing the im-pipelines-utils package to PyPI
+The utilities are published to [PyPi] for easy installation
+(normally automatically by the Travis CI/CD framework).
 
+## Publishing via Travis
+We currently employ Travis to automate our tests and also to publish the
+Python module to PyPi.
+
+In order to publish a new release of the module you need to: -
+
+1.  **Update** the `version` value in `src/python/setup.py` with a new
+    release number and commit the change.
+2.  **Review** the `src/python/READEME.rst` file (which is the source of
+    the PyPi documentation. This rarely needs changing but it's worth
+    understanding where the PyPi documentation comes from.
+3.  **Tag** the repository. It's the tagging that instructs Travis
+    to publish the Python module to PyPi - it does not publish *every*
+    commit. In order to publish the module the tag *must* begin `pypi-`.
+    This allows you to use other tags and not cause a publication of the
+    module. By convention is you've set the `version` to `2.3.1` the tag would
+    be `pypi-2.3.1` (you can see the other *releases* or tags in the project
+    as an example). The the actual number is unimportant as it's the act of
+    tagging that causes a release. After tagging Travis pulls the code and
+    then builds and publishes the module.
+
+The travis instructions are all encoded in the project's `.travis.yml` file.
+
+## Publishing manually
 If you are going to publish the utilities yourself (not recommended) you will
 need our PyPI account details. For Informatics Matters you should add the
 following to your `~/.pypirc` file (or create one if you don't have one): -
