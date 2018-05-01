@@ -9,20 +9,16 @@ pipeline {
     stages {
 
         // --------------------------------------------------------------------
-        // Python Test
+        // Python Tests
         // --------------------------------------------------------------------
 
-        stage ('Test') {
+        stage ('Python2 Test') {
 
             agent {
                 label 'python-slave'
             }
 
             steps {
-
-                // Crete a Python2 environment and move into it.
-                sh 'python3.6 -m venv python3'
-                sh '. python3/bin/activate'
 
                 sh 'pip install -r package-requirements.txt'
 
