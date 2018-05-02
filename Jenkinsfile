@@ -65,7 +65,7 @@ pipeline {
     post {
 
         failure {
-            mail to: 'achristie@informaticsmatters.com',
+            mail to: 'achristie@informaticsmatters.com tdudgeon@informaticsmatters.com',
             subject: 'Failed PipelineUtils Job',
             body: "Something is wrong with the Squonk CI/CD PIPELINES-UTILS build ${env.BUILD_URL}"
         }
