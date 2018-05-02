@@ -12,21 +12,47 @@ pipeline {
         // Python Tests
         // --------------------------------------------------------------------
 
-        stage ('Python2 Test') {
+        stage('Unit Test') {
 
-            agent {
-                label 'python-slave'
-            }
+            parallel {
 
-            steps {
+                stage('Python 2.7') {
 
-                sh 'pip install -r package-requirements.txt'
+                    agent {
+                        label 'python-slave'
+                    }
 
-                dir('src/python') {
-                    sh 'coverage run setup.py test'
-                    sh 'coverage report'
-                    sh 'pyroma .'
-                    sh 'python setup.py bdist_wheel'
+                    steps {
+
+                        sh 'pip install -r package-requirements.txt'
+
+                        dir('src/python') {
+                            sh 'coverage run setup.py test'
+                            sh 'coverage report'
+                            sh 'pyroma .'
+                        }
+
+                    }
+                }
+
+                stage('Python 3.6') {
+
+                    agent {
+                        label 'python3-slave'
+                    }
+
+                    steps {
+
+                        sh 'pip install -r package-requirements.txt'
+
+                        dir('src/python') {
+                            sh 'coverage run setup.py test'
+                            sh 'coverage report'
+                            sh 'pyroma .'
+                        }
+
+                    }
+
                 }
 
             }
