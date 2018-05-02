@@ -24,7 +24,7 @@ pipeline {
 
                     steps {
 
-                        sh 'pip install -r package-requirements.txt'
+                        sh 'pip install --user -r package-requirements.txt'
 
                         dir('src/python') {
                             sh 'coverage run setup.py test'
@@ -43,7 +43,7 @@ pipeline {
 
                     steps {
 
-                        sh 'pip install -r package-requirements.txt'
+                        sh 'pip install --user -r package-requirements.txt'
 
                         dir('src/python') {
                             sh 'coverage run setup.py test'
