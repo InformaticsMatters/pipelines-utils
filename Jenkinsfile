@@ -24,6 +24,8 @@ pipeline {
 
                     steps {
 
+                        sh 'env'
+                        sh 'id'
                         sh 'pip install --user -r package-requirements.txt'
 
                         dir('src/python') {
@@ -43,6 +45,8 @@ pipeline {
 
                     steps {
 
+                        sh 'env'
+                        sh 'id'
                         sh 'pip install --user -r package-requirements.txt'
 
                         dir('src/python') {
