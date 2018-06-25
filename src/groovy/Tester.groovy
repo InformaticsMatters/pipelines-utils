@@ -424,22 +424,35 @@ class Tester {
      */
     private dumpCommandError(StringBuilder errString) {
 
+        Log.text_colour_red()
+        Log.text_style_bold()
         println "$dumpErrPrefix STDERR Follows..."
+        Log.text_normal()
+
+        Log.text_colour_red()
         errString.toString().split('\n').each { line ->
             println "$dumpErrPrefix $line"
         }
+        Log.text_normal()
 
     }
 
     /**
      * Dumps the pipeline command's output, used when the user's used '-v'.
+     * It uses control-codes to change the text color (see Log.groovy).
      */
     private dumpCommandOutput(StringBuilder outString) {
 
+        Log.text_colour_green()
+        Log.text_style_bold()
         println "$dumpOutPrefix STDOUT Follows..."
+        Log.text_normal()
+
+        Log.text_colour_green()
         outString.toString().split('\n').each { line ->
             println "$dumpOutPrefix $line"
         }
+        Log.text_normal()
 
     }
 

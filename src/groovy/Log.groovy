@@ -21,6 +21,22 @@
  */
 
 /**
+ * Text colour codes
+ * (see http://ozzmaker.com/add-colour-to-text-in-python/)
+ *
+ * Text         Style           Background
+ * ----         -----           ----------
+ * Black    30  No effect   0   Black   40
+ * Red      31  Bold        1   Red     41
+ * Green    32  Underline   2   Green   42
+ * Yellow   33  Negative1   3   Yellow  43
+ * Blue     34  Negative2   5   Blue    44
+ * Purple   35                  Purple  45
+ * Cyan     36                  Cyan    46
+ * White    37                  White   47
+ */
+
+/**
  * Print a simple separator (a bar) to stdout.
  * Used to visually separate generated output into logical blocks.
  */
@@ -40,6 +56,34 @@ static info(String tag, msg) {
 
     println "|" + sprintf('%18s| %s', tag, msg)
 
+}
+
+/**
+ * Turns text printing BOLD.
+ */
+static text_style_bold() {
+    print "" + (char)27 + "[1m"
+}
+
+/**
+ * Turns text printing RED.
+ */
+static text_colour_red() {
+    print "" + (char)27 + "[31m"
+}
+
+/**
+ * Turns text printing GREEN.
+ */
+static text_colour_green() {
+    print "" + (char)27 + "[32m"
+}
+
+/**
+ * Returns text printing colour to normal (default).
+ */
+static text_normal() {
+    print "" + (char)27 + "[39m" + (char)27 + "[0m"
 }
 
 /**
