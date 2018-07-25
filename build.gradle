@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-import java.util.Date
-
 plugins {
     id 'groovy'
     id 'application'
@@ -26,9 +24,11 @@ plugins {
 
 mainClassName = 'PipelineTester'
 
+// The version should reflect the version
+// defined in the PipelineTester.
+version = '2.6.2'
 group = 'com.informaticsmatters'
-version = '2.3.2'
-description 'A Squonk service descriptor validator and pipelines tester'
+description 'A Squonk service descriptor validator (the PipelineTester)'
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.4.1'
@@ -65,6 +65,9 @@ task javadocJar(type: Jar) {
 // Linking to jcentre can take some time, so wait for at least 4 hours after
 // the initial link request before worrying about the lack of email
 // confirmation. Once confirmed the package should be on jcenter.
+//
+// If you see 'HTTP/1.1 401 Unauthorized' when you run `gw bintrayUpload'
+// you've probably forgotten to set your Bintray account credentials.
 publishing {
     publications {
         pipelineTester(MavenPublication) {
@@ -76,7 +79,7 @@ publishing {
     }
 }
 
-// Set environment variables for the Bintray account: -
+// Set environment variables for the Bintray account credentials: -
 // - BINTRAY_USER
 // - BINTRAY_KEY
 bintray {
