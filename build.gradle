@@ -26,20 +26,12 @@ plugins {
 
 mainClassName = 'PipelineTester'
 
+group = 'com.informaticsmatters'
+version = '2.3.2'
+description 'A Squonk service descriptor validator and pipelines tester'
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.4.1'
-}
-
-// We build the sourcesJar so the package can be linked to JCenter.
-// See https://github.com/bintray/gradle-bintray-plugin
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allJava
-}
-
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
 }
 
 repositories {
@@ -52,10 +44,27 @@ dependencies {
     compile 'commons-cli:commons-cli:1.2'
 }
 
-group = 'com.informaticsmatters'
-version = '2.3.2'
-description 'A Squonk service descriptor validator and pipelines tester'
+// We build the sourcesJar and javaDoc so the package can be linked to JCenter.
+// See https://github.com/bintray/gradle-bintray-plugin
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
 
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Standard MavenPublication settings.
+// Here we just publish our Java JAR and the source and javadoc.
+// Deployment to the external maven repository (Bintray) is handed by
+// the bintray closure and the bintray plugin's `bintrayUpload` task.
+//
+// Once uploaded (for the first time) you then 'link' the pkg.name to jcenter.
+// Linking to jcentre can take some time, so wait for at least 4 hours after
+// the initial link request before worrying about the lack of email
+// confirmation. Once confirmed the package should be on jcenter.
 publishing {
     publications {
         pipelineTester(MavenPublication) {
