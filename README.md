@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/InformaticsMatters/pipelines-utils.svg?branch=master)](https://travis-ci.org/InformaticsMatters/pipelines-utils)
-[![Coverage Status](https://coveralls.io/repos/github/InformaticsMatters/pipelines-utils/badge.svg?branch=master)](https://coveralls.io/github/InformaticsMatters/pipelines-utils?branch=master)
+[![PyPI version](https://badge.fury.io/py/im-pipelines-utils.svg)](https://badge.fury.io/py/im-pipelines-utils)
 [![Download](https://api.bintray.com/packages/informaticsmatters/Squonk/pipelines-utils/images/download.svg)](https://bintray.com/informaticsmatters/Squonk/pipelines-utils/_latestVersion)
 
 # Pipelines Utils
