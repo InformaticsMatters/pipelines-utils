@@ -35,7 +35,19 @@ class MediaChecker {
      */
     MediaChecker() {
 
-        mediaTypesLookup = new ConfigSlurper().parse(new File(mediaTypesFile).toURI().toURL())
+        mediaTypesLookup = [
+
+            // Please keep the keys in alphabetical order...
+
+            'application/x-squonk-dataset-molecule+json': ['.data.gz', '.metadata'],
+            'application/x-squonk-dataset-basic+json': ['.data.gz', '.metadata'],
+
+            'image/gif': ['.gif'],
+            'image/jpeg': ['.jpg'],
+            'image/png': ['.png'],
+
+        ]
+
 
     }
 

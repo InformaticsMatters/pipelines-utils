@@ -13,40 +13,89 @@
  * limitations under the License.
  */
 
+import java.util.Date
+
+plugins {
+    id 'groovy'
+    id 'application'
+    id 'distribution'
+    id 'com.jfrog.bintray' version '1.8.4'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+mainClassName = 'PipelineTester'
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.4.1'
 }
 
-task runPipelineTester(type: Exec) {
-
-    description 'Runs the PipelineTester (add arguments with -Pptargs=-v)'
-
-    def args
-    if (project.hasProperty('ptargs')) {
-        args = project.property('ptargs')
-    } else {
-        args = ''
-    }
-    def currentDir = System.getProperty("user.dir")
-
-    workingDir 'src/groovy'
-    commandLine 'groovy', 'PipelineTester.groovy', args
-
+// We build the sourcesJar so the package can be linked to JCenter.
+// See https://github.com/bintray/gradle-bintray-plugin
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
 }
 
-task runDockerPipelineTester(type: Exec) {
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
-    description 'Runs the PipelineTester Docker tests (add arguments with -Pptargs=-v)'
+repositories {
+    jcenter()
+}
 
-    def args
-    if (project.hasProperty('ptargs')) {
-        args = project.property('ptargs')
-    } else {
-        args = ''
+dependencies {
+    compile 'org.apache.ant:ant:1.8.2'
+    compile 'org.codehaus.groovy:groovy-all:2.4.10'
+    compile 'commons-cli:commons-cli:1.2'
+}
+
+group = 'com.informaticsmatters'
+version = '2.3.2'
+description 'A Squonk service descriptor validator and pipelines tester'
+
+publishing {
+    publications {
+        pipelineTester(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+        }
     }
-    def currentDir = System.getProperty("user.dir")
+}
 
-    workingDir 'src/groovy'
-    commandLine 'groovy', 'PipelineTester.groovy', '-indocker', args
+// Set environment variables for the Bintray account: -
+// - BINTRAY_USER
+// - BINTRAY_KEY
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['pipelineTester']
 
+    dryRun = false
+    publish = true
+    override = false
+
+    pkg {
+        userOrg = 'informaticsmatters'
+        repo = 'Squonk'
+        name = 'pipelines-utils'
+        desc = project.description
+        licenses = ['Apache-2.0']
+
+        labels = ['pipelines',
+                  'pipelines tester']
+
+        websiteUrl = 'https://github.com/InformaticsMatters/pipelines-utils'
+        issueTrackerUrl = 'https://github.com/InformaticsMatters/pipelines-utils/issues'
+        vcsUrl = 'https://github.com/InformaticsMatters/pipelines-utils.git'
+
+        version {
+            name = project.version
+            released = new Date()
+        }
+    }
 }

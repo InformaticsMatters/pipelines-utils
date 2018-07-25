@@ -47,7 +47,7 @@ class Tester {
     String testExt = '.test'
     String executeAnchorDir = File.separator + 'src' + File.separator
     String testFileSpec = '**' + File.separator + "*${testExt}"
-    String testSearchDir = '..'+ File.separator + '..' + File.separator + '..'
+    String testSearchDir = '.'
     String sdExt = '.dsd.json'
     String optionPrefix = 'arg.'
     String metricsFile = 'output_metrics.txt'
