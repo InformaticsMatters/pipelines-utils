@@ -22,11 +22,12 @@ plugins {
     id 'maven-publish'
 }
 
+// The PipelineTester version.
+// The processResources closure sets the version
+// string in the 'resources/tester.properties' properties file.
+ext.ptVersion = '2.6.3'
 mainClassName = 'PipelineTester'
 
-// The version should reflect the version
-// defined in the PipelineTester.
-version = '2.6.2'
 group = 'com.informaticsmatters'
 description 'A Squonk service descriptor validator (the PipelineTester)'
 
@@ -42,6 +43,14 @@ dependencies {
     compile 'org.apache.ant:ant:1.8.2'
     compile 'org.codehaus.groovy:groovy-all:2.4.10'
     compile 'commons-cli:commons-cli:1.2'
+}
+
+// Process resource files,
+// replacing @version@ values with the ptVersion defined above.
+processResources {
+    inputs.property "version", project.ptVersion
+    filter(org.apache.tools.ant.filters.ReplaceTokens,
+           tokens: [version: project.ptVersion])
 }
 
 // We build the sourcesJar and javaDoc so the package can be linked to JCenter.
@@ -62,7 +71,7 @@ task javadocJar(type: Jar) {
 // the bintray closure and the bintray plugin's `bintrayUpload` task.
 //
 // Once uploaded (for the first time) you then 'link' the pkg.name to jcenter.
-// Linking to jcentre can take some time, so wait for at least 4 hours after
+// Linking to jcenter can take some time, so wait for at least 4 hours after
 // the initial link request before worrying about the lack of email
 // confirmation. Once confirmed the package should be on jcenter.
 //
@@ -106,7 +115,7 @@ bintray {
         vcsUrl = 'https://github.com/InformaticsMatters/pipelines-utils.git'
 
         version {
-            name = project.version
+            name = project.ptVersion
             released = new Date()
         }
     }

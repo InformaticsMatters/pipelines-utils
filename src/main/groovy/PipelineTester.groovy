@@ -31,12 +31,17 @@ import org.apache.commons.cli.Option
  * the PipelineTester within a suitable execution environment like Conda.
  */
 
-// Version
-// Update with every change/release
-String version = '2.6.2'
+// Get the version
+// (defined in the tester.properties resource)
+def getVersion() {
+    final URL resource = this.class.getClassLoader().getResource('tester.properties');
+    Properties props = new Properties()
+    props.load(resource.openConnection().inputStream)
+    return props.getProperty('version')
+}
 
 println "+------------------+"
-println "|  PipelineTester  | v$version"
+println "|  PipelineTester  | v" + getVersion()
 println "+------------------+"
 
 // Build command-line processor
