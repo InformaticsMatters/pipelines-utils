@@ -13,6 +13,23 @@
  * limitations under the License.
  */
 
+// Uses the Gradle Bintray Plugin
+// (https://github.com/bintray/gradle-bintray-plugin)
+// to publish the main Java artifact (our Pipeline Tester) to Bintray.
+//
+// You will need to set environment variables for the Bintray account
+// credentials: -
+//
+// - BINTRAY_USER
+// - BINTRAY_KEY
+//
+// Then ... set the version number for publishing with ext.ptVersion.
+// (you can't normally re-publish a version so its number must change)
+//
+// Then ... publish with: -
+//
+// - gradle bintrayUpload
+
 plugins {
     id 'groovy'
     id 'application'
@@ -88,9 +105,6 @@ publishing {
     }
 }
 
-// Set environment variables for the Bintray account credentials: -
-// - BINTRAY_USER
-// - BINTRAY_KEY
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
