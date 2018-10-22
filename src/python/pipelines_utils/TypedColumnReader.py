@@ -33,7 +33,7 @@ class Error(Exception):
     pass
 
 
-class UnknownType(Error):
+class UnknownTypeError(Error):
     """Exception raised for an unknown type in the header.
 
     Attributes:
@@ -222,7 +222,7 @@ class TypedColumnReader(object):
             if len(cell_parts) == 2:
                 column_type = cell_parts[1].lower()
                 if column_type not in CONVERTERS:
-                    raise UnknownType(column_number, column_type)
+                    raise UnknownTypeError(column_number, column_type)
             else:
                 # Unspecified - assume built-in 'string'
                 column_type = 'string'

@@ -50,7 +50,7 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         try:
             for _ in test_file:
                 num_lines += 1
-        except TypedColumnReader.UnknownType as e:
+        except TypedColumnReader.UnknownTypeError as e:
             self.assertEqual(4, e.column)
             self.assertAlmostEqual('unknown-type', e.column_type)
             got_exception = True
