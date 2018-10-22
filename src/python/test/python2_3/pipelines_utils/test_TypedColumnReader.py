@@ -1,3 +1,4 @@
+import gzip
 import os
 import unittest
 
@@ -12,7 +13,8 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         """Test loading of a simple CSV file
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.a.csv')
-        test_file = TypedColumnReader.TypedColumnReader(test_file, column_sep=',')
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file, column_sep=',')
         num_lines = 0
         first_row = {}
         for row in test_file:
@@ -22,34 +24,40 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         self.assertEqual(2, num_lines)
         self.assertEqual('A string', first_row['one'])
         self.assertEqual('and finally', first_row['four'])
+        csv_file.close()
 
     def test_basic_example_a_with_supplied_header(self):
         """Test loading of a simple CSV file with a provided header
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.a-no-header.csv')
-        test_file = TypedColumnReader.TypedColumnReader(test_file,
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file,
                                                         column_sep=',',
                                                         header='one,two:int,three:float,four:string')
         num_lines = 0
         for _ in test_file:
             num_lines += 1
         self.assertEqual(2, num_lines)
+        csv_file.close()
 
     def test_basic_example_a_gzip(self):
         """Test loading of a simple CSV file (gzipped)
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.a.csv.gz')
-        test_file = TypedColumnReader.TypedColumnReader(test_file, column_sep=',')
+        csv_file = gzip.open(test_file, 'rt')
+        test_file = TypedColumnReader.TypedColumnReader(csv_file, column_sep=',')
         num_lines = 0
         for _ in test_file:
             num_lines += 1
         self.assertEqual(2, num_lines)
+        csv_file.close()
 
     def test_basic_example_b_unknown_type(self):
         """Test loading of a simple CSV file with a column type that is unknown
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.b.csv')
-        test_file = TypedColumnReader.TypedColumnReader(test_file, column_sep=',')
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file, column_sep=',')
         num_lines = 0
         got_exception = False
         try:
@@ -61,12 +69,14 @@ class TypedColumnReaderTestCase(unittest.TestCase):
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
+        csv_file.close()
 
     def test_basic_example_c_too_many_colons(self):
         """Test loading of a simple CSV file with a column that has too many colons
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.c.csv')
-        test_file = TypedColumnReader.TypedColumnReader(test_file, column_sep=',')
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file, column_sep=',')
         num_lines = 0
         got_exception = False
         try:
@@ -79,12 +89,14 @@ class TypedColumnReaderTestCase(unittest.TestCase):
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
+        csv_file.close()
 
     def test_basic_example_d_wrong_type(self):
         """Test loading of a simple CSV file with a column that has a string as an int
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.d.csv')
-        test_file = TypedColumnReader.TypedColumnReader(test_file, column_sep=',')
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file, column_sep=',')
         num_lines = 0
         got_exception = False
         try:
@@ -98,22 +110,26 @@ class TypedColumnReaderTestCase(unittest.TestCase):
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
+        csv_file.close()
 
     def test_basic_example_d_tabs(self):
         """Test loading of a simple CSV file with tab (default) separators
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.e.csv')
-        test_file = TypedColumnReader.TypedColumnReader(test_file)
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file)
         num_lines = 0
         for _ in test_file:
             num_lines += 1
         self.assertEqual(2, num_lines)
+        csv_file.close()
 
     def test_basic_example_d_too_many_values(self):
         """Test loading of a simple CSV file with too many values
         """
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.f.csv')
-        test_file = TypedColumnReader.TypedColumnReader(test_file, column_sep=',')
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file, column_sep=',')
         num_lines = 0
         got_exception = False
         try:
@@ -126,3 +142,4 @@ class TypedColumnReaderTestCase(unittest.TestCase):
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
+        csv_file.close()

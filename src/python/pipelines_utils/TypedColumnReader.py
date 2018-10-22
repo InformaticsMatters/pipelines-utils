@@ -25,7 +25,6 @@ October 2018
 """
 
 import csv
-import gzip
 
 
 class Error(Exception):
@@ -118,13 +117,15 @@ class TypedColumnReader(object):
         "smiles,comment:string,hac:int,ratio:float"
     """
 
-    def __init__(self, filename,
+    def __init__(self, csv_file,
                  column_sep='\t',
                  type_sep=':',
                  header=None):
         """Basic initialiser.
 
-        :param filename: The typed CSV file name
+        :param csvfile: The typed CSV file. csvfile can be any object which
+                        supports the iterator protocol and returns a string
+                        each time its next() method is called
         :param column_sep: The file column separator
         :param type_sep: The type separator
         :param header: An optional header. If provided the must not have
@@ -138,15 +139,10 @@ class TypedColumnReader(object):
                        encouraged to add a header line to all new files.
         """
 
-        self._filename = filename
+        self._csv_file = csv_file
         self._type_sep = type_sep
         self._header = header
 
-        # Open the CSV file (which may be compressed)
-        if filename.endswith('.gz'):
-            self._csv_file = gzip.open(filename, 'rt')
-        else:
-            self._csv_file = open(filename, 'rt')
         self._c_reader = csv.reader(self._csv_file,
                                     delimiter=column_sep,
                                     skipinitialspace=True,
@@ -242,10 +238,3 @@ class TypedColumnReader(object):
             self._converters.append([name, CONVERTERS[column_type]])
             self._column_names.append(name)
             column_number += 1
-
-    def __del__(self):
-        """Delete method.
-        """
-        if self._csv_file:
-            self._csv_file.close()
-            self._csv_file = None
