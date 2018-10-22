@@ -129,8 +129,13 @@ class TypedColumnReader(object):
         :param type_sep: The type separator
         :param header: An optional header. If provided the must not have
                        a header line. This is provided to allow processing
-                       of exiting files that have no header. You are strongly
-                       encouraged to create new files with a header.
+                       of exiting files that have no header. The headder
+                       must contain column names and optional types.
+                       "smiles:string" would be a column named "smiles"
+                       of type "string" and "n:int" would be a column known as
+                       "n" of type "integer". Although you can provide
+                       thew header here you are strongly
+                       encouraged to add a header line to all new files.
         """
 
         self._filename = filename
@@ -156,10 +161,12 @@ class TypedColumnReader(object):
 
     def __iter__(self):
         """Return the next type-converted row from the file.
-        The first row is expected to be a header with optional
-        type definitions.
+        Unless the header is provided in the initialiser, the first row is
+        expected to be a header with optional type definitions.
 
         :returns: A dictionary of type-converted values for the next row
+                  where the dictionary key is the name of the column
+                  (as defined in the header).
 
         :raises: ValueError if a column value cannot be converted
         :raises: ContentError if the column value is unknown or does not
