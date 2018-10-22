@@ -1,0 +1,3 @@
+one,two:int,three:float,four:unknown-type
+A string,45,46,and finally
+Another string,55,56,that's it
