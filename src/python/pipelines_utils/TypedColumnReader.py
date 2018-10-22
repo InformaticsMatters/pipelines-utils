@@ -16,8 +16,8 @@
 
 """Typed CSV reader.
 
-Based on the built-in ``csv`` module, this module provides the user with
-the ability to load _typed_ CSV content, a CSV file with optional type
+Based on the built-in ``csv`` module, this Generator module provides the user
+with the ability to load _typed_ CSV content, a CSV file with optional type
 specifications provided in the header (which must be supplied).
 
 Alan Christie
@@ -102,8 +102,8 @@ CONVERTERS = {'int': convert_int,
 
 class TypedColumnReader(object):
 
-    """A class to handle 'typed' CSV-like files, files (normally) with a header
-    that can include type information. This class supports
+    """A generator to handle 'typed' CSV-like files, files (normally)
+    with a header that can include type information. This class supports
     neo4j-like column typing where field are annotated
     with type information. The class returns
     a list of values for each row in the file where, if the column header
