@@ -81,3 +81,36 @@ def pick_sdf(filename, directory=None):
         return file_path + '.sdf'
     # Couldn't find a suitable SDF file
     return None
+
+
+def pick_csv(filename, directory=None):
+    """Returns a full path to the chosen CSV file. The supplied file
+    is not expected to contain a recognised CSV extension, this is added
+    automatically.
+    If a file with the extension `.csv.gz` or `.csv` is found the path to it
+    (excluding the extension) is returned. If this fails, `None` is returned.
+
+    :param filename: The CSV file basename, whose path is required.
+    :type filename: ``str``
+    :param directory: An optional directory.
+                      If not provided it is calculated automatically.
+    :type directory: ``str``
+    :return: The full path to the file without extension,
+             or None if it does not exist
+    :rtype: ``str``
+    """
+    if directory is None:
+        directory = utils.get_undecorated_calling_module()
+        # If the 'cwd' is not '/output' (which indicates we're in a Container)
+        # then remove the CWD and the anticipated '/'
+        # from the front of the module
+        if os.getcwd() not in ['/output']:
+            directory = directory[len(os.getcwd()) + 1:]
+
+    file_path = os.path.join(directory, filename)
+    if os.path.isfile(file_path + '.csv.gz'):
+        return file_path + '.csv.gz'
+    elif os.path.isfile(file_path + '.csv'):
+        return file_path + '.csv'
+    # Couldn't find a suitable CSV file
+    return None
