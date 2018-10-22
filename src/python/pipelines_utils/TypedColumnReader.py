@@ -151,13 +151,15 @@ class TypedColumnReader(object):
         # An entry for each column in the file and compiled by _handle_header
         # using the provided header or file content oin the first iteration.
         self._converters = []
+        # The the column names extracted from the header
+        self._column_names = []
 
     def __iter__(self):
-        """Return the next typ-converted row from the file.
+        """Return the next type-converted row from the file.
         The first row is expected to be a header with optional
         type definitions.
 
-        :returns: A list of type-converted values for the next row
+        :returns: A dictionary of type-converted values for the next row
 
         :raises: ValueError if a column value cannot be converted
         :raises: ContentError if the column value is unknown or does not
@@ -183,10 +185,10 @@ class TypedColumnReader(object):
             if len(self._converters) == 0:
                 raise ContentError(1, 1, None, 'Missing header')
 
-            # Construct a list of row column values,
+            # Construct a dictionary of row column names and values,
             # applying type conversions based on the
             # type defined in the header....
-            row_values = []
+            row_content = {}
             col_index = 0
             # Convert...
             for col in row:
@@ -195,14 +197,15 @@ class TypedColumnReader(object):
                     raise ContentError(col_index + 1, self._c_reader.line_num,
                                        None, 'Too many values')
                 try:
-                    row_values.append(self._converters[col_index][1](col))
+                    row_content[self._column_names[col_index]] =\
+                        self._converters[col_index][1](col)
                 except ValueError:
                     raise ContentError(col_index + 1, self._c_reader.line_num,
                                        col,
                                        'Does not comply with column type')
                 col_index += 1
 
-            yield row_values
+            yield row_content
 
     def _handle_hdr(self, hdr):
         """Given the file header line (or one provided when the class
@@ -218,7 +221,10 @@ class TypedColumnReader(object):
             if len(cell_parts) not in [1, 2]:
                 raise ContentError(column_number, self._c_reader.line_num,
                                    cell, 'Expected name and type (up to 2 items)')
-            name = cell_parts[0]
+            name = cell_parts[0].strip()
+            if len(name) == 0:
+                raise ContentError(column_number, self._c_reader.line_num,
+                                   cell, 'Column name is empty')
             if len(cell_parts) == 2:
                 column_type = cell_parts[1].lower()
                 if column_type not in CONVERTERS:
@@ -227,6 +233,7 @@ class TypedColumnReader(object):
                 # Unspecified - assume built-in 'string'
                 column_type = 'string'
             self._converters.append([name, CONVERTERS[column_type]])
+            self._column_names.append(name)
             column_number += 1
 
     def __del__(self):

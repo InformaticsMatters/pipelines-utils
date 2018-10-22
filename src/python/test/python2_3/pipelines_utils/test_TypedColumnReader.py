@@ -14,9 +14,14 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.a.csv')
         test_file = TypedColumnReader.TypedColumnReader(test_file, column_sep=',')
         num_lines = 0
-        for _ in test_file:
+        first_row = {}
+        for row in test_file:
+            if num_lines == 0:
+                first_row = row
             num_lines += 1
         self.assertEqual(2, num_lines)
+        self.assertEqual('A string', first_row['one'])
+        self.assertEqual('and finally', first_row['four'])
 
     def test_basic_example_a_with_supplied_header(self):
         """Test loading of a simple CSV file with a provided header
