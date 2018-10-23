@@ -40,6 +40,29 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         self.assertEqual(2, num_lines)
         csv_file.close()
 
+    def test_basic_example_a_with_duplicate_column_names(self):
+        """Test loading of a simple CSV file with a provided header
+        that contains duplicate names
+        """
+        test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.a-no-header.csv')
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file,
+                                                        column_sep=',',
+                                                        header='one,one,three,four')
+        num_lines = 0
+        got_exception = False
+        try:
+            for _ in test_file:
+                num_lines += 1
+        except TypedColumnReader.ContentError as e:
+            self.assertEqual(2, e.column)
+            self.assertEqual(0, e.row)
+            self.assertEqual('one', e.value)
+            got_exception = True
+        self.assertTrue(got_exception)
+        self.assertEqual(0, num_lines)
+        csv_file.close()
+
     def test_basic_example_a_gzip(self):
         """Test loading of a simple CSV file (gzipped)
         """
@@ -65,7 +88,7 @@ class TypedColumnReaderTestCase(unittest.TestCase):
                 num_lines += 1
         except TypedColumnReader.UnknownTypeError as e:
             self.assertEqual(4, e.column)
-            self.assertAlmostEqual('unknown-type', e.column_type)
+            self.assertEqual('unknown-type', e.column_type)
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
@@ -85,7 +108,7 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         except TypedColumnReader.ContentError as e:
             self.assertEqual(4, e.column)
             self.assertEqual(1, e.row)
-            self.assertAlmostEqual('four:unknown-type:too-many-colons', e.value)
+            self.assertEqual('four:unknown-type:too-many-colons', e.value)
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
@@ -105,8 +128,8 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         except TypedColumnReader.ContentError as e:
             self.assertEqual(1, e.column)
             self.assertEqual(2, e.row)
-            self.assertAlmostEqual('A string', e.value)
-            self.assertAlmostEqual('Does not comply with column type', e.message)
+            self.assertEqual('A string', e.value)
+            self.assertEqual('Does not comply with column type', e.message)
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
@@ -138,7 +161,7 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         except TypedColumnReader.ContentError as e:
             self.assertEqual(3, e.column)
             self.assertEqual(2, e.row)
-            self.assertAlmostEqual('Too many values', e.message)
+            self.assertEqual('Too many values', e.message)
             got_exception = True
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)

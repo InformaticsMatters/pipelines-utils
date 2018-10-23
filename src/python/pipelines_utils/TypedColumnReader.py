@@ -228,6 +228,10 @@ class TypedColumnReader(object):
             if len(name) == 0:
                 raise ContentError(column_number, self._c_reader.line_num,
                                    cell, 'Column name is empty')
+            if name in self._column_names:
+                raise ContentError(column_number, self._c_reader.line_num,
+                                   name, 'Duplicate column name')
+
             if len(cell_parts) == 2:
                 column_type = cell_parts[1].lower()
                 if column_type not in CONVERTERS:
