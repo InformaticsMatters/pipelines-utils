@@ -22,7 +22,10 @@ class TypedColumnReaderTestCase(unittest.TestCase):
                 first_row = row
             num_lines += 1
         self.assertEqual(2, num_lines)
+        # Examine the first row...
         self.assertEqual('A string', first_row['one'])
+        self.assertEqual(45, first_row['two'])
+        self.assertEqual(None, first_row['three'])
         self.assertEqual('and finally', first_row['four'])
         csv_file.close()
 

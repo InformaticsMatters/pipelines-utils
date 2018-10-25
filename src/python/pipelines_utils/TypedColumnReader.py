@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Typed CSV reader.
+"""Typed column (CSV) reader.
 
 Based on the built-in ``csv`` module, this Generator module provides the user
-with the ability to load _typed_ CSV content, a CSV file with optional type
-specifications provided in the header (which must be supplied).
+with the ability to load _typed_ CSV-like content, a text file of values
+that include a header with optional type specifications provided in the
+header.
 
 Alan Christie
 October 2018
@@ -36,8 +37,8 @@ class UnknownTypeError(Error):
     """Exception raised for an unknown type in the header.
 
     Attributes:
-        column -- the problematic column number
-        column_type -- The column type
+        column -- the problematic (1-based) column number
+        column_type -- The column's type value
     """
 
     def __init__(self, column, column_type):
@@ -51,9 +52,9 @@ class ContentError(Error):
     comply with the defined type.
 
     Attributes:
-        column -- the problematic column number
+        column -- the problematic (1-based) column number
         row -- the problematic (1-based) row number
-        value -- The value (or None is n/a)
+        value -- The value (or None if n/a)
         message -- explanation of the error
     """
 
@@ -65,56 +66,69 @@ class ContentError(Error):
 
 
 def convert_int(string_value):
-    """Converts string to integer (see CONVERTERS).
-    There is a ``converter_?()`` function for each column type.
+    """Converts a string to integer (see CONVERTERS).
+    There is a converter function for each column type.
 
     :param string_value: The string to convert
+
+    :raises: ValueError if the string cannot be represented by an int
     """
     return int(string_value.strip())
 
 
 def convert_float(string_value):
     """Converts string to float (see CONVERTERS).
-    There is a ``converter_?()`` function for each column type.
+    There is a converter function for each column type.
 
     :param string_value: The string to convert
+
+    :raises: ValueError if the string cannot be represented by a float
     """
     return float(string_value.strip())
 
 
 def convert_string(string_value):
     """String and default converter (see CONVERTERS).
-    There is a ``converter_?()`` function for each column type.
+    There is a converter function for each column type.
 
     :param string_value: The string to convert
     """
     return string_value
 
 
-# A map of built-in column type to string conversion function.
-# If a column is 'name:INT' then we call 'convert_int()'
-# for the column values.
+# A map of column type names (case-insensitive) to string conversion function.
+# If a column is 'name:INT' then we call 'convert_int()' for the column values.
 CONVERTERS = {'int': convert_int,
               'float': convert_float,
               'string': convert_string}
 
 
 class TypedColumnReader(object):
+    """A generator to handle 'typed' CSV-like files, files that include
+    a header that may also define data types. This class supports
+    neo4j-like node/edge column typing where fields are annotated
+    with type information where each column header is of the format
+    ``name[:type]``.
 
-    """A generator to handle 'typed' CSV-like files, files (normally)
-    with a header that can include type information. This class supports
-    neo4j-like column typing where field are annotated
-    with type information. The class returns
-    a list of values for each row in the file where, if the column header
-    defines a type, the value is converted to that type.
+    As a Generator it returns a dictionary of values for each row in the file
+    where, if the column header defines a type, the value is converted to that
+    type.
 
     There is built-in support for ``int``, ``float`` and ``string`` data types.
 
-    The following is a comma-separated header for a file where the first two
-    columns contain strings and the last two contain `int`` and ``float``
-    types: -
+    As an example, the following is a comma-separated header for a file with
+    columns ``names`` "smiles", "comment", "hac" and "ratio" where
+    the first two column types are strings and the last two are
+    ``int`` and ``float`` types: -
 
-        "smiles,comment:string,hac:int,ratio:float"
+    "smiles,comment:string,hac:int,ratio:float"
+
+    *   The ``name`` cannot be blank and must be unique.
+    *   Whitespace is stripped from the start and end of the column ``name``
+    *   If a column value is empty/blank the corresponding dictionary
+        value is ``None``
+
+
     """
 
     def __init__(self, csv_file,
@@ -123,20 +137,19 @@ class TypedColumnReader(object):
                  header=None):
         """Basic initialiser.
 
-        :param csvfile: The typed CSV file. csvfile can be any object which
-                        supports the iterator protocol and returns a string
-                        each time its next() method is called
+        :param csv_file: The typed CSV-like file. csv_file can be any object
+                         tha supports the iterator protocol and returns a string
+                         each time its next() method is called
         :param column_sep: The file column separator
-        :param type_sep: The type separator
-        :param header: An optional header. If provided the must not have
-                       a header line. This is provided to allow processing
-                       of exiting files that have no header. The headder
-                       must contain column names and optional types.
+        :param type_sep: The type separator, the character between the column
+                         header name and its type declaration.
+        :param header: An optional header. This is provided to allow processing
+                       of existing files that have no header. The header
+                       must contain column names.
                        "smiles:string" would be a column named "smiles"
                        of type "string" and "n:int" would be a column known as
-                       "n" of type "integer". Although you can provide
-                       thew header here you are strongly
-                       encouraged to add a header line to all new files.
+                       "n" of type "integer". When provided here the header
+                       column separator must be comma-separated.
         """
 
         self._csv_file = csv_file
@@ -149,16 +162,19 @@ class TypedColumnReader(object):
                                     strict=True)
 
         # Column value type converter functions.
-        # An entry for each column in the file and compiled by _handle_header
-        # using the provided header or file content oin the first iteration.
+        # An entry for each column in the file and compiled by _handle_header()
+        # using the provided header or file content on the first iteration.
         self._converters = []
-        # The the column names extracted from the header
+        # The ordered list of unique column names extracted from the header
         self._column_names = []
 
     def __iter__(self):
         """Return the next type-converted row from the file.
         Unless the header is provided in the initialiser, the first row is
-        expected to be a header with optional type definitions.
+        expected to be a header with optional type declarations.
+
+        If the column value is empty/blank the corresponding dictionary
+        value is None.
 
         :returns: A dictionary of type-converted values for the next row
                   where the dictionary key is the name of the column
@@ -167,6 +183,7 @@ class TypedColumnReader(object):
         :raises: ValueError if a column value cannot be converted
         :raises: ContentError if the column value is unknown or does not
                               comply with the column type.
+        :raises: UnknownTypeError if the column type is unknown.
         """
 
         # If we have not generated the converter array but we have been given
@@ -180,42 +197,50 @@ class TypedColumnReader(object):
 
             # Handle the first row?
             # (which defines column names and types)
+            # If we were given a header during initialisation
+            # then there's no header in the file
             if not self._converters:
                 self._handle_hdr(row)
                 continue
 
-            # Must have seen a header if we get here...
+            # Must have a header if we get here...
             if len(self._converters) == 0:
                 raise ContentError(1, 1, None, 'Missing header')
 
             # Construct a dictionary of row column names and values,
             # applying type conversions based on the
-            # type defined in the header....
+            # type defined in the header
             row_content = {}
             col_index = 0
-            # Convert...
             for col in row:
                 # Too many items in the row?
+                # Can't have a header with 4 columns and a file of 5
                 if col_index >= len(self._converters):
                     raise ContentError(col_index + 1, self._c_reader.line_num,
                                        None, 'Too many values')
-                try:
-                    row_content[self._column_names[col_index]] =\
-                        self._converters[col_index][1](col)
-                except ValueError:
-                    raise ContentError(col_index + 1, self._c_reader.line_num,
-                                       col,
-                                       'Does not comply with column type')
+                lean_col = col.strip()
+                col_val = None
+                if lean_col:
+                    try:
+                        col_val = self._converters[col_index][1](col)
+                    except ValueError:
+                        raise ContentError(col_index + 1, self._c_reader.line_num,
+                                           col,
+                                           'Does not comply with column type')
+                row_content[self._column_names[col_index]] = col_val
                 col_index += 1
 
             yield row_content
 
     def _handle_hdr(self, hdr):
-        """Given the file header line (or one provided when the class
-        is instantiated) this method populates the self.converters array,
-        a list of type converters indexed by column.
+        """Given the file header line (or one provided when the object
+        is instantiated) this method populates the ``self._converters`` array,
+        a list of type converters indexed by the column name.
 
         :param hdr: The header line.
+
+        :raises: ContentError for any formatting problems
+        :raises: UnknownTypeError if the type is not known
         """
 
         column_number = 1
@@ -233,7 +258,7 @@ class TypedColumnReader(object):
                                    name, 'Duplicate column name')
 
             if len(cell_parts) == 2:
-                column_type = cell_parts[1].lower()
+                column_type = cell_parts[1].strip().lower()
                 if column_type not in CONVERTERS:
                     raise UnknownTypeError(column_number, column_type)
             else:
