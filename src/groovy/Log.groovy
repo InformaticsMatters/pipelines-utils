@@ -91,6 +91,8 @@ static text_normal() {
  */
 static err(String msg) {
 
+    text_colour_red()
     println "|" + sprintf('%18s| %s', 'ERROR', msg)
+    text_normal()
 
 }
