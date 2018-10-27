@@ -89,6 +89,7 @@ class Tester {
     // A convenient list of normalised service descriptor option names
     // i.e. 'arg.volumes' becomes 'volumes' (also contains expanded ranges)
     def optionNames = []
+    def optionMinValues = []
     def optionDefaults = [:]
     // Files created by the entire test collection.
     // Defined in the 'setup_collection.creates' block.
@@ -466,6 +467,7 @@ class Tester {
         // (to avoid contamination from a prior test)
         optionNames.clear()
         optionDefaults.clear()
+        optionMinValues.clear()
 
         currentServiceDescriptor.serviceConfig.optionDescriptors.each { option ->
 
@@ -476,6 +478,11 @@ class Tester {
                 optionNames.add(arglessOption + '.maxValue')
             } else {
                 optionNames.add(arglessOption)
+            }
+
+            // Collect the optional minValues value
+            if (option.minValues != null) {
+                optionMinValues.add(option.minValues)
             }
 
             // Collect the optional default value?
@@ -536,7 +543,7 @@ class Tester {
 
         if (checkStatus) {
             // Now check that the user has not missed an option.
-            optionNames.each { option ->
+            optionNames.each { String option ->
                 boolean foundParam = false
                 params.each { param ->
                     // Accommodate range parameters
@@ -555,7 +562,7 @@ class Tester {
                         }
                     }
                 }
-                if (!foundParam) {
+                if (!foundParam && optionMinValues.size() > 0 && optionMinValues[0] > 0) {
                     Log.err("Pipeline option '$option' is not defined in the test's params" +
                             " and there is no default value to use.")
                     checkStatus = false
