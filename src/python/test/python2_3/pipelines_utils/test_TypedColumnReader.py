@@ -169,3 +169,17 @@ class TypedColumnReaderTestCase(unittest.TestCase):
         self.assertTrue(got_exception)
         self.assertEqual(0, num_lines)
         csv_file.close()
+
+    def test_basic_example_g_booleans(self):
+        """Test loading of a simple CSV file with all booleans
+        """
+        test_file = os.path.join(DATA_DIR, 'TypedCsvReader.example.g.csv')
+        csv_file = open(test_file)
+        test_file = TypedColumnReader.TypedColumnReader(csv_file, column_sep=',')
+        num_lines = 0
+        for row in test_file:
+            num_lines += 1
+            self.assertTrue(row['a'])
+            self.assertFalse(row['b'])
+        self.assertEqual(4, num_lines)
+        csv_file.close()

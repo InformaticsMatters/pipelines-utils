@@ -65,8 +65,31 @@ class ContentError(Error):
         self.message = message
 
 
+def convert_boolean(string_value):
+    """Converts a string to a boolean (see CONVERTERS).
+    There is a converter function for each column type.
+
+    Boolean strings are independent of case. Values interpreted as True
+    are: "yes", "true", "on", "1". values interpreted as False are
+    "no", "false", "off", "0". Any other value will result in a ValueError.
+
+    :param string_value: The string to convert
+
+    :raises: ValueError if the string cannot be represented by a boolean
+    """
+
+    lean_string_value = string_value.strip().lower()
+    if lean_string_value in ['yes', 'true', 'on', '1']:
+        return True
+    elif lean_string_value in ['no', 'false', 'off', '0']:
+        return False
+
+    # Not recognised boolean if we get here
+    raise ValueError('Unrecognised boolean ({})'.format(lean_string_value))
+
+
 def convert_int(string_value):
-    """Converts a string to integer (see CONVERTERS).
+    """Converts a string to to an integer (see CONVERTERS).
     There is a converter function for each column type.
 
     :param string_value: The string to convert
@@ -77,7 +100,7 @@ def convert_int(string_value):
 
 
 def convert_float(string_value):
-    """Converts string to float (see CONVERTERS).
+    """Converts string to a float (see CONVERTERS).
     There is a converter function for each column type.
 
     :param string_value: The string to convert
@@ -98,7 +121,8 @@ def convert_string(string_value):
 
 # A map of column type names (case-insensitive) to string conversion function.
 # If a column is 'name:INT' then we call 'convert_int()' for the column values.
-CONVERTERS = {'int': convert_int,
+CONVERTERS = {'boolean': convert_boolean,
+              'int': convert_int,
               'float': convert_float,
               'string': convert_string}
 
@@ -114,7 +138,8 @@ class TypedColumnReader(object):
     where, if the column header defines a type, the value is converted to that
     type.
 
-    There is built-in support for ``int``, ``float`` and ``string`` data types.
+    There is built-in support for ``boolean``,
+    ``int``, ``float`` and ``string`` data types.
 
     As an example, the following is a comma-separated header for a file with
     columns ``names`` "smiles", "comment", "hac" and "ratio" where
@@ -127,7 +152,6 @@ class TypedColumnReader(object):
     *   Whitespace is stripped from the start and end of the column ``name``
     *   If a column value is empty/blank the corresponding dictionary
         value is ``None``
-
 
     """
 
