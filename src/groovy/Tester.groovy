@@ -483,6 +483,8 @@ class Tester {
             // Collect the optional minValues value
             if (option.minValues != null) {
                 optionMinValues.add(option.minValues)
+            } else {
+                optionMinValues.add(0)
             }
 
             // Collect the optional default value?
@@ -543,6 +545,7 @@ class Tester {
 
         if (checkStatus) {
             // Now check that the user has not missed an option.
+            int offset = 0
             optionNames.each { String option ->
                 boolean foundParam = false
                 params.each { param ->
@@ -562,11 +565,12 @@ class Tester {
                         }
                     }
                 }
-                if (!foundParam && optionMinValues.size() > 0 && optionMinValues[0] > 0) {
-                    Log.err("Pipeline option '$option' is not defined in the test's params" +
-                            " and there is no default value to use.")
+                if (!foundParam && optionMinValues.size() > 0 && optionMinValues[offset] > 0) {
+                    Log.err("Pipeline option '$option' is not defined ($offset) in the test's params" +
+                            " and there is no default value to use. $optionMinValues")
                     checkStatus = false
                 }
+                offset += 1
             }
         }
 
