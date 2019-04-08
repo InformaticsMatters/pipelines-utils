@@ -37,8 +37,9 @@ class StreamJsonListLoader(object):
         else:
             self.stream = filename_or_stream
 
-        if not self.stream.read(1) == '[':
-            raise NotImplementedError('Only JSON-streams of lists (that start with a [) are supported.')
+        stream_character = self.stream.read(1)
+        if not stream_character == '[':
+            raise NotImplementedError('Found "%s". Only JSON-streams of lists (that start with a "[") are supported.' % stream_character)
 
     def __iter__(self):
         return self
@@ -49,8 +50,9 @@ class StreamJsonListLoader(object):
             try:
                 json_obj = json.loads(read_buffer)
 
-                if not self.stream.read(1) in [',',']']:
-                    raise Exception('JSON seems to be malformed: object is not followed by comma (,) or end of list (]).')
+                stream_character = self.stream.read(1)
+                if not stream_character in [',',']']:
+                    raise Exception('JSON seems to be malformed: object is not followed by comma (",") or end of list ("]"). Found "%s".' % stream_character)
                 return json_obj
             except ValueError:
                 next_char = self.stream.read(1)
