@@ -39,7 +39,7 @@ class StreamJsonListLoader(object):
 
         stream_character = self.stream.read(1)
         if not stream_character == '[':
-            raise NotImplementedError('Found "%s". Only JSON-streams of lists (that start with a "[") are supported.' % stream_character)
+            raise NotImplementedError('Only JSON-streams of lists (that start with a "[") are supported. Found "%s".' % stream_character)
 
     def __iter__(self):
         return self
