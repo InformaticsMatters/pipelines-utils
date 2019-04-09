@@ -32,12 +32,20 @@ def round_sig(x, sig):
     return round(x, sig - int(floor(log10(abs(x)))) - 1)
 
 
-def open_file(filename):
-    """Open the file gunzipping it if it ends with .gz"""
+def open_file(filename, as_text=False):
+    """Open the file gunzipping it if it ends with .gz.
+    If as_text the file is opened in text mode,
+    otherwise the file's opened in binary mode."""
     if filename.lower().endswith('.gz'):
-        return gzip.open(filename, 'rt')
+        if as_text:
+            return gzip.open(filename, 'rt')
+        else:
+            return gzip.open(filename, 'rb')
     else:
-        return open(filename, 'r')
+        if as_text:
+            return open(filename, 'rt')
+        else:
+            return open(filename, 'rb')
 
 
 def create_simple_writer(outputDef, defaultOutput, outputFormat, fieldNames,
