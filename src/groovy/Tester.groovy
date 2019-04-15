@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 /**
- * Copyright (c) 2018 Informatics Matters Ltd.
+ * Copyright (c) 2019 Informatics Matters Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
+// Groovy 3.0.0 (to be released) contains a groovy.yaml.YamlSlurper.
+// Until that's available we're forced to use something else...
+@Grab('org.yaml:snakeyaml:1.24')
+
 import java.nio.file.Files
 import java.util.regex.Pattern
 
-import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
+
+import org.yaml.snakeyaml.Yaml
 
 /**
  * The Tester. A groovy class for the automated testing
@@ -48,7 +53,7 @@ class Tester {
     String executeAnchorDir = File.separator + 'src' + File.separator
     String testFileSpec = '**' + File.separator + "*${testExt}"
     String testSearchDir = '..'+ File.separator + '..' + File.separator + '..'
-    String sdExt = '.dsd.json'
+    String sdExt = '.dsd.yml'
     String optionPrefix = 'arg.'
     String metricsFile = 'output_metrics.txt'
     String dumpOutPrefix = '   #'
@@ -191,7 +196,8 @@ class Tester {
             currentServiceDescriptor = null
             File sdFilenameFile = new File(sdFilename)
             if (sdFilenameFile.exists()) {
-                currentServiceDescriptor = new JsonSlurper().parse(sdFilenameFile.toURI().toURL())
+                Yaml yaml = new Yaml()
+                currentServiceDescriptor = yaml.load(new FileInputStream(sdFilenameFile))
                 extractOptionsFromCurrentServiceDescriptor()
             }
 

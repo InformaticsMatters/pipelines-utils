@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 /**
- * Copyright (c) 2018 Informatics Matters Ltd.
+ * Copyright (c) 2019 Informatics Matters Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.apache.commons.cli.Option
 
 // Version
 // Update with every change/release
-String version = '2.6.5'
+String version = '2.7.0'
 
 println "+------------------+"
 println "|  PipelineTester  | v$version"
