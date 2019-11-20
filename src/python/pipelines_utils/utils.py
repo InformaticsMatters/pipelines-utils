@@ -70,6 +70,12 @@ def create_simple_writer(outputDef, defaultOutput, outputFormat, fieldNames,
     else:
         raise ValueError("Unsupported format: " + outputFormat)
 
+def determine_output_format(outformat):
+    if outformat:
+        return outformat
+    else:
+        log("No output format specified - assuming sdf")
+        return 'sdf'
 
 def open_output(basename, ext, compress):
     if basename:
@@ -87,7 +93,7 @@ def open_output(basename, ext, compress):
             return sys.stdout
 
 
-def write_squonk_datasetmetadata(outputBase, thinOutput, valueClassMappings, datasetMetaProps, fieldMetaProps):
+def write_squonk_datasetmetadata(outputBase, thinOutput, valueClassMappings, datasetMetaProps, fieldMetaProps, size=None):
     """This is a temp hack to write the minimal metadata that Squonk needs.
     Will needs to be replaced with something that allows something more complete to be written.
 
@@ -118,6 +124,8 @@ def write_squonk_datasetmetadata(outputBase, thinOutput, valueClassMappings, dat
         meta['type'] = 'org.squonk.types.BasicObject'
     else:
         meta['type'] = 'org.squonk.types.MoleculeObject'
+    if size != None:
+        meta['size'] = size
     s = json.dumps(meta)
     meta = open(outputBase + '.metadata', 'w')
     meta.write(s)
