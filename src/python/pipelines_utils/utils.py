@@ -74,7 +74,7 @@ def determine_output_format(outformat):
     if outformat:
         return outformat
     else:
-        log("No output format specified - assuming sdf")
+        log("No output format specified - using sdf")
         return 'sdf'
 
 def open_output(basename, ext, compress):
