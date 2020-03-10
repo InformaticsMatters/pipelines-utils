@@ -31,7 +31,6 @@ script:
 - cd ${TRAVIS_BUILD_DIR}/src/python
 - coverage run setup.py test
 - coverage report -i
-- pyroma .
 - python setup.py bdist_wheel
 
 # Execution jobs.
