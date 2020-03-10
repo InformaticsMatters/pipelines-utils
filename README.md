@@ -1,7 +1,8 @@
-[![Build Status](https://travis-ci.org/InformaticsMatters/pipelines-utils.svg?branch=master)](https://travis-ci.org/InformaticsMatters/pipelines-utils)
-[![Coverage Status](https://coveralls.io/repos/github/InformaticsMatters/pipelines-utils/badge.svg?branch=master)](https://coveralls.io/github/InformaticsMatters/pipelines-utils?branch=master)
-
 # Pipelines Utils
+
+[![Build Status](https://travis-ci.com/InformaticsMatters/pipelines-utils.svg?branch=master)](https://travis-ci.com/InformaticsMatters/pipelines-utils)
+[![PyPI version](https://badge.fury.io/py/im-pipelines-utils.svg)](https://badge.fury.io/py/im-pipelines-utils)
+
 A repository of common **Informatics Matters** _Pipeline_ utilities shared
 between a number of _Pipelines_ repositories. As well as containing a number
 of modules previously resident in the [Pipelines] repository this repository
@@ -234,60 +235,30 @@ To test these modules run the following from the `src/python` directory: -
     $ pip install -r requirements.txt
     $ python setup.py test
 
-# Publishing the im-pipelines-utils package to PyPI
-The utilities are published to [PyPi] for easy installation
-(normally automatically by the Travis CI/CD framework).
+# Publishing to PyPI
+The utilities are automatically published to [PyPI] for easy installation.
 
-## Publishing via Travis
-We currently employ Travis to automate our tests and also to publish the
-Python module to PyPi.
+We currently employ Travis to automate our builds and also to publish the
+Python module to PyPI. The Travis CI/CD service (controlled by the `.travis.yml`
+file) automatically publishes to PyPI when the repository is tagged (normally
+on **master**).
 
 In order to publish a new release of the module you need to: -
 
-1.  **Update** the `version` value in `src/python/setup.py` with a new
-    release number and commit the change.
-2.  **Review** the `src/python/READEME.rst` file (which is the source of
-    the PyPi documentation. This rarely needs changing but it's worth
-    understanding where the PyPi documentation comes from.
-3.  **Tag** the repository. It's the tagging that instructs Travis
-    to publish the Python module to PyPi - it does not publish *every*
-    commit. In order to publish the module the tag *must* begin `pypi-`.
-    This allows you to use other tags and not cause a publication of the
-    module. By convention is you've set the `version` to `2.3.1` the tag would
-    be `pypi-2.3.1` (you can see the other *releases* or tags in the project
-    as an example). The the actual number is unimportant as it's the act of
-    tagging that causes a release. After tagging Travis pulls the code and
-    then builds and publishes the module.
+1.  **Review** the `src/python/READEME.rst` file (which is the source of
+    the PyPi documentation). This rarely needs changing but it's worth
+    understanding where the PyPI documentation comes from.
+3.  **Tag** the repository's **master** branch. It's the tagging that instructs
+    Travis to publish the Python module to PyPI - it does not publish *every*
+    commit.
 
-The travis instructions are all encoded in the project's `.travis.yml` file.
-
-## Publishing manually
-If you are going to publish the utilities yourself (not recommended) you will
-need our PyPI account details. For Informatics Matters you should add the
-following to your `~/.pypirc` file (or create one if you don't have one): -
-
-    [pypi]
-    username: informaticsmatters
-    password: <password>
-
-To publish a new set of Python utilities you then simply need to build
-and upload them from the `src/python` directory: -
-
-    $ pip install -r requirments.txt
-    $ python setup.py bdist_wheel
-    $ twine upload dist/*
-
->   Before publishing (or tagging for automatic publishing) you must ensure
-    that the package version is new (currently defined in `setup.py`).
-    If you re-publish a package PyPI will respond with an error. Once you
+>   Before tagging you must ensure that the tag you're using has not
+    been used before. If you re-publish a package to PyPI it will respond with
+    an error if the version's been published before. Once you
     have released version 1.0.0 you cannot release it again. Ever.
     
 >   For acceptable version number formatting you should follow [PEP-440].
 
->   The Travis CI/CD service (controlled by the `.travis.yml` file)
-    automatically publishes the PyPI package when the `master` branch is tagged
-    using label begins `pypi-`
-    
 ---
 
 [Conda]: https://conda.io/docs/

@@ -22,12 +22,6 @@ stages:
 - name: deploy
   if: tag is present
 
-# Run Travis on all branches
-# (normally it only runs on master)
-branches:
-  only:
-  - "/.*/"
-
 # Installation steps.
 # We have more than one requirements file.
 install:
@@ -52,9 +46,11 @@ jobs:
   - python: 2.7
   - python: 3.5
   - python: 3.6
+  - python: 3.7
+  - python: 3.8
 
   - stage: deploy
-    python: 3.6
+    python: 3.8
     # No need to re-run scripted commands here.
     # They're all part of the above test stages.
     script: skip
@@ -71,4 +67,3 @@ jobs:
       on:
         tags: true
         branch: master
-        condition: $TRAVIS_TAG =~ ^pypi

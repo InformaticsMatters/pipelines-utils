@@ -3,10 +3,15 @@
 
 # Setup module for the Python-based Pipelines Utilities.
 #
-# Jan 2018
+# The published version is "1.0.0-alpha.1"
+# or the value of the TRAVIS_TAG environment variable if set.
+#
+# March 2020
 
 import platform
 from setuptools import setup, find_packages
+import os
+
 
 # By default the test suite is the root test suite.
 # Unless it's Python 2.
@@ -22,11 +27,11 @@ def get_long_description():
 setup(
 
     name='im-pipelines-utils',
-    version='2.4.8',
+    version=os.environ.get('TRAVIS_TAG', '1.0.0-alpha.1'),
     author='Alan Christie',
     author_email='achristie@informaticsmatters.com',
     url='https://github.com/InformaticsMatters/pipelines-utils',
-    license='Copyright (C) 2018 Informatics Matters Ltd. All rights reserved.',
+    license='Copyright (C) 2020 Informatics Matters Ltd. All rights reserved.',
     description='Utilities for Informatics Matters Pipelines',
     long_description=get_long_description(),
     keywords='pipelines',
