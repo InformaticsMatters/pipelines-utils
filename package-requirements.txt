@@ -4,6 +4,7 @@
 
 # For testing...
 coverage == 5.0.3
+future >= 0.16.0
 pyroma == 2.6
 
 # In order to run 'python setup.py bdist_wheel'...

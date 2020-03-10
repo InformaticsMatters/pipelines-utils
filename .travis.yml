@@ -21,6 +21,7 @@ stages:
   if: tag is present
 
 install:
+- pip install --upgrade pip
 - pip install -r package-requirements.txt
 
 # Test/build execution steps...
@@ -37,7 +38,7 @@ script:
 # Let's run the script against various Python versions
 # and then move to our deploy stage. Travis will only run the deploy stage
 # when the test stages have passed. Deployment will also only execute
-# if this triggering commit is tagged and we're on the master branch.
+# if this triggering commit is tagged.
 jobs:
   include:
   - python: 2.7
@@ -63,4 +64,3 @@ jobs:
       distributions: bdist_wheel
       on:
         tags: true
-        branch: master
