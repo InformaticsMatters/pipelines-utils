@@ -30,7 +30,7 @@ script:
 - export TRAVIS_TAG="${TRAVIS_TAG-1.0.0}"
 - cd ${TRAVIS_BUILD_DIR}/src/python
 - coverage run setup.py test
-- coverage report
+- coverage report -i
 - pyroma .
 - python setup.py bdist_wheel
 
