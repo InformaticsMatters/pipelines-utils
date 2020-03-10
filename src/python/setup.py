@@ -3,7 +3,7 @@
 
 # Setup module for the Python-based Pipelines Utilities.
 #
-# The published version is "1.0.0-alpha.1"
+# The published version is "1.0.0"
 # or the value of the TRAVIS_TAG environment variable if set.
 #
 # March 2020
@@ -27,7 +27,7 @@ def get_long_description():
 setup(
 
     name='im-pipelines-utils',
-    version=os.environ.get('TRAVIS_TAG', '1.0.0-alpha.1'),
+    version=os.environ.get('TRAVIS_TAG', '1.0.0'),
     author='Alan Christie',
     author_email='achristie@informaticsmatters.com',
     url='https://github.com/InformaticsMatters/pipelines-utils',
