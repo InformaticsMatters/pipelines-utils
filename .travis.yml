@@ -13,23 +13,20 @@ os:
 - linux
 
 # Our build stages.
-# (`test` is basically a travis default default so we don't need to name it).
-# But we do want a `deploy` stage that only runs if the the commit is tagged
-# (with a label that begins `pypi-` and it's on the master branch).
-# Our tags for PyPI distributions will be of the form `pypi-1.0.1`.
+# (`test` is basically a travis default so we don't need to name it).
+# But we do want a `deploy` stage that only runs if the the commit is tagged.
 stages:
 - name: test
 - name: deploy
   if: tag is present
 
-# Installation steps.
-# We have more than one requirements file.
 install:
 - pip install -r package-requirements.txt
 
 # Test/build execution steps...
 # All in the default 'test' stage.
 script:
+- export TRAVIS_TAG="${TRAVIS_TAG-1.0.0}"
 - cd ${TRAVIS_BUILD_DIR}/src/python
 - coverage run setup.py test
 - coverage report
