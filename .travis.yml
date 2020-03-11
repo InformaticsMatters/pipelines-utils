@@ -7,6 +7,17 @@
 # We avoid running pylint at the moment because the vast majority of the
 # code is legacy and fails a number of best-practice tests.
 
+# -----------------
+# Control variables (Travis Settings)
+# -----------------
+#
+# TRIGGER_DOWNSTREAM    Should be 'yes' to enable triggering downstream projects
+#                       like 'pipelines'.
+#
+# If you set TRIGGER_DOWNSTREAM you must also set the following: -
+#
+# TRAVIS_ACCESS_TOKEN   A Travis token
+
 language: python
 
 os:
@@ -20,9 +31,21 @@ stages:
 - name: deploy
   if: tag is present
 
+# Global variables
+# (available to the Job matrix)...
+env:
+  global:
+  # The origin of the trigger code
+  - TRIGGER_ORIGIN=https://raw.githubusercontent.com/informaticsmatters/trigger-travis/master
+
 install:
 - pip install --upgrade pip
 - pip install -r package-requirements.txt
+# Download trigger code
+- curl --location --retry 3 ${TRIGGER_ORIGIN}/requirements.txt --output trigger-travis-requirements.txt
+- curl --location --retry 3 ${TRIGGER_ORIGIN}/trigger-travis.py --output trigger-travis.py
+- pip install -r trigger-travis-requirements.txt
+- chmod +x trigger-travis.py
 
 # Test/build execution steps...
 # All in the default 'test' stage.
@@ -64,3 +87,7 @@ jobs:
       distributions: bdist_wheel
       on:
         tags: true
+    after_deploy:
+    - if [ ${TRIGGER_DOWNSTREAM} == "yes" ]; then
+      ./trigger-travis.py --pro informaticsmatters pipelines ${TRAVIS_ACCESS_TOKEN};
+      fi
