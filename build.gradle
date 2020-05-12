@@ -13,10 +13,6 @@
  * limitations under the License.
  */
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.4.1'
-}
-
 task runPipelineTester(type: Exec) {
 
     description 'Runs the PipelineTester (add arguments with -Pptargs=-v)'
