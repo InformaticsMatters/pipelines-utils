@@ -25,8 +25,7 @@ def add_default_input_args(parser):
     parser.add_argument('-i', '--input',
                         help="Input file, if not defined the STDIN is used")
     parser.add_argument('-if', '--informat', choices=['sdf', 'json'],
-                        help="Input format."
-                             " When using STDIN this must be specified.")
+                        help="Input format. When using STDIN this must be specified.")
 
 
 def add_default_output_args(parser):
