@@ -3,9 +3,9 @@
 # for the module's runtime requirements.
 
 # For testing...
-coverage == 5.0.3
-future >= 0.16.0
-setuptools == 44.0.0
+coverage == 5.3.1
+future >= 0.18.2
+setuptools == 51.3.3
 
 # In order to run 'python setup.py bdist_wheel'...
-wheel == 0.34.2
+wheel == 0.36.2

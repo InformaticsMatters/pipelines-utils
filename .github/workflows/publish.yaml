@@ -1,0 +1,56 @@
+---
+name: publish
+
+# Actions for any tag.
+
+# -----------------
+# Control variables (GitHub Secrets)
+# -----------------
+#
+# At the GitHub 'organisation' or 'project' level you must have the following
+# GitHub 'Repository Secrets' defined (i.e. via 'Settings -> Secrets'): -
+#
+# PYPI_USERNAME
+# PYPI_TOKEN
+#
+# DISPATCH_PIPELINES_TOKEN
+#
+# -----------
+# Environment (GitHub Environments)
+# -----------
+#
+# Environment         (none)
+
+on:
+  push:
+    tags:
+    - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r package-requirements.txt
+    - name: Build
+      run: |
+        pushd src/python
+        python setup.py bdist_wheel
+    - name: Publish
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USERNAME }}
+        password: ${{ secrets.PYPI_TOKEN }}
+    - name: Repository dispatch
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        repository: informaticsmatters/pipelines
+        token: ${{ secrets.DISPATCH_PIPELINES_TOKEN }}
+        event-type: pipelines-utils

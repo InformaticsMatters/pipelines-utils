@@ -1,6 +1,8 @@
 # Pipelines Utils
 
-[![Build Status](https://travis-ci.com/InformaticsMatters/pipelines-utils.svg?branch=master)](https://travis-ci.com/InformaticsMatters/pipelines-utils)
+![build](https://github.com/InformaticsMatters/pipelines-utils/workflows/build/badge.svg)
+![publish](https://github.com/InformaticsMatters/pipelines-utils/workflows/publish/badge.svg)
+
 [![PyPI version](https://badge.fury.io/py/im-pipelines-utils.svg)](https://badge.fury.io/py/im-pipelines-utils)
 
 A repository of common **Informatics Matters** _Pipeline_ utilities shared
