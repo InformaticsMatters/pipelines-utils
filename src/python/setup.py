@@ -27,7 +27,7 @@ def get_long_description():
 setup(
 
     name='im-pipelines-utils',
-    version=os.environ.get('TRAVIS_TAG', '1.0.0'),
+    version=os.environ.get('GITHUB_REF_SLUG', '1.0.0'),
     author='Alan Christie',
     author_email='achristie@informaticsmatters.com',
     url='https://github.com/InformaticsMatters/pipelines-utils',
