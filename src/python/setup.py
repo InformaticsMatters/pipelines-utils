@@ -44,7 +44,7 @@ setup(
     install_requires=[
         'future >= 0.16.0'
     ],
-    # Supported Python versions
+    # Supported Python versions
     # 2.7 and 3.5 or better
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, != 3.4.*, <4',
 
