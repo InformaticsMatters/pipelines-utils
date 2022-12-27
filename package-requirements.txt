@@ -5,7 +5,7 @@
 # For testing...
 coverage == 5.3.1
 future >= 0.18.2
-setuptools == 51.3.3
+setuptools == 65.5.1
 
 # In order to run 'python setup.py bdist_wheel'...
 wheel == 0.36.2
